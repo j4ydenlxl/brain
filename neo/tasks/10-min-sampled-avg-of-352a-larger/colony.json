@@ -2,41 +2,337 @@
   "task": "10-min-sampled-avg-of-352a-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:31:59.666Z",
+  "at": "2026-10-25T16:08:17.799Z",
   "stats": {
-    "generated": 44645,
-    "distinct": 59764,
-    "kept": 2,
-    "know": 2,
+    "generated": 200782,
+    "distinct": 68142,
+    "kept": 108,
+    "know": 6,
     "byFamily": {
-      "transform": 2
+      "route": 2,
+      "transform": 2,
+      "compare": 2,
+      "memory": 102
     },
     "bySource": {
-      "open": 1,
-      "enum": 1
+      "enum": 1,
+      "open": 2,
+      "parent": 2,
+      "yesno": 1,
+      "memory": 102
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 47220,
-    "cellsPerSecond": 945,
+    "ms": 144797,
+    "cellsPerSecond": 1387,
     "capped": "ms",
     "packs": [
       "fr-datasets-time-series-with-error-bars-excel-54fe73"
     ],
     "cursor": {
       "v": 1,
-      "basis": "36c6b3989bb4c842a810669ab7339655e67ea15dfe4c8a2c69c18a4a948854eb",
-      "round": 2,
-      "at": 117431,
+      "basis": "62f1cd5ce5314495e4d6ad1a6b816658a2439c49652f10e7a26f048a28bc738c",
+      "round": 0,
+      "at": 90428,
       "maxCost": 7,
       "done": false,
       "cost": 5,
-      "prim": "transform.sortUp",
-      "tpl": 4863
+      "prim": "iterate.growth",
+      "tpl": 3000
     }
   },
   "cells": [
+    {
+      "id": "n-515c504d",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "bigger than",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "smaller"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "lesser"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 33,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6cdbff55",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [
+        "n-515c504d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "compare",
+              "lesser",
+              "makes",
+              "smaller",
+              "std",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 33,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
     {
       "id": "n-3f71a234",
       "task": "10-min-sampled-avg-of-352a-larger",
@@ -335,10 +631,5098 @@
         "fired": 100,
         "rows": 100
       }
+    },
+    {
+      "id": "n-2aa90e36",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "bigger than",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "smaller"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "lesser"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.greater",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min sampled avg"
+              }
+            ]
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min sampled avg"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the larger 10 min sampled avg (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the larger 10 min sampled avg (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 126,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8077c4ed",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [
+        "n-2aa90e36"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "compare",
+              "lesser",
+              "makes",
+              "smaller",
+              "std",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.greater",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min sampled avg"
+              }
+            ]
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min sampled avg"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the larger 10 min sampled avg (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the larger 10 min sampled avg (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 126,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9c12a0b8",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "avg"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 1:30:00 PM or 6/11/2001 9:20:00 PM": "6/12/2001 1:30:00 PM has the larger 10 min sampled avg (20.4 against 17.5).",
+          "between 6/11/2001 2:20:00 PM and 6/11/2001 11:30:00 AM, which has the greater 10 min sampled avg": "6/11/2001 2:20:00 PM has the larger 10 min sampled avg (23.9 against 22).",
+          "between 6/12/2001 11:30:00 AM and 6/11/2001 6:10:00 PM, which has the greater 10 min sampled avg": "6/11/2001 6:10:00 PM has the larger 10 min sampled avg (18.6 against 14.4).",
+          "whose 10 min sampled avg is larger: 6/12/2001 4:10:00 AM or 6/11/2001 12:40:00 PM": "6/11/2001 12:40:00 PM has the larger 10 min sampled avg (20.3 against 12.2).",
+          "which has the larger 10 min sampled avg, 6/12/2001 4:20:00 PM or 6/12/2001 4:00:00 AM": "6/12/2001 4:20:00 PM has the larger 10 min sampled avg (28.8 against 12.3).",
+          "between 6/12/2001 5:10:00 PM and 6/12/2001 7:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 7:50:00 PM has the larger 10 min sampled avg (28.2 against 27).",
+          "between 6/12/2001 12:10:00 PM and 6/11/2001 4:10:00 PM, which has the greater 10 min sampled avg": "6/11/2001 4:10:00 PM has the larger 10 min sampled avg (16.7 against 15.1).",
+          "between 6/12/2001 3:40:00 PM and 6/12/2001 4:10:00 PM, which has the greater 10 min sampled avg": "6/12/2001 3:40:00 PM has the larger 10 min sampled avg (28.4 against 24.4).",
+          "whose 10 min sampled avg is larger: 6/12/2001 8:50:00 PM or 6/12/2001 9:10:00 AM": "6/12/2001 8:50:00 PM has the larger 10 min sampled avg (25.4 against 17.4).",
+          "which has the larger 10 min sampled avg, 6/12/2001 6:00:00 AM or 6/12/2001 12:10:00 AM": "6/12/2001 12:10:00 AM has the larger 10 min sampled avg (16.1 against 8.9).",
+          "whose 10 min sampled avg is larger: 6/11/2001 6:00:00 PM or 6/12/2001 11:00:00 AM": "6/11/2001 6:00:00 PM has the larger 10 min sampled avg (17.1 against 11.3).",
+          "which has the larger 10 min sampled avg, 6/12/2001 4:50:00 AM or 6/12/2001 4:20:00 AM": "6/12/2001 4:20:00 AM has the larger 10 min sampled avg (11.8 against 9.5).",
+          "which has the larger 10 min sampled avg, 6/12/2001 6:20:00 PM or 6/12/2001 2:40:00 PM": "6/12/2001 6:20:00 PM has the larger 10 min sampled avg (30.2 against 21.9).",
+          "whose 10 min sampled avg is larger: 6/12/2001 7:00:00 PM or 6/12/2001 7:40:00 PM": "6/12/2001 7:40:00 PM has the larger 10 min sampled avg (27.5 against 24.5).",
+          "which has the larger 10 min sampled avg, 6/11/2001 12:40:00 PM or 6/12/2001 6:20:00 AM": "6/11/2001 12:40:00 PM has the larger 10 min sampled avg (20.3 against 12.1).",
+          "which has the larger 10 min sampled avg, 6/12/2001 11:00:00 AM or 6/12/2001 3:40:00 PM": "6/12/2001 3:40:00 PM has the larger 10 min sampled avg (28.4 against 11.3).",
+          "whose 10 min sampled avg is larger: 6/12/2001 10:50:00 PM or 6/12/2001 3:20:00 PM": "6/12/2001 3:20:00 PM has the larger 10 min sampled avg (25 against 22.1).",
+          "whose 10 min sampled avg is larger: 6/12/2001 2:30:00 AM or 6/12/2001 12:50:00 AM": "6/12/2001 12:50:00 AM has the larger 10 min sampled avg (15.9 against 15.3).",
+          "between 6/11/2001 3:30:00 PM and 6/12/2001 3:00:00 PM, which has the greater 10 min sampled avg": "6/12/2001 3:00:00 PM has the larger 10 min sampled avg (24.6 against 20).",
+          "which has the larger 10 min sampled avg, 6/12/2001 2:20:00 PM or 6/12/2001 3:30:00 PM": "6/12/2001 3:30:00 PM has the larger 10 min sampled avg (26.9 against 21).",
+          "between 6/12/2001 3:30:00 PM and 6/12/2001 10:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 3:30:00 PM has the larger 10 min sampled avg (26.9 against 22.1).",
+          "between 6/12/2001 10:10:00 PM and 6/11/2001 10:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 10:10:00 PM has the larger 10 min sampled avg (26.4 against 13).",
+          "whose 10 min sampled avg is larger: 6/12/2001 7:30:00 PM or 6/12/2001 2:20:00 PM": "6/12/2001 7:30:00 PM has the larger 10 min sampled avg (25.9 against 21).",
+          "which has the larger 10 min sampled avg, 6/12/2001 9:50:00 AM or 6/12/2001 5:50:00 AM": "6/12/2001 9:50:00 AM has the larger 10 min sampled avg (13.8 against 4.9).",
+          "which has the larger 10 min sampled avg, 6/12/2001 7:40:00 AM or 6/12/2001 7:20:00 PM": "6/12/2001 7:20:00 PM has the larger 10 min sampled avg (26.7 against 21.7).",
+          "whose 10 min sampled avg is larger: 6/12/2001 11:40:00 AM or 6/12/2001 6:20:00 PM": "6/12/2001 6:20:00 PM has the larger 10 min sampled avg (30.2 against 12.3).",
+          "whose 10 min sampled avg is larger: 6/11/2001 4:10:00 PM or 6/12/2001 12:20:00 PM": "6/11/2001 4:10:00 PM has the larger 10 min sampled avg (16.7 against 14.8).",
+          "between 6/12/2001 12:30:00 AM and 6/11/2001 6:00:00 PM, which has the greater 10 min sampled avg": "6/11/2001 6:00:00 PM has the larger 10 min sampled avg (17.1 against 15.2).",
+          "which has the larger 10 min sampled avg, 6/12/2001 12:20:00 AM or 6/11/2001 3:40:00 PM": "6/11/2001 3:40:00 PM has the larger 10 min sampled avg (18.3 against 15.3).",
+          "between 6/12/2001 11:20:00 PM and 6/12/2001 2:30:00 AM, which has the greater 10 min sampled avg": "6/12/2001 11:20:00 PM has the larger 10 min sampled avg (22.9 against 15.3).",
+          "which has the larger 10 min sampled avg, 6/11/2001 11:00:00 AM or 6/12/2001 7:30:00 AM": "6/11/2001 11:00:00 AM has the larger 10 min sampled avg (22.3 against 19.2).",
+          "whose 10 min sampled avg is larger: 6/12/2001 2:10:00 PM or 6/12/2001 10:50:00 AM": "6/12/2001 2:10:00 PM has the larger 10 min sampled avg (22.6 against 18.3).",
+          "which has the larger 10 min sampled avg, 6/12/2001 6:30:00 PM or 6/12/2001 3:40:00 AM": "6/12/2001 6:30:00 PM has the larger 10 min sampled avg (30 against 12.1).",
+          "between 6/12/2001 9:30:00 PM and 6/11/2001 6:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 9:30:00 PM has the larger 10 min sampled avg (27.1 against 16.5).",
+          "which has the larger 10 min sampled avg, 6/11/2001 5:50:00 PM or 6/12/2001 12:30:00 AM": "6/11/2001 5:50:00 PM has the larger 10 min sampled avg (17.5 against 15.2).",
+          "between 6/11/2001 3:40:00 PM and 6/11/2001 1:10:00 PM, which has the greater 10 min sampled avg": "6/11/2001 1:10:00 PM has the larger 10 min sampled avg (21.3 against 18.3).",
+          "between 6/12/2001 7:30:00 AM and 6/12/2001 1:10:00 PM, which has the greater 10 min sampled avg": "6/12/2001 7:30:00 AM has the larger 10 min sampled avg (19.2 against 18.9).",
+          "which has the larger 10 min sampled avg, 6/12/2001 10:20:00 AM or 6/12/2001 10:10:00 PM": "6/12/2001 10:10:00 PM has the larger 10 min sampled avg (26.4 against 12.2).",
+          "between 6/11/2001 12:00:00 PM and 6/12/2001 2:10:00 PM, which has the greater 10 min sampled avg": "6/11/2001 12:00:00 PM has the larger 10 min sampled avg (24.8 against 22.6).",
+          "whose 10 min sampled avg is larger: 6/12/2001 1:50:00 AM or 6/12/2001 7:40:00 AM": "6/12/2001 7:40:00 AM has the larger 10 min sampled avg (21.7 against 15.3).",
+          "between 6/12/2001 5:50:00 AM and 6/11/2001 4:30:00 PM, which has the greater 10 min sampled avg": "6/11/2001 4:30:00 PM has the larger 10 min sampled avg (16.6 against 4.9).",
+          "between 6/11/2001 10:30:00 PM and 6/11/2001 8:00:00 PM, which has the greater 10 min sampled avg": "6/11/2001 8:00:00 PM has the larger 10 min sampled avg (16.2 against 14.1).",
+          "whose 10 min sampled avg is larger: 6/11/2001 12:20:00 PM or 6/11/2001 11:00:00 AM": "6/11/2001 12:20:00 PM has the larger 10 min sampled avg (22.9 against 22.3).",
+          "between 6/11/2001 8:50:00 PM and 6/12/2001 11:40:00 AM, which has the greater 10 min sampled avg": "6/11/2001 8:50:00 PM has the larger 10 min sampled avg (18.3 against 12.3).",
+          "which has the larger 10 min sampled avg, 6/12/2001 9:00:00 PM or 6/11/2001 10:30:00 PM": "6/12/2001 9:00:00 PM has the larger 10 min sampled avg (24.9 against 14.1).",
+          "whose 10 min sampled avg is larger: 6/11/2001 10:50:00 PM or 6/11/2001 2:00:00 PM": "6/11/2001 2:00:00 PM has the larger 10 min sampled avg (25.5 against 13).",
+          "which has the larger 10 min sampled avg, 6/12/2001 7:40:00 PM or 6/12/2001 11:20:00 PM": "6/12/2001 7:40:00 PM has the larger 10 min sampled avg (27.5 against 22.9).",
+          "whose 10 min sampled avg is larger: 6/12/2001 3:50:00 AM or 6/11/2001 11:30:00 PM": "6/11/2001 11:30:00 PM has the larger 10 min sampled avg (14.3 against 12.3).",
+          "whose 10 min sampled avg is larger: 6/11/2001 11:30:00 AM or 6/11/2001 10:10:00 PM": "6/11/2001 11:30:00 AM has the larger 10 min sampled avg (22 against 15.5).",
+          "which has the larger 10 min sampled avg, 6/12/2001 9:10:00 AM or 6/12/2001 9:40:00 AM": "6/12/2001 9:10:00 AM has the larger 10 min sampled avg (17.4 against 14.9).",
+          "whose 10 min sampled avg is larger: 6/12/2001 8:20:00 AM or 6/12/2001 3:10:00 PM": "6/12/2001 8:20:00 AM has the larger 10 min sampled avg (29.9 against 24).",
+          "which has the larger 10 min sampled avg, 6/11/2001 9:20:00 PM or 6/12/2001 5:10:00 PM": "6/12/2001 5:10:00 PM has the larger 10 min sampled avg (27 against 17.5).",
+          "whose 10 min sampled avg is larger: 6/12/2001 3:00:00 PM or 6/12/2001 10:00:00 PM": "6/12/2001 10:00:00 PM has the larger 10 min sampled avg (26.6 against 24.6).",
+          "between 6/12/2001 4:30:00 AM and 6/12/2001 1:50:00 AM, which has the greater 10 min sampled avg": "6/12/2001 1:50:00 AM has the larger 10 min sampled avg (15.3 against 9.3).",
+          "whose 10 min sampled avg is larger: 6/12/2001 7:50:00 PM or 6/12/2001 9:50:00 AM": "6/12/2001 7:50:00 PM has the larger 10 min sampled avg (28.2 against 13.8).",
+          "which has the larger 10 min sampled avg, 6/12/2001 3:10:00 PM or 6/11/2001 10:00:00 PM": "6/12/2001 3:10:00 PM has the larger 10 min sampled avg (24 against 14.7).",
+          "between 6/12/2001 4:00:00 AM and 6/12/2001 4:10:00 AM, which has the greater 10 min sampled avg": "6/12/2001 4:00:00 AM has the larger 10 min sampled avg (12.3 against 12.2).",
+          "between 6/12/2001 4:20:00 AM and 6/11/2001 1:30:00 PM, which has the greater 10 min sampled avg": "6/11/2001 1:30:00 PM has the larger 10 min sampled avg (22.4 against 11.8).",
+          "between 6/11/2001 10:00:00 PM and 6/11/2001 5:20:00 PM, which has the greater 10 min sampled avg": "6/11/2001 5:20:00 PM has the larger 10 min sampled avg (17.1 against 14.7).",
+          "between 6/11/2001 7:50:00 PM and 6/11/2001 4:40:00 PM, which has the greater 10 min sampled avg": "6/11/2001 4:40:00 PM has the larger 10 min sampled avg (16.1 against 15.9).",
+          "whose 10 min sampled avg is larger: 6/11/2001 6:50:00 PM or 6/12/2001 4:20:00 PM": "6/12/2001 4:20:00 PM has the larger 10 min sampled avg (28.8 against 16.5).",
+          "between 6/11/2001 9:00:00 PM and 6/12/2001 8:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 8:50:00 PM has the larger 10 min sampled avg (25.4 against 18.1).",
+          "whose 10 min sampled avg is larger: 6/11/2001 8:00:00 PM or 6/12/2001 4:50:00 AM": "6/11/2001 8:00:00 PM has the larger 10 min sampled avg (16.2 against 9.5).",
+          "which has the larger 10 min sampled avg, 6/12/2001 10:50:00 AM or 6/12/2001 12:10:00 PM": "6/12/2001 10:50:00 AM has the larger 10 min sampled avg (18.3 against 15.1).",
+          "whose 10 min sampled avg is larger: 6/12/2001 4:10:00 PM or 6/12/2001 2:00:00 AM": "6/12/2001 4:10:00 PM has the larger 10 min sampled avg (24.4 against 15.2).",
+          "whose 10 min sampled avg is larger: 6/11/2001 1:10:00 PM or 6/12/2001 9:00:00 PM": "6/12/2001 9:00:00 PM has the larger 10 min sampled avg (24.9 against 21.3).",
+          "whose 10 min sampled avg is larger: 6/11/2001 5:00:00 PM or 6/11/2001 6:20:00 PM": "6/11/2001 6:20:00 PM has the larger 10 min sampled avg (18.4 against 17).",
+          "which has the larger 10 min sampled avg, 6/12/2001 6:50:00 PM or 6/12/2001 11:30:00 AM": "6/12/2001 6:50:00 PM has the larger 10 min sampled avg (25.7 against 14.4).",
+          "which has the larger 10 min sampled avg, 6/12/2001 3:20:00 PM or 6/12/2001 9:30:00 PM": "6/12/2001 9:30:00 PM has the larger 10 min sampled avg (27.1 against 25).",
+          "whose 10 min sampled avg is larger: 6/12/2001 8:10:00 AM or 6/12/2001 6:50:00 PM": "6/12/2001 8:10:00 AM has the larger 10 min sampled avg (28.5 against 25.7).",
+          "between 6/12/2001 8:50:00 AM and 6/12/2001 10:30:00 AM, which has the greater 10 min sampled avg": "6/12/2001 8:50:00 AM has the larger 10 min sampled avg (26.1 against 17.8).",
+          "which has the larger 10 min sampled avg, 6/12/2001 12:50:00 AM or 6/11/2001 12:00:00 PM": "6/11/2001 12:00:00 PM has the larger 10 min sampled avg (24.8 against 15.9).",
+          "which has the larger 10 min sampled avg, 6/12/2001 8:30:00 AM or 6/12/2001 8:50:00 AM": "6/12/2001 8:30:00 AM has the larger 10 min sampled avg (30.9 against 26.1).",
+          "between 6/11/2001 1:40:00 PM and 6/11/2001 2:50:00 PM, which has the greater 10 min sampled avg": "6/11/2001 2:50:00 PM has the larger 10 min sampled avg (26.9 against 25.4).",
+          "between 6/12/2001 2:40:00 PM and 6/12/2001 7:30:00 PM, which has the greater 10 min sampled avg": "6/12/2001 7:30:00 PM has the larger 10 min sampled avg (25.9 against 21.9).",
+          "which has the larger 10 min sampled avg, 6/12/2001 2:00:00 AM or 6/11/2001 7:50:00 PM": "6/11/2001 7:50:00 PM has the larger 10 min sampled avg (15.9 against 15.2).",
+          "whose 10 min sampled avg is larger: 6/11/2001 6:10:00 PM or 6/12/2001 12:20:00 AM": "6/11/2001 6:10:00 PM has the larger 10 min sampled avg (18.6 against 15.3).",
+          "which has the larger 10 min sampled avg, 6/12/2001 6:40:00 AM or 6/11/2001 8:50:00 PM": "6/11/2001 8:50:00 PM has the larger 10 min sampled avg (18.3 against 13.8).",
+          "between 6/12/2001 6:20:00 AM and 6/11/2001 5:00:00 PM, which has the greater 10 min sampled avg": "6/11/2001 5:00:00 PM has the larger 10 min sampled avg (17 against 12.1).",
+          "which has the larger 10 min sampled avg, 6/11/2001 11:30:00 PM or 6/11/2001 2:20:00 PM": "6/11/2001 2:20:00 PM has the larger 10 min sampled avg (23.9 against 14.3).",
+          "whose 10 min sampled avg is larger: 6/11/2001 1:30:00 PM or 6/11/2001 9:10:00 PM": "6/11/2001 1:30:00 PM has the larger 10 min sampled avg (22.4 against 19.2).",
+          "which has the larger 10 min sampled avg, 6/11/2001 4:00:00 PM or 6/11/2001 3:30:00 PM": "6/11/2001 3:30:00 PM has the larger 10 min sampled avg (20 against 17.6).",
+          "which has the larger 10 min sampled avg, 6/11/2001 2:00:00 PM or 6/12/2001 5:20:00 AM": "6/11/2001 2:00:00 PM has the larger 10 min sampled avg (25.5 against 8).",
+          "whose 10 min sampled avg is larger: 6/11/2001 5:20:00 PM or 6/11/2001 5:50:00 PM": "6/11/2001 5:50:00 PM has the larger 10 min sampled avg (17.5 against 17.1).",
+          "whose 10 min sampled avg is larger: 6/12/2001 1:10:00 PM or 6/11/2001 4:00:00 PM": "6/12/2001 1:10:00 PM has the larger 10 min sampled avg (18.9 against 17.6).",
+          "which has the larger 10 min sampled avg, 6/12/2001 12:20:00 PM or 6/11/2001 1:40:00 PM": "6/11/2001 1:40:00 PM has the larger 10 min sampled avg (25.4 against 14.8).",
+          "whose 10 min sampled avg is larger: 6/11/2001 4:30:00 PM or 6/12/2001 6:00:00 AM": "6/11/2001 4:30:00 PM has the larger 10 min sampled avg (16.6 against 8.9).",
+          "whose 10 min sampled avg is larger: 6/11/2001 4:40:00 PM or 6/12/2001 6:30:00 PM": "6/12/2001 6:30:00 PM has the larger 10 min sampled avg (30 against 16.1).",
+          "between 6/12/2001 9:40:00 AM and 6/12/2001 8:20:00 AM, which has the greater 10 min sampled avg": "6/12/2001 8:20:00 AM has the larger 10 min sampled avg (29.9 against 14.9).",
+          "between 6/12/2001 12:10:00 AM and 6/11/2001 12:20:00 PM, which has the greater 10 min sampled avg": "6/11/2001 12:20:00 PM has the larger 10 min sampled avg (22.9 against 16.1).",
+          "between 6/12/2001 3:40:00 AM and 6/12/2001 1:30:00 PM, which has the greater 10 min sampled avg": "6/12/2001 1:30:00 PM has the larger 10 min sampled avg (20.4 against 12.1).",
+          "between 6/11/2001 9:50:00 PM and 6/12/2001 7:00:00 PM, which has the greater 10 min sampled avg": "6/12/2001 7:00:00 PM has the larger 10 min sampled avg (24.5 against 15.4).",
+          "which has the larger 10 min sampled avg, 6/12/2001 10:00:00 PM or 6/11/2001 9:50:00 PM": "6/12/2001 10:00:00 PM has the larger 10 min sampled avg (26.6 against 15.4).",
+          "between 6/12/2001 7:20:00 PM and 6/12/2001 8:10:00 AM, which has the greater 10 min sampled avg": "6/12/2001 8:10:00 AM has the larger 10 min sampled avg (28.5 against 26.7).",
+          "between 6/12/2001 6:40:00 PM and 6/12/2001 3:50:00 AM, which has the greater 10 min sampled avg": "6/12/2001 6:40:00 PM has the larger 10 min sampled avg (24.9 against 12.3).",
+          "whose 10 min sampled avg is larger: 6/12/2001 10:30:00 AM or 6/12/2001 6:40:00 AM": "6/12/2001 10:30:00 AM has the larger 10 min sampled avg (17.8 against 13.8).",
+          "which has the larger 10 min sampled avg, 6/11/2001 10:10:00 PM or 6/11/2001 9:00:00 PM": "6/11/2001 9:00:00 PM has the larger 10 min sampled avg (18.1 against 15.5).",
+          "whose 10 min sampled avg is larger: 6/11/2001 2:50:00 PM or 6/12/2001 10:20:00 AM": "6/11/2001 2:50:00 PM has the larger 10 min sampled avg (26.9 against 12.2).",
+          "which has the larger 10 min sampled avg, 6/11/2001 6:20:00 PM or 6/12/2001 4:30:00 AM": "6/11/2001 6:20:00 PM has the larger 10 min sampled avg (18.4 against 9.3).",
+          "which has the larger 10 min sampled avg, 6/11/2001 9:10:00 PM or 6/12/2001 6:40:00 PM": "6/12/2001 6:40:00 PM has the larger 10 min sampled avg (24.9 against 19.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b0ebbd5a",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "avg"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "larger: 6/12/2001 1:30:00 PM or 6/11/2001 9:20:00 PM": "6/12/2001 1:30:00 PM has the larger 10 min sampled avg (20.4 against 17.5).",
+          "larger: 6/12/2001 4:10:00 AM or 6/11/2001 12:40:00 PM": "6/11/2001 12:40:00 PM has the larger 10 min sampled avg (20.3 against 12.2).",
+          "larger: 6/12/2001 8:50:00 PM or 6/12/2001 9:10:00 AM": "6/12/2001 8:50:00 PM has the larger 10 min sampled avg (25.4 against 17.4).",
+          "larger: 6/11/2001 6:00:00 PM or 6/12/2001 11:00:00 AM": "6/11/2001 6:00:00 PM has the larger 10 min sampled avg (17.1 against 11.3).",
+          "larger: 6/12/2001 7:00:00 PM or 6/12/2001 7:40:00 PM": "6/12/2001 7:40:00 PM has the larger 10 min sampled avg (27.5 against 24.5).",
+          "larger: 6/12/2001 10:50:00 PM or 6/12/2001 3:20:00 PM": "6/12/2001 3:20:00 PM has the larger 10 min sampled avg (25 against 22.1).",
+          "larger: 6/12/2001 2:30:00 AM or 6/12/2001 12:50:00 AM": "6/12/2001 12:50:00 AM has the larger 10 min sampled avg (15.9 against 15.3).",
+          "larger: 6/12/2001 7:30:00 PM or 6/12/2001 2:20:00 PM": "6/12/2001 7:30:00 PM has the larger 10 min sampled avg (25.9 against 21).",
+          "larger: 6/12/2001 11:40:00 AM or 6/12/2001 6:20:00 PM": "6/12/2001 6:20:00 PM has the larger 10 min sampled avg (30.2 against 12.3).",
+          "larger: 6/11/2001 4:10:00 PM or 6/12/2001 12:20:00 PM": "6/11/2001 4:10:00 PM has the larger 10 min sampled avg (16.7 against 14.8).",
+          "larger: 6/12/2001 2:10:00 PM or 6/12/2001 10:50:00 AM": "6/12/2001 2:10:00 PM has the larger 10 min sampled avg (22.6 against 18.3).",
+          "larger: 6/12/2001 1:50:00 AM or 6/12/2001 7:40:00 AM": "6/12/2001 7:40:00 AM has the larger 10 min sampled avg (21.7 against 15.3).",
+          "larger: 6/11/2001 12:20:00 PM or 6/11/2001 11:00:00 AM": "6/11/2001 12:20:00 PM has the larger 10 min sampled avg (22.9 against 22.3).",
+          "larger: 6/11/2001 10:50:00 PM or 6/11/2001 2:00:00 PM": "6/11/2001 2:00:00 PM has the larger 10 min sampled avg (25.5 against 13).",
+          "larger: 6/12/2001 3:50:00 AM or 6/11/2001 11:30:00 PM": "6/11/2001 11:30:00 PM has the larger 10 min sampled avg (14.3 against 12.3).",
+          "larger: 6/11/2001 11:30:00 AM or 6/11/2001 10:10:00 PM": "6/11/2001 11:30:00 AM has the larger 10 min sampled avg (22 against 15.5).",
+          "larger: 6/12/2001 8:20:00 AM or 6/12/2001 3:10:00 PM": "6/12/2001 8:20:00 AM has the larger 10 min sampled avg (29.9 against 24).",
+          "larger: 6/12/2001 3:00:00 PM or 6/12/2001 10:00:00 PM": "6/12/2001 10:00:00 PM has the larger 10 min sampled avg (26.6 against 24.6).",
+          "larger: 6/12/2001 7:50:00 PM or 6/12/2001 9:50:00 AM": "6/12/2001 7:50:00 PM has the larger 10 min sampled avg (28.2 against 13.8).",
+          "larger: 6/11/2001 6:50:00 PM or 6/12/2001 4:20:00 PM": "6/12/2001 4:20:00 PM has the larger 10 min sampled avg (28.8 against 16.5).",
+          "larger: 6/11/2001 8:00:00 PM or 6/12/2001 4:50:00 AM": "6/11/2001 8:00:00 PM has the larger 10 min sampled avg (16.2 against 9.5).",
+          "larger: 6/12/2001 4:10:00 PM or 6/12/2001 2:00:00 AM": "6/12/2001 4:10:00 PM has the larger 10 min sampled avg (24.4 against 15.2).",
+          "larger: 6/11/2001 1:10:00 PM or 6/12/2001 9:00:00 PM": "6/12/2001 9:00:00 PM has the larger 10 min sampled avg (24.9 against 21.3).",
+          "larger: 6/11/2001 5:00:00 PM or 6/11/2001 6:20:00 PM": "6/11/2001 6:20:00 PM has the larger 10 min sampled avg (18.4 against 17).",
+          "larger: 6/12/2001 8:10:00 AM or 6/12/2001 6:50:00 PM": "6/12/2001 8:10:00 AM has the larger 10 min sampled avg (28.5 against 25.7).",
+          "larger: 6/11/2001 6:10:00 PM or 6/12/2001 12:20:00 AM": "6/11/2001 6:10:00 PM has the larger 10 min sampled avg (18.6 against 15.3).",
+          "larger: 6/11/2001 1:30:00 PM or 6/11/2001 9:10:00 PM": "6/11/2001 1:30:00 PM has the larger 10 min sampled avg (22.4 against 19.2).",
+          "larger: 6/11/2001 5:20:00 PM or 6/11/2001 5:50:00 PM": "6/11/2001 5:50:00 PM has the larger 10 min sampled avg (17.5 against 17.1).",
+          "larger: 6/12/2001 1:10:00 PM or 6/11/2001 4:00:00 PM": "6/12/2001 1:10:00 PM has the larger 10 min sampled avg (18.9 against 17.6).",
+          "larger: 6/11/2001 4:30:00 PM or 6/12/2001 6:00:00 AM": "6/11/2001 4:30:00 PM has the larger 10 min sampled avg (16.6 against 8.9).",
+          "larger: 6/11/2001 4:40:00 PM or 6/12/2001 6:30:00 PM": "6/12/2001 6:30:00 PM has the larger 10 min sampled avg (30 against 16.1).",
+          "larger: 6/12/2001 10:30:00 AM or 6/12/2001 6:40:00 AM": "6/12/2001 10:30:00 AM has the larger 10 min sampled avg (17.8 against 13.8).",
+          "larger: 6/11/2001 2:50:00 PM or 6/12/2001 10:20:00 AM": "6/11/2001 2:50:00 PM has the larger 10 min sampled avg (26.9 against 12.2)."
+        }
+      },
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-029cbc68",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 11:00:00 AM or 6/12/2001 7:30:00 AM": "6/11/2001 11:00:00 AM has the larger 10 min sampled avg (22.3 against 19.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-04bc4f52",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 10:10:00 PM and 6/11/2001 10:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 10:10:00 PM has the larger 10 min sampled avg (26.4 against 13)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-04cda5f7",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 4:00:00 AM and 6/12/2001 4:10:00 AM, which has the greater 10 min sampled avg": "6/12/2001 4:00:00 AM has the larger 10 min sampled avg (12.3 against 12.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-066150e9",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 7:50:00 PM and 6/11/2001 4:40:00 PM, which has the greater 10 min sampled avg": "6/11/2001 4:40:00 PM has the larger 10 min sampled avg (16.1 against 15.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-079fb341",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 9:20:00 PM or 6/12/2001 5:10:00 PM": "6/12/2001 5:10:00 PM has the larger 10 min sampled avg (27 against 17.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0810a2b0",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 9:40:00 AM and 6/12/2001 8:20:00 AM, which has the greater 10 min sampled avg": "6/12/2001 8:20:00 AM has the larger 10 min sampled avg (29.9 against 14.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-09b37315",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 3:30:00 PM and 6/12/2001 3:00:00 PM, which has the greater 10 min sampled avg": "6/12/2001 3:00:00 PM has the larger 10 min sampled avg (24.6 against 20)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0bcaf655",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 6:50:00 PM or 6/12/2001 11:30:00 AM": "6/12/2001 6:50:00 PM has the larger 10 min sampled avg (25.7 against 14.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0bfc6869",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 6:40:00 AM or 6/11/2001 8:50:00 PM": "6/11/2001 8:50:00 PM has the larger 10 min sampled avg (18.3 against 13.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0e9a8d34",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 10:00:00 PM and 6/11/2001 5:20:00 PM, which has the greater 10 min sampled avg": "6/11/2001 5:20:00 PM has the larger 10 min sampled avg (17.1 against 14.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-15eff3e4",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 8:50:00 PM and 6/12/2001 11:40:00 AM, which has the greater 10 min sampled avg": "6/11/2001 8:50:00 PM has the larger 10 min sampled avg (18.3 against 12.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-15f39bac",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 2:40:00 PM and 6/12/2001 7:30:00 PM, which has the greater 10 min sampled avg": "6/12/2001 7:30:00 PM has the larger 10 min sampled avg (25.9 against 21.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-187338e4",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 7:30:00 AM and 6/12/2001 1:10:00 PM, which has the greater 10 min sampled avg": "6/12/2001 7:30:00 AM has the larger 10 min sampled avg (19.2 against 18.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-19f871f3",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 8:30:00 AM or 6/12/2001 8:50:00 AM": "6/12/2001 8:30:00 AM has the larger 10 min sampled avg (30.9 against 26.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1a1d2669",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 9:00:00 PM and 6/12/2001 8:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 8:50:00 PM has the larger 10 min sampled avg (25.4 against 18.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1ca7d6d8",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 12:20:00 PM or 6/11/2001 11:00:00 AM": "6/11/2001 12:20:00 PM has the larger 10 min sampled avg (22.9 against 22.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-23aeea0a",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 11:30:00 PM or 6/11/2001 2:20:00 PM": "6/11/2001 2:20:00 PM has the larger 10 min sampled avg (23.9 against 14.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-23b896cb",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 3:40:00 PM and 6/11/2001 1:10:00 PM, which has the greater 10 min sampled avg": "6/11/2001 1:10:00 PM has the larger 10 min sampled avg (21.3 against 18.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2855369b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 4:00:00 PM or 6/11/2001 3:30:00 PM": "6/11/2001 3:30:00 PM has the larger 10 min sampled avg (20 against 17.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2b855d5e",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 6:20:00 PM or 6/12/2001 2:40:00 PM": "6/12/2001 6:20:00 PM has the larger 10 min sampled avg (30.2 against 21.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2ce957b0",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 4:10:00 AM or 6/11/2001 12:40:00 PM": "6/11/2001 12:40:00 PM has the larger 10 min sampled avg (20.3 against 12.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2e6ae9db",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 6:20:00 AM and 6/11/2001 5:00:00 PM, which has the greater 10 min sampled avg": "6/11/2001 5:00:00 PM has the larger 10 min sampled avg (17 against 12.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-380111ba",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 5:00:00 PM or 6/11/2001 6:20:00 PM": "6/11/2001 6:20:00 PM has the larger 10 min sampled avg (18.4 against 17)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3804a474",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 12:20:00 PM or 6/11/2001 1:40:00 PM": "6/11/2001 1:40:00 PM has the larger 10 min sampled avg (25.4 against 14.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-39cd1d08",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 12:10:00 PM and 6/11/2001 4:10:00 PM, which has the greater 10 min sampled avg": "6/11/2001 4:10:00 PM has the larger 10 min sampled avg (16.7 against 15.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3c1b24dd",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 2:20:00 PM and 6/11/2001 11:30:00 AM, which has the greater 10 min sampled avg": "6/11/2001 2:20:00 PM has the larger 10 min sampled avg (23.9 against 22)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3e8bdd7b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 3:40:00 PM and 6/12/2001 4:10:00 PM, which has the greater 10 min sampled avg": "6/12/2001 3:40:00 PM has the larger 10 min sampled avg (28.4 against 24.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-40595e77",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 6:00:00 AM or 6/12/2001 12:10:00 AM": "6/12/2001 12:10:00 AM has the larger 10 min sampled avg (16.1 against 8.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-474cbe5e",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 7:30:00 PM or 6/12/2001 2:20:00 PM": "6/12/2001 7:30:00 PM has the larger 10 min sampled avg (25.9 against 21)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-49b9c1e6",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 10:50:00 AM or 6/12/2001 12:10:00 PM": "6/12/2001 10:50:00 AM has the larger 10 min sampled avg (18.3 against 15.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-54ad58bd",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 5:20:00 PM or 6/11/2001 5:50:00 PM": "6/11/2001 5:50:00 PM has the larger 10 min sampled avg (17.5 against 17.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-54eaf645",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 11:30:00 AM and 6/11/2001 6:10:00 PM, which has the greater 10 min sampled avg": "6/11/2001 6:10:00 PM has the larger 10 min sampled avg (18.6 against 14.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-55207bb8",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 3:30:00 PM and 6/12/2001 10:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 3:30:00 PM has the larger 10 min sampled avg (26.9 against 22.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-57a9fc4c",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 10:50:00 PM or 6/12/2001 3:20:00 PM": "6/12/2001 3:20:00 PM has the larger 10 min sampled avg (25 against 22.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5868a777",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 4:10:00 PM or 6/12/2001 2:00:00 AM": "6/12/2001 4:10:00 PM has the larger 10 min sampled avg (24.4 against 15.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5c426b4c",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 2:30:00 AM or 6/12/2001 12:50:00 AM": "6/12/2001 12:50:00 AM has the larger 10 min sampled avg (15.9 against 15.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5d1844a9",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 6:20:00 PM or 6/12/2001 4:30:00 AM": "6/11/2001 6:20:00 PM has the larger 10 min sampled avg (18.4 against 9.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5d92c604",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 4:20:00 AM and 6/11/2001 1:30:00 PM, which has the greater 10 min sampled avg": "6/11/2001 1:30:00 PM has the larger 10 min sampled avg (22.4 against 11.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5f33ee79",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 10:20:00 AM or 6/12/2001 10:10:00 PM": "6/12/2001 10:10:00 PM has the larger 10 min sampled avg (26.4 against 12.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5fc1f45b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 6:30:00 PM or 6/12/2001 3:40:00 AM": "6/12/2001 6:30:00 PM has the larger 10 min sampled avg (30 against 12.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-63522806",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 9:00:00 PM or 6/11/2001 10:30:00 PM": "6/12/2001 9:00:00 PM has the larger 10 min sampled avg (24.9 against 14.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-655cee9f",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 11:30:00 AM or 6/11/2001 10:10:00 PM": "6/11/2001 11:30:00 AM has the larger 10 min sampled avg (22 against 15.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-67742a1f",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 4:30:00 AM and 6/12/2001 1:50:00 AM, which has the greater 10 min sampled avg": "6/12/2001 1:50:00 AM has the larger 10 min sampled avg (15.3 against 9.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6b5a685a",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 10:30:00 AM or 6/12/2001 6:40:00 AM": "6/12/2001 10:30:00 AM has the larger 10 min sampled avg (17.8 against 13.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6bc5f30e",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 10:30:00 PM and 6/11/2001 8:00:00 PM, which has the greater 10 min sampled avg": "6/11/2001 8:00:00 PM has the larger 10 min sampled avg (16.2 against 14.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6d16b164",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 2:20:00 PM or 6/12/2001 3:30:00 PM": "6/12/2001 3:30:00 PM has the larger 10 min sampled avg (26.9 against 21)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-709df24b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 1:40:00 PM and 6/11/2001 2:50:00 PM, which has the greater 10 min sampled avg": "6/11/2001 2:50:00 PM has the larger 10 min sampled avg (26.9 against 25.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-764fdc2b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 1:10:00 PM or 6/11/2001 4:00:00 PM": "6/12/2001 1:10:00 PM has the larger 10 min sampled avg (18.9 against 17.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-76f188c5",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 5:10:00 PM and 6/12/2001 7:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 7:50:00 PM has the larger 10 min sampled avg (28.2 against 27)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-78bff414",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 2:10:00 PM or 6/12/2001 10:50:00 AM": "6/12/2001 2:10:00 PM has the larger 10 min sampled avg (22.6 against 18.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7b9d143e",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 12:00:00 PM and 6/12/2001 2:10:00 PM, which has the greater 10 min sampled avg": "6/11/2001 12:00:00 PM has the larger 10 min sampled avg (24.8 against 22.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7d3cba69",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 1:10:00 PM or 6/12/2001 9:00:00 PM": "6/12/2001 9:00:00 PM has the larger 10 min sampled avg (24.9 against 21.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-807048d4",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 8:00:00 PM or 6/12/2001 4:50:00 AM": "6/11/2001 8:00:00 PM has the larger 10 min sampled avg (16.2 against 9.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-85ffad8b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 6:00:00 PM or 6/12/2001 11:00:00 AM": "6/11/2001 6:00:00 PM has the larger 10 min sampled avg (17.1 against 11.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-87dbf44a",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 1:50:00 AM or 6/12/2001 7:40:00 AM": "6/12/2001 7:40:00 AM has the larger 10 min sampled avg (21.7 against 15.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8914040c",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 8:50:00 PM or 6/12/2001 9:10:00 AM": "6/12/2001 8:50:00 PM has the larger 10 min sampled avg (25.4 against 17.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8b6a8efe",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 7:20:00 PM and 6/12/2001 8:10:00 AM, which has the greater 10 min sampled avg": "6/12/2001 8:10:00 AM has the larger 10 min sampled avg (28.5 against 26.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8df61c8b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 12:30:00 AM and 6/11/2001 6:00:00 PM, which has the greater 10 min sampled avg": "6/11/2001 6:00:00 PM has the larger 10 min sampled avg (17.1 against 15.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8ed76a88",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 3:40:00 AM and 6/12/2001 1:30:00 PM, which has the greater 10 min sampled avg": "6/12/2001 1:30:00 PM has the larger 10 min sampled avg (20.4 against 12.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-90245c88",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 9:10:00 PM or 6/12/2001 6:40:00 PM": "6/12/2001 6:40:00 PM has the larger 10 min sampled avg (24.9 against 19.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-92ec1103",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 4:10:00 PM or 6/12/2001 12:20:00 PM": "6/11/2001 4:10:00 PM has the larger 10 min sampled avg (16.7 against 14.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-995f87af",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 11:00:00 AM or 6/12/2001 3:40:00 PM": "6/12/2001 3:40:00 PM has the larger 10 min sampled avg (28.4 against 11.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9c80f4ab",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 3:10:00 PM or 6/11/2001 10:00:00 PM": "6/12/2001 3:10:00 PM has the larger 10 min sampled avg (24 against 14.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9ef44f2a",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 12:50:00 AM or 6/11/2001 12:00:00 PM": "6/11/2001 12:00:00 PM has the larger 10 min sampled avg (24.8 against 15.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a27d4d56",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 3:20:00 PM or 6/12/2001 9:30:00 PM": "6/12/2001 9:30:00 PM has the larger 10 min sampled avg (27.1 against 25)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a4d556c1",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 8:20:00 AM or 6/12/2001 3:10:00 PM": "6/12/2001 8:20:00 AM has the larger 10 min sampled avg (29.9 against 24)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a4fcd43a",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 3:00:00 PM or 6/12/2001 10:00:00 PM": "6/12/2001 10:00:00 PM has the larger 10 min sampled avg (26.6 against 24.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a86ece54",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 12:10:00 AM and 6/11/2001 12:20:00 PM, which has the greater 10 min sampled avg": "6/11/2001 12:20:00 PM has the larger 10 min sampled avg (22.9 against 16.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-abe04ed3",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 6:50:00 PM or 6/12/2001 4:20:00 PM": "6/12/2001 4:20:00 PM has the larger 10 min sampled avg (28.8 against 16.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ac3b7036",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 9:50:00 PM and 6/12/2001 7:00:00 PM, which has the greater 10 min sampled avg": "6/12/2001 7:00:00 PM has the larger 10 min sampled avg (24.5 against 15.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-acc4787e",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 4:40:00 PM or 6/12/2001 6:30:00 PM": "6/12/2001 6:30:00 PM has the larger 10 min sampled avg (30 against 16.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b09e7cef",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 3:50:00 AM or 6/11/2001 11:30:00 PM": "6/11/2001 11:30:00 PM has the larger 10 min sampled avg (14.3 against 12.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b25f1995",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 10:00:00 PM or 6/11/2001 9:50:00 PM": "6/12/2001 10:00:00 PM has the larger 10 min sampled avg (26.6 against 15.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b46c0f75",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 6:10:00 PM or 6/12/2001 12:20:00 AM": "6/11/2001 6:10:00 PM has the larger 10 min sampled avg (18.6 against 15.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ba00ef6c",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 9:30:00 PM and 6/11/2001 6:50:00 PM, which has the greater 10 min sampled avg": "6/12/2001 9:30:00 PM has the larger 10 min sampled avg (27.1 against 16.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bb4f5785",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 9:50:00 AM or 6/12/2001 5:50:00 AM": "6/12/2001 9:50:00 AM has the larger 10 min sampled avg (13.8 against 4.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bc8393aa",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 5:50:00 AM and 6/11/2001 4:30:00 PM, which has the greater 10 min sampled avg": "6/11/2001 4:30:00 PM has the larger 10 min sampled avg (16.6 against 4.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bdd601b7",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 7:40:00 PM or 6/12/2001 11:20:00 PM": "6/12/2001 7:40:00 PM has the larger 10 min sampled avg (27.5 against 22.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-be1bab93",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 1:30:00 PM or 6/11/2001 9:20:00 PM": "6/12/2001 1:30:00 PM has the larger 10 min sampled avg (20.4 against 17.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-be5a5a03",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 7:40:00 AM or 6/12/2001 7:20:00 PM": "6/12/2001 7:20:00 PM has the larger 10 min sampled avg (26.7 against 21.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bed905e7",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 6:40:00 PM and 6/12/2001 3:50:00 AM, which has the greater 10 min sampled avg": "6/12/2001 6:40:00 PM has the larger 10 min sampled avg (24.9 against 12.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c152faf0",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 1:30:00 PM or 6/11/2001 9:10:00 PM": "6/11/2001 1:30:00 PM has the larger 10 min sampled avg (22.4 against 19.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c73d8843",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 8:10:00 AM or 6/12/2001 6:50:00 PM": "6/12/2001 8:10:00 AM has the larger 10 min sampled avg (28.5 against 25.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c743e254",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 10:10:00 PM or 6/11/2001 9:00:00 PM": "6/11/2001 9:00:00 PM has the larger 10 min sampled avg (18.1 against 15.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c75bccdd",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 2:00:00 PM or 6/12/2001 5:20:00 AM": "6/11/2001 2:00:00 PM has the larger 10 min sampled avg (25.5 against 8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ca5e5f75",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 8:50:00 AM and 6/12/2001 10:30:00 AM, which has the greater 10 min sampled avg": "6/12/2001 8:50:00 AM has the larger 10 min sampled avg (26.1 against 17.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cfc0d8c4",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 11:40:00 AM or 6/12/2001 6:20:00 PM": "6/12/2001 6:20:00 PM has the larger 10 min sampled avg (30.2 against 12.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d09ad6b1",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "greater",
+            "has",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 11:20:00 PM and 6/12/2001 2:30:00 AM, which has the greater 10 min sampled avg": "6/12/2001 11:20:00 PM has the larger 10 min sampled avg (22.9 against 15.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d1b93699",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 4:20:00 PM or 6/12/2001 4:00:00 AM": "6/12/2001 4:20:00 PM has the larger 10 min sampled avg (28.8 against 12.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d295dfaf",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 12:20:00 AM or 6/11/2001 3:40:00 PM": "6/11/2001 3:40:00 PM has the larger 10 min sampled avg (18.3 against 15.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d2cbccc6",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 7:50:00 PM or 6/12/2001 9:50:00 AM": "6/12/2001 7:50:00 PM has the larger 10 min sampled avg (28.2 against 13.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d976a28e",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 2:50:00 PM or 6/12/2001 10:20:00 AM": "6/11/2001 2:50:00 PM has the larger 10 min sampled avg (26.9 against 12.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e6a08668",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 4:50:00 AM or 6/12/2001 4:20:00 AM": "6/12/2001 4:20:00 AM has the larger 10 min sampled avg (11.8 against 9.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ec907d1a",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 4:30:00 PM or 6/12/2001 6:00:00 AM": "6/11/2001 4:30:00 PM has the larger 10 min sampled avg (16.6 against 8.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ee21c22f",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/11/2001 10:50:00 PM or 6/11/2001 2:00:00 PM": "6/11/2001 2:00:00 PM has the larger 10 min sampled avg (25.5 against 13)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f0fab4d1",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 5:50:00 PM or 6/12/2001 12:30:00 AM": "6/11/2001 5:50:00 PM has the larger 10 min sampled avg (17.5 against 15.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f20445e6",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 2:00:00 AM or 6/11/2001 7:50:00 PM": "6/11/2001 7:50:00 PM has the larger 10 min sampled avg (15.9 against 15.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f520bc7b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/11/2001 12:40:00 PM or 6/12/2001 6:20:00 AM": "6/11/2001 12:40:00 PM has the larger 10 min sampled avg (20.3 against 12.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f79d4e1b",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "larger",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger 10 min sampled avg, 6/12/2001 9:10:00 AM or 6/12/2001 9:40:00 AM": "6/12/2001 9:10:00 AM has the larger 10 min sampled avg (17.4 against 14.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-feab1848",
+      "task": "10-min-sampled-avg-of-352a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "larger",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is larger: 6/12/2001 7:00:00 PM or 6/12/2001 7:40:00 PM": "6/12/2001 7:40:00 PM has the larger 10 min sampled avg (27.5 against 24.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
     "7616f62f2bcec5daba565034434f993474dc288580a450dfbf9b7e9e03d16b1a",
-    "66f8f897eac8bb8000ad9f1b3989f57bcf1ec2c2160808ab5104c1eee8b10fb3"
+    "66f8f897eac8bb8000ad9f1b3989f57bcf1ec2c2160808ab5104c1eee8b10fb3",
+    "274251a7dbec5c9f902953521a6310e09a5cb87b260485a5fe5abb5542fb3d0a"
   ]
 }

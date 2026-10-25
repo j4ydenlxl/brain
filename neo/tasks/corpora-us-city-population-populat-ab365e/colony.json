@@ -2,29 +2,31 @@
   "task": "corpora-us-city-population-populat-ab365e",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:24:40.809Z",
+  "at": "2026-10-25T16:03:44.664Z",
   "stats": {
-    "generated": 160266,
-    "distinct": 66854,
-    "kept": 266,
-    "know": 204,
+    "generated": 172663,
+    "distinct": 54076,
+    "kept": 297,
+    "know": 235,
     "byFamily": {
-      "know": 12,
-      "transform": 176,
+      "know": 21,
+      "transform": 198,
       "sense": 12,
       "memory": 62,
       "aggregate": 4
     },
     "bySource": {
-      "parent": 263,
-      "enum": 3
+      "mutant": 46,
+      "parent": 232,
+      "enum": 4,
+      "open": 15
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 109183,
-    "cellsPerSecond": 1468,
-    "capped": null,
+    "ms": 214371,
+    "cellsPerSecond": 805,
+    "capped": "ms",
     "packs": [
       "corpora-us-city-population",
       "crypto-tickers",
@@ -32,27 +34,48 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "d7114255c6ddf23a2592f9ddaf3b5a3d9132d0cf5cf00132a313b7201a8dd4ea",
-      "round": 1,
-      "at": 235506,
+      "basis": "b5bc2cfb67da93958b10006243bdd26c989eb1ca779c7eb3197c927ae79daedf",
+      "round": 0,
+      "at": 82951,
       "maxCost": 7,
       "done": false,
-      "cost": 7,
-      "prim": "compare.divisible",
+      "cost": 6,
+      "prim": "iterate.squares",
       "tpl": 1187
     }
   },
   "cells": [
     {
-      "id": "n-054c91d3",
+      "id": "n-0612fb76",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-2d2c2c1c"
+        "n-f8b014b5"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
       "pyramid": [
-        "render.code",
+        "render.str",
         [
           "know.lookup",
           [
@@ -91,15 +114,32 @@
       }
     },
     {
-      "id": "n-1e2d51b4",
+      "id": "n-07427f6c",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-c495c796"
+        "n-2d2c2c1c"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
       "pyramid": [
-        "render.sentence",
+        "render.code",
         [
           "know.lookup",
           [
@@ -196,6 +236,138 @@
       }
     },
     {
+      "id": "n-3d366ca2",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-f8b014b5"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-438ce8d2",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-2d2c2c1c"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4b58a917",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
@@ -214,6 +386,64 @@
       ],
       "pyramid": [
         "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5a18ebb8",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-721ddf0d",
+        "n-c495c796",
+        "n-c5b905ac",
+        "n-d46d0b36"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
         [
           "know.lookup",
           [
@@ -314,13 +544,27 @@
       }
     },
     {
-      "id": "n-82b49ff1",
+      "id": "n-676e2858",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-871ce6a8"
+        "n-634d3968"
       ],
       "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ],
         [
           "not",
           [
@@ -368,13 +612,154 @@
       }
     },
     {
-      "id": "n-871ce6a8",
+      "id": "n-693f8146",
       "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 7,
+      "gen": 10,
       "parents": [
-        "n-4b58a917"
+        "n-07427f6c",
+        "n-2d2c2c1c",
+        "n-438ce8d2",
+        "n-db9c32ef"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-721ddf0d",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-c495c796"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8f85c83d",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-90c3c12d"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
       "pyramid": [
         "render.str",
         [
@@ -479,17 +864,27 @@
       }
     },
     {
-      "id": "n-a7a4b6b9",
+      "id": "n-ad59bf14",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-871ce6a8"
+        "n-0612fb76",
+        "n-3d366ca2",
+        "n-4b58a917",
+        "n-634d3968",
+        "n-676e2858",
+        "n-8f85c83d",
+        "n-90c3c12d",
+        "n-b6192539",
+        "n-f8b014b5",
+        "n-fc6c217a"
       ],
       "guard": [
         [
           "not",
           [
-            "colon"
+            "has",
+            "cotton"
           ]
         ]
       ],
@@ -533,16 +928,32 @@
       }
     },
     {
-      "id": "n-c47bdd22",
+      "id": "n-b6192539",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-871ce6a8"
+        "n-634d3968"
       ],
       "guard": [
         [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
           "nums>=",
           1
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
         ]
       ],
       "pyramid": [
@@ -643,6 +1054,198 @@
       }
     },
     {
+      "id": "n-c5b905ac",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-c495c796"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d46d0b36",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-c495c796"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-db9c32ef",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-2d2c2c1c"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f8b014b5",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
@@ -658,6 +1261,76 @@
             "item number",
             "nth",
             "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fc6c217a",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-90c3c12d"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
           ]
         ],
         [
@@ -777,13 +1450,28 @@
       }
     },
     {
-      "id": "n-0416fe81",
+      "id": "n-04ce1f40",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-3deeb5c4"
+        "n-34b7feb4"
       ],
       "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
         [
           "not",
           [
@@ -792,7 +1480,281 @@
         ]
       ],
       "pyramid": [
+        "render.code",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-086f194b",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-ae30553f"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
         "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-11e21fa3",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-04ce1f40",
+        "n-2fb8a7cb",
+        "n-34b7feb4",
+        "n-5c8f5fa8"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-126a63e9",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-24e70797",
+        "n-346392ab",
+        "n-39bc6a0d",
+        "n-8c304f4b",
+        "n-a17147ec",
+        "n-a58ca979",
+        "n-b2928f01",
+        "n-b6301a34",
+        "n-d09ab02f",
+        "n-d7b92bcd"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1e4f79b5",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-e4bef0a2"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.code",
         [
           "transform.lower",
           [
@@ -834,18 +1796,35 @@
       }
     },
     {
-      "id": "n-18338b0d",
+      "id": "n-24e70797",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-4a2a1d7c"
+        "n-b2928f01"
       ],
       "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
         [
           "not",
           [
             "colon"
           ]
+        ],
+        [
+          "nums>=",
+          1
         ]
       ],
       "pyramid": [
@@ -891,67 +1870,35 @@
       }
     },
     {
-      "id": "n-1bf5dc7c",
+      "id": "n-2789486d",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-3d9cc91a"
+        "n-434d4dd2"
       ],
-      "guard": [],
-      "pyramid": [
-        "render.sentence",
+      "guard": [
         [
-          "transform.swapCase",
+          "hasAny",
           [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "population"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "population"
-            },
-            {
-              "lit": "city, state"
-            }
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
           ]
+        ],
+        [
+          "nums>=",
+          1
         ]
       ],
-      "mem": null,
-      "height": 5,
-      "size": 11,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-246215b5",
-      "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 10,
-      "parents": [
-        "n-34b7feb4"
-      ],
-      "guard": [],
       "pyramid": [
         "render.code",
         [
-          "transform.upper",
+          "transform.swapCase",
           [
             "know.lookup",
             [
@@ -1053,13 +2000,28 @@
       }
     },
     {
-      "id": "n-30cc9ddc",
+      "id": "n-2fb8a7cb",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-3deeb5c4"
+        "n-34b7feb4"
       ],
       "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
         [
           "not",
           [
@@ -1068,9 +2030,9 @@
         ]
       ],
       "pyramid": [
-        "render.str",
+        "render.code",
         [
-          "transform.lower",
+          "transform.upper",
           [
             "know.lookup",
             [
@@ -1246,6 +2208,224 @@
       }
     },
     {
+      "id": "n-39bc6a0d",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-b2928f01"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3af3a6c6",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-434d4dd2"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3b8941db",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-c6a29f03"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3d9cc91a",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
@@ -1310,15 +2490,33 @@
       }
     },
     {
-      "id": "n-3deeb5c4",
+      "id": "n-403a6fa7",
       "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 7,
+      "gen": 10,
       "parents": [
-        "n-2908be53"
+        "n-8963c086"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
       "pyramid": [
-        "render.str",
+        "render.sentence",
         [
           "transform.lower",
           [
@@ -1424,17 +2622,41 @@
       }
     },
     {
-      "id": "n-4a2a1d7c",
+      "id": "n-44550b64",
       "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 7,
+      "gen": 10,
       "parents": [
-        "n-a58ca979"
+        "n-029c8747"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
       "pyramid": [
         "render.str",
         [
-          "transform.swapCase",
+          "transform.lower",
           [
             "know.lookup",
             [
@@ -1474,24 +2696,309 @@
       }
     },
     {
-      "id": "n-4deac242",
+      "id": "n-4f8b8cda",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-4a2a1d7c"
+        "n-3b8941db",
+        "n-55e207fa",
+        "n-b9c1d14b",
+        "n-c6a29f03"
       ],
       "guard": [
         [
           "not",
           [
-            "quoted"
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-50e29b51",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-5e6d906f"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ],
+        [
+          "not",
+          [
+            "colon"
           ]
         ]
       ],
       "pyramid": [
         "render.str",
         [
-          "transform.swapCase",
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-51388c0a",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-029c8747",
+        "n-2908be53",
+        "n-44550b64",
+        "n-50e29b51",
+        "n-5e6d906f",
+        "n-6111c8ef",
+        "n-8fe43cb6",
+        "n-cc0b9f59",
+        "n-d8e5c596",
+        "n-f5942296"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-55e207fa",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-c6a29f03"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5c8f5fa8",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-34b7feb4"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.upper",
           [
             "know.lookup",
             [
@@ -1599,13 +3106,28 @@
       }
     },
     {
-      "id": "n-64c7ff38",
+      "id": "n-5e869fd4",
       "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 7,
+      "gen": 10,
       "parents": [
-        "n-d825a5f5"
+        "n-086f194b",
+        "n-7a903acb",
+        "n-ae30553f",
+        "n-c3e2d496",
+        "n-d825a5f5",
+        "n-e964008a",
+        "n-f4414d68",
+        "n-f52dea6d"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
       "pyramid": [
         "render.str",
         [
@@ -1649,15 +3171,109 @@
       }
     },
     {
-      "id": "n-6af7cd27",
+      "id": "n-6111c8ef",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-434d4dd2"
+        "n-5e6d906f"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
       "pyramid": [
-        "render.code",
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-776354fb",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-3d9cc91a"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
         [
           "transform.swapCase",
           [
@@ -1771,13 +3387,26 @@
       }
     },
     {
-      "id": "n-7b354dd4",
+      "id": "n-810794e9",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-64c7ff38"
+        "n-8963c086"
       ],
       "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
         [
           "not",
           [
@@ -1786,57 +3415,7 @@
         ]
       ],
       "pyramid": [
-        "render.str",
-        [
-          "transform.upper",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "population"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "population"
-            },
-            {
-              "lit": "city, state"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 11,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-84e7f2aa",
-      "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 10,
-      "parents": [
-        "n-e4bef0a2"
-      ],
-      "guard": [],
-      "pyramid": [
-        "render.code",
+        "render.sentence",
         [
           "transform.lower",
           [
@@ -1942,17 +3521,37 @@
       }
     },
     {
-      "id": "n-8a5666cc",
+      "id": "n-8a5fcec8",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-c6a29f03"
+        "n-3d9cc91a"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
       "pyramid": [
         "render.sentence",
         [
-          "transform.upper",
+          "transform.swapCase",
           [
             "know.lookup",
             [
@@ -2060,16 +3659,37 @@
       }
     },
     {
-      "id": "n-9e081bc0",
+      "id": "n-8fe43cb6",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-3deeb5c4"
+        "n-d8e5c596"
       ],
       "guard": [
         [
-          "nums>=",
-          1
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
         ]
       ],
       "pyramid": [
@@ -2115,13 +3735,236 @@
       }
     },
     {
-      "id": "n-9fe9f946",
+      "id": "n-92b200a9",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-8963c086"
+        "n-434d4dd2"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a17147ec",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-346392ab"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a1ed5219",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-3d9cc91a"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a2ce0448",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-403a6fa7",
+        "n-810794e9",
+        "n-8963c086",
+        "n-e1b34f31"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
       "pyramid": [
         "render.sentence",
         [
@@ -2188,6 +4031,137 @@
         "render.str",
         [
           "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a61472d0",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-2789486d",
+        "n-3af3a6c6",
+        "n-434d4dd2",
+        "n-92b200a9"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a674b6d0",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-e4bef0a2"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.lower",
           [
             "know.lookup",
             [
@@ -2299,13 +4273,26 @@
       }
     },
     {
-      "id": "n-b08da5ee",
+      "id": "n-afd520de",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-64c7ff38"
+        "n-e4bef0a2"
       ],
       "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
         [
           "not",
           [
@@ -2314,9 +4301,9 @@
         ]
       ],
       "pyramid": [
-        "render.str",
+        "render.code",
         [
-          "transform.upper",
+          "transform.lower",
           [
             "know.lookup",
             [
@@ -2426,13 +4413,241 @@
       }
     },
     {
-      "id": "n-b30f5fb8",
+      "id": "n-b6301a34",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-4a2a1d7c"
+        "n-8c304f4b"
       ],
       "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b92180b2",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-3d9cc91a",
+        "n-776354fb",
+        "n-8a5fcec8",
+        "n-a1ed5219"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b9c1d14b",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-c6a29f03"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c3e2d496",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-7a903acb"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ],
         [
           "nums>=",
           1
@@ -2441,7 +4656,7 @@
       "pyramid": [
         "render.str",
         [
-          "transform.swapCase",
+          "transform.upper",
           [
             "know.lookup",
             [
@@ -2547,22 +4762,193 @@
       }
     },
     {
-      "id": "n-d3455940",
+      "id": "n-cc0b9f59",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-64c7ff38"
+        "n-029c8747"
       ],
       "guard": [
         [
-          "nums>=",
-          1
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
         ]
       ],
       "pyramid": [
         "render.str",
         [
-          "transform.upper",
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d09ab02f",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-346392ab"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d7b92bcd",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-8c304f4b"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
           [
             "know.lookup",
             [
@@ -2736,6 +5122,76 @@
       }
     },
     {
+      "id": "n-e1b34f31",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-8963c086"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e4bef0a2",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
@@ -2761,6 +5217,221 @@
         "render.code",
         [
           "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e964008a",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-7a903acb"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ea90b061",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-1e4f79b5",
+        "n-a674b6d0",
+        "n-afd520de",
+        "n-e4bef0a2"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f4414d68",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-ae30553f"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
           [
             "know.lookup",
             [
@@ -2831,6 +5502,80 @@
         "render.str",
         [
           "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f5942296",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-d8e5c596"
+      ],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ],
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
           [
             "know.lookup",
             [
@@ -12532,134 +15277,21 @@
       }
     },
     {
-      "id": "n-0e7059ce",
-      "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 7,
-      "parents": [
-        "n-c54866af"
-      ],
-      "guard": [],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "population"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "population"
-            },
-            {
-              "lit": "city, state"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 13,
-      "fit": {
-        "ok": 14,
-        "fired": 14,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-30236012",
+      "id": "n-10572380",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-0e7059ce"
-      ],
-      "guard": [
-        [
-          "nums>=",
-          1
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "population"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "population"
-            },
-            {
-              "lit": "city, state"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 13,
-      "fit": {
-        "ok": 14,
-        "fired": 14,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-4b460630",
-      "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 10,
-      "parents": [
-        "n-0e7059ce"
+        "n-9a31eea5",
+        "n-c54866af",
+        "n-e53978b6",
+        "n-e6157fbe"
       ],
       "guard": [
         [
           "not",
           [
-            "quoted"
+            "has",
+            "cotton"
           ]
         ]
       ],
@@ -12712,15 +15344,23 @@
       }
     },
     {
-      "id": "n-7084df5f",
+      "id": "n-331ae416",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
       "parents": [
-        "n-e965a66f"
+        "n-7711e97d"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
       "pyramid": [
-        "render.code",
+        "render.sentence",
         [
           "transform.remove",
           [
@@ -12792,6 +15432,70 @@
       ],
       "pyramid": [
         "render.sentence",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8ab2e073",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-e965a66f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
         [
           "transform.remove",
           [
@@ -12916,62 +15620,6 @@
       }
     },
     {
-      "id": "n-9d93d25a",
-      "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 10,
-      "parents": [
-        "n-7711e97d"
-      ],
-      "guard": [],
-      "pyramid": [
-        "render.sentence",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "population"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "population"
-            },
-            {
-              "lit": "city, state"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 13,
-      "fit": {
-        "ok": 14,
-        "fired": 14,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-c54866af",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
@@ -12989,69 +15637,6 @@
             "remove",
             "strip out",
             "without"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "population"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "population"
-            },
-            {
-              "lit": "city, state"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 13,
-      "fit": {
-        "ok": 14,
-        "fired": 14,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-cd60286e",
-      "task": "corpora-us-city-population-populat-ab365e",
-      "gen": 10,
-      "parents": [
-        "n-0e7059ce"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "colon"
           ]
         ]
       ],
@@ -21105,11 +23690,1625 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-054c91d3",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-2d2c2c1c"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.code",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1e2d51b4",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-c495c796"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.sentence",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-82b49ff1",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-871ce6a8"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-871ce6a8",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 7,
+      "parents": [
+        "n-4b58a917"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a7a4b6b9",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-871ce6a8"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c47bdd22",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-871ce6a8"
+      ],
+      "guard": [
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "population"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "population"
+          },
+          {
+            "lit": "city, state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0416fe81",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-3deeb5c4"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-18338b0d",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-4a2a1d7c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1bf5dc7c",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-3d9cc91a"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-246215b5",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-34b7feb4"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-30cc9ddc",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-3deeb5c4"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3deeb5c4",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 7,
+      "parents": [
+        "n-2908be53"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4a2a1d7c",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 7,
+      "parents": [
+        "n-a58ca979"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4deac242",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-4a2a1d7c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-64c7ff38",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 7,
+      "parents": [
+        "n-d825a5f5"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6af7cd27",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-434d4dd2"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7b354dd4",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-64c7ff38"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-84e7f2aa",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-e4bef0a2"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8a5666cc",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-c6a29f03"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9e081bc0",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-3deeb5c4"
+      ],
+      "guard": [
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9fe9f946",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-8963c086"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b08da5ee",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-64c7ff38"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b30f5fb8",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-4a2a1d7c"
+      ],
+      "guard": [
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d3455940",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-64c7ff38"
+      ],
+      "guard": [
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0e7059ce",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 7,
+      "parents": [
+        "n-c54866af"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-30236012",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-0e7059ce"
+      ],
+      "guard": [
+        [
+          "nums>=",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4b460630",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-0e7059ce"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "quoted"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7084df5f",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-e965a66f"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9d93d25a",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-7711e97d"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.sentence",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd60286e",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-0e7059ce"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
     }
   ],
   "stages": [
     "88cad02fbe5a12ab81591452f361115577210fe3e175f88661505a993be4db05",
     "72617de47ef9becc16ce2f5d2eff353eed9ddb58904f7386ad5d71b99c951995",
-    "a2a24e1217a86d64f59f07eb5179f3036a1c82ff46d80a0fa1e3f2ae9d1b1001"
+    "a2a24e1217a86d64f59f07eb5179f3036a1c82ff46d80a0fa1e3f2ae9d1b1001",
+    "3129b42d3d1308e3084a7587e7982cb66bf3327c4c4dbb6d9396e1fde1ebecc7"
   ]
 }

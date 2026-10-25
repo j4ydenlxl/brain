@@ -2,27 +2,28 @@
   "task": "gemoji-emoji-shortcode-to-emoji-category",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:26:58.762Z",
+  "at": "2026-10-25T16:04:25.957Z",
   "stats": {
-    "generated": 160266,
-    "distinct": 123871,
-    "kept": 276,
-    "know": 190,
+    "generated": 200036,
+    "distinct": 52418,
+    "kept": 280,
+    "know": 195,
     "byFamily": {
       "memory": 82,
-      "transform": 175,
+      "transform": 178,
       "aggregate": 17,
-      "know": 2
+      "know": 3
     },
     "bySource": {
-      "parent": 266,
-      "enum": 10
+      "parent": 214,
+      "enum": 65,
+      "template": 1
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 83574,
-    "cellsPerSecond": 1918,
+    "ms": 119675,
+    "cellsPerSecond": 1671,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -31,13 +32,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "327f50f91f6032f847008c7424b7312401d20d6d27f29aaaa15594bf44c883f8",
-      "round": 1,
-      "at": 224653,
+      "basis": "d5a232b83200f6c0f5c1cf4d3406090f596507eab78bd0bdf23f13e98722eaa8",
+      "round": 0,
+      "at": 128725,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "transform.concat",
+      "prim": "compute.compound",
       "tpl": 2242
     }
   },
@@ -5560,6 +5561,109 @@
       }
     },
     {
+      "id": "n-fb4d274f",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alembic",
+            "bomb",
+            "brownsquare",
+            "chopsticks",
+            "couplekissmanman",
+            "croissant",
+            "crystalball",
+            "hamster",
+            "item number",
+            "knot",
+            "mobilephoneoff",
+            "nomobilephones",
+            "nth",
+            "olive",
+            "personwithveil",
+            "poutingcat",
+            "transgendersymbol",
+            "womaninmotorizedwheelchair",
+            "yellowheart",
+            "zombieman"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "emoji"
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "artist"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "baby"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1a9d3ac1",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
@@ -5626,6 +5730,115 @@
         "render.str",
         [
           "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji name"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-40c6f31b",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alembic",
+            "bomb",
+            "brownsquare",
+            "chopsticks",
+            "couplekissmanman",
+            "croissant",
+            "crystalball",
+            "hamster",
+            "invert case",
+            "item number",
+            "knot",
+            "mobilephoneoff",
+            "nomobilephones",
+            "nth",
+            "olive",
+            "personwithveil",
+            "poutingcat",
+            "swap case",
+            "toggle case",
+            "transgendersymbol",
+            "womaninmotorizedwheelchair",
+            "yellowheart",
+            "zombieman"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "emoji"
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "artist"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "baby"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
           [
             "know.lookup",
             [
@@ -5836,6 +6049,115 @@
             },
             {
               "lit": "emoji shortcode"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-799afe95",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alembic",
+            "bomb",
+            "brownsquare",
+            "chopsticks",
+            "couplekissmanman",
+            "croissant",
+            "crystalball",
+            "hamster",
+            "item number",
+            "knot",
+            "lower case",
+            "lowercase",
+            "mobilephoneoff",
+            "nomobilephones",
+            "nth",
+            "olive",
+            "personwithveil",
+            "poutingcat",
+            "small letters",
+            "transgendersymbol",
+            "womaninmotorizedwheelchair",
+            "yellowheart",
+            "zombieman"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "emoji"
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "artist"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "baby"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji name"
             },
             {
               "lit": "emoji category"
@@ -6507,6 +6829,116 @@
             },
             {
               "lit": "emoji shortcode"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fcbab19b",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alembic",
+            "bomb",
+            "brownsquare",
+            "capital letters",
+            "capitals",
+            "chopsticks",
+            "couplekissmanman",
+            "croissant",
+            "crystalball",
+            "hamster",
+            "item number",
+            "knot",
+            "mobilephoneoff",
+            "nomobilephones",
+            "nth",
+            "olive",
+            "personwithveil",
+            "poutingcat",
+            "transgendersymbol",
+            "upper case",
+            "uppercase",
+            "womaninmotorizedwheelchair",
+            "yellowheart",
+            "zombieman"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "emoji"
+        ],
+        [
+          "not",
+          [
+            "colon"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "artist"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "baby"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji name"
             },
             {
               "lit": "emoji category"
@@ -11516,6 +11948,65 @@
       }
     },
     {
+      "id": "n-8dcf7064",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bouncingballman",
+            "cartwheeling",
+            "delete",
+            "item number",
+            "manfirefighter",
+            "nth",
+            "remove",
+            "singer",
+            "strip out",
+            "supervillainwoman"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "People & Body"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a7d410b3",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
@@ -12281,6 +12772,59 @@
       }
     },
     {
+      "id": "n-39529203",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "greensquare",
+            "item number",
+            "nth",
+            "radioactive",
+            "remove",
+            "strip out",
+            "wireless"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Symbols"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4a6005fe",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
@@ -12311,6 +12855,59 @@
           "transform.remove",
           {
             "lit": "Smileys & Emotion"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-569388bf",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "greensquare",
+            "item number",
+            "nth",
+            "radioactive",
+            "remove",
+            "strip out",
+            "wireless"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "symbols"
           },
           [
             "transform.nthStr",
@@ -12396,7 +12993,7 @@
       }
     },
     {
-      "id": "n-6d38fb26",
+      "id": "n-6f63d49c",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
       "parents": [],
@@ -12404,16 +13001,19 @@
         [
           "hasAny",
           [
+            "boom",
             "delete",
-            "greensquare",
             "item number",
             "nth",
-            "position",
-            "radioactive",
+            "poutingcat",
             "remove",
             "strip out",
-            "wireless"
+            "twohearts"
           ]
+        ],
+        [
+          "has",
+          "emoji"
         ]
       ],
       "pyramid": [
@@ -12421,61 +13021,7 @@
         [
           "transform.remove",
           {
-            "lit": "Symbols"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-internal-calls-10b0d2"
-              },
-              {
-                "lit": "package"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 3,
-        "fired": 3,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-911be7bd",
-      "task": "gemoji-emoji-shortcode-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "delete",
-            "greensquare",
-            "item number",
-            "nth",
-            "position",
-            "radioactive",
-            "remove",
-            "strip out",
-            "wireless"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "symbols"
+            "lit": "Smileys & Emotion"
           },
           [
             "transform.nthStr",
@@ -12746,6 +13292,66 @@
       }
     },
     {
+      "id": "n-63352ffd",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "hamster",
+            "horse",
+            "item number",
+            "nth",
+            "remove",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "emoji"
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Animals & Nature"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a8423f14",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
@@ -12798,7 +13404,7 @@
       }
     },
     {
-      "id": "n-be6215f2",
+      "id": "n-bb58c755",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
       "parents": [],
@@ -12811,7 +13417,6 @@
             "hammer",
             "item number",
             "nth",
-            "position",
             "remove",
             "strip out"
           ]
@@ -13686,58 +14291,6 @@
       }
     },
     {
-      "id": "n-11e4866f",
-      "task": "gemoji-emoji-shortcode-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "delete",
-            "elsalvador",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "Flags"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-internal-calls-10b0d2"
-              },
-              {
-                "lit": "package"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-193a19ed",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
@@ -13842,7 +14395,7 @@
       }
     },
     {
-      "id": "n-43a91c2b",
+      "id": "n-3e40d8e5",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
       "parents": [],
@@ -13850,13 +14403,17 @@
         [
           "hasAny",
           [
-            "bomb",
             "delete",
+            "hamster",
             "item number",
             "nth",
             "position",
             "strip out"
           ]
+        ],
+        [
+          "has",
+          "emoji"
         ]
       ],
       "pyramid": [
@@ -13864,7 +14421,7 @@
         [
           "transform.remove",
           {
-            "lit": "Objects"
+            "lit": "Animals & Nature"
           },
           [
             "transform.nthStr",
@@ -13893,7 +14450,7 @@
       }
     },
     {
-      "id": "n-78cd8eab",
+      "id": "n-43a91c2b",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
       "parents": [],
@@ -13901,17 +14458,13 @@
         [
           "hasAny",
           [
+            "bomb",
             "delete",
-            "hamster",
             "item number",
             "nth",
             "position",
             "strip out"
           ]
-        ],
-        [
-          "has",
-          "what"
         ]
       ],
       "pyramid": [
@@ -13919,7 +14472,7 @@
         [
           "transform.remove",
           {
-            "lit": "Animals & Nature"
+            "lit": "Objects"
           },
           [
             "transform.nthStr",
@@ -14057,6 +14610,57 @@
       }
     },
     {
+      "id": "n-a605a7fe",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "elsalvador",
+            "item number",
+            "nth",
+            "remove",
+            "strip out"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Flags"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-aa0681b1",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
@@ -14156,64 +14760,6 @@
       "mem": null,
       "height": 4,
       "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-20d5630f",
-      "task": "gemoji-emoji-shortcode-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "acronym",
-            "append",
-            "combine",
-            "concatenate",
-            "item number",
-            "nth",
-            "position",
-            "put together",
-            "transgendersymbol"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.concat",
-          [
-            "sense.lastWord"
-          ],
-          [
-            "transform.acronym",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "crypto-tickers"
-                },
-                {
-                  "lit": "cryptocurrency"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 9,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -14445,76 +14991,6 @@
           ],
           [
             "transform.initials",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "crypto-tickers"
-                },
-                {
-                  "lit": "cryptocurrency"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-6ee0f0cf",
-      "task": "gemoji-emoji-shortcode-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "acronym",
-            "append",
-            "combine",
-            "concatenate",
-            "item number",
-            "nth",
-            "position",
-            "put together",
-            "transgendersymbol"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.concat",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "cryptocurrency"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "transform.acronym",
             [
               "transform.nthStr",
               [
@@ -15320,92 +15796,6 @@
               "slot": 0
             },
             " category of massage is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "know.find",
-            {
-              "lit": "crypto-tickers"
-            },
-            {
-              "lit": "crypto ticker"
-            }
-          ],
-          {
-            "lit": -1
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "gemoji"
-              },
-              {
-                "lit": "emoji shortcode"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "gemoji"
-          },
-          {
-            "lit": "emoji shortcode"
-          },
-          {
-            "lit": "emoji category"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-232852ec",
-      "task": "gemoji-emoji-shortcode-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "hamster",
-            "item number",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " category of hamster is ",
             {
               "slot": 1
             },
@@ -17409,6 +17799,92 @@
               "slot": 0
             },
             " category of wireless is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji shortcode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji shortcode"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d55a0962",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "hamster",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "emoji"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of hamster is ",
             {
               "slot": 1
             },
@@ -19596,49 +20072,6 @@
       }
     },
     {
-      "id": "n-357afd85",
-      "task": "gemoji-emoji-shortcode-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "acronym",
-            "append",
-            "combine",
-            "concatenate",
-            "put together",
-            "transgendersymbol"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.concat",
-          [
-            "sense.lastWord"
-          ],
-          [
-            "transform.acronym",
-            [
-              "sense.lastWord"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-3c614ba0",
       "task": "gemoji-emoji-shortcode-to-emoji-category",
       "gen": 10,
@@ -21081,10 +21514,540 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-6d38fb26",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "greensquare",
+            "item number",
+            "nth",
+            "position",
+            "radioactive",
+            "remove",
+            "strip out",
+            "wireless"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Symbols"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-911be7bd",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "greensquare",
+            "item number",
+            "nth",
+            "position",
+            "radioactive",
+            "remove",
+            "strip out",
+            "wireless"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "symbols"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-be6215f2",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "calling",
+            "delete",
+            "hammer",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Objects"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-11e4866f",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "elsalvador",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Flags"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-78cd8eab",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "hamster",
+            "item number",
+            "nth",
+            "position",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Animals & Nature"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-20d5630f",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "position",
+            "put together",
+            "transgendersymbol"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6ee0f0cf",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "position",
+            "put together",
+            "transgendersymbol"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-232852ec",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "hamster",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of hamster is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji shortcode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji shortcode"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-357afd85",
+      "task": "gemoji-emoji-shortcode-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "append",
+            "combine",
+            "concatenate",
+            "put together",
+            "transgendersymbol"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.acronym",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
     "6cdafb3e5fb752e478607b56bea2f11f33d4efcbdc394bf7f32184df15656194",
-    "f20c8efe628e949bd2535a25606eec62819bbb04c1512e67bf4cc7e91c335c3f"
+    "f20c8efe628e949bd2535a25606eec62819bbb04c1512e67bf4cc7e91c335c3f",
+    "4373abf17874d44b6f986ea98fc90999852dd6b9edf14d99bfd4c8f62c6a6bba"
   ]
 }

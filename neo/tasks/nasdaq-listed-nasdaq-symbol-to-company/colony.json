@@ -2,10 +2,10 @@
   "task": "nasdaq-listed-nasdaq-symbol-to-company",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T16:47:20.238Z",
+  "at": "2026-10-25T16:14:42.862Z",
   "stats": {
-    "generated": 160556,
-    "distinct": 64865,
+    "generated": 200308,
+    "distinct": 72510,
     "kept": 556,
     "know": 43,
     "byFamily": {
@@ -14,13 +14,14 @@
       "sense": 53
     },
     "bySource": {
-      "parent": 556
+      "parent": 555,
+      "enum": 1
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 27553,
-    "cellsPerSecond": 5827,
+    "ms": 36307,
+    "cellsPerSecond": 5517,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -29,13 +30,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "f4bc5d83fc7de3ebf33138c5adbd52e8e543c2d2815413430e9dc24b6ca6b981",
-      "round": 1,
-      "at": 252349,
+      "basis": "d90a8c37c18e61ef66363df8e1b56e2c3c0bb1a7ef17e49a6f2631960bc9c7f8",
+      "round": 0,
+      "at": 113845,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compute.compound",
+      "prim": "aggregate.indexOf",
       "tpl": 924
     }
   },
@@ -237,7 +238,7 @@
       }
     },
     {
-      "id": "n-72eb4941",
+      "id": "n-9486a380",
       "task": "nasdaq-listed-nasdaq-symbol-to-company",
       "gen": 10,
       "parents": [],
@@ -250,7 +251,6 @@
             "letters from to",
             "mdxh",
             "nth",
-            "position",
             "slice of the text",
             "substring",
             "svia"
@@ -31339,10 +31339,80 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-72eb4941",
+      "task": "nasdaq-listed-nasdaq-symbol-to-company",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "item number",
+            "letters from to",
+            "mdxh",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring",
+            "svia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+                },
+                {
+                  "lit": "symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+            },
+            {
+              "lit": "symbol"
+            },
+            {
+              "lit": "security name"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
     }
   ],
   "stages": [
     "8e1c95dace6d478e26497876b7749e2212037e931d68ce3a6be77cadda169e15",
-    "4c680998d26494d5bc226e79963182c72ded979389a53b621b966debdc9bc403"
+    "4c680998d26494d5bc226e79963182c72ded979389a53b621b966debdc9bc403",
+    "67f64eddf9504f344c4b92ec8f26aecd1a15331c910d727516ce449cbddbee3b"
   ]
 }

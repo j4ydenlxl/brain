@@ -2,42 +2,337 @@
   "task": "10-min-std-dev-of-tim-2f50-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T16:42:35.204Z",
+  "at": "2026-10-25T16:10:38.186Z",
   "stats": {
-    "generated": 160002,
-    "distinct": 70558,
-    "kept": 4,
-    "know": 4,
+    "generated": 200610,
+    "distinct": 76904,
+    "kept": 110,
+    "know": 8,
     "byFamily": {
-      "transform": 4
+      "route": 2,
+      "transform": 4,
+      "compare": 2,
+      "memory": 102
     },
     "bySource": {
-      "parent": 2,
-      "open": 1,
-      "enum": 1
+      "enum": 1,
+      "open": 2,
+      "parent": 4,
+      "yesno": 1,
+      "memory": 102
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 38310,
-    "cellsPerSecond": 4177,
-    "capped": null,
+    "ms": 165823,
+    "cellsPerSecond": 1210,
+    "capped": "ms",
     "packs": [
       "fr-datasets-time-series-with-error-bars-excel-54fe73"
     ],
     "cursor": {
       "v": 1,
-      "basis": "b9664b47701bf52d3d198863385a9c28d228a84607d7135a5bd8d60698559f45",
-      "round": 2,
-      "at": 274961,
+      "basis": "c686f2b8b7ce3e3395f762c15991227fed83982499326ca2897641ef1f00e6c1",
+      "round": 0,
+      "at": 93124,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "compare.between",
-      "tpl": 4963
+      "cost": 5,
+      "prim": "compute.root",
+      "tpl": 3000
     }
   },
   "cells": [
+    {
+      "id": "n-094bae48",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "dev",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min std dev"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min std dev"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 33,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b83f45fb",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [
+        "n-094bae48"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "avg",
+              "compare",
+              "greater",
+              "larger",
+              "makes",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min std dev"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min std dev"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 33,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
     {
       "id": "n-4862793b",
       "task": "10-min-std-dev-of-tim-2f50-smaller",
@@ -636,10 +931,5100 @@
         "fired": 100,
         "rows": 100
       }
+    },
+    {
+      "id": "n-3f2db96e",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "dev",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.greater",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min std dev"
+              }
+            ]
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min std dev"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the smaller 10 min std dev (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min std dev"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min std dev"
+            }
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the smaller 10 min std dev (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min std dev"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min std dev"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 126,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3f3af310",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [
+        "n-3f2db96e"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "avg",
+              "compare",
+              "greater",
+              "larger",
+              "makes",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.greater",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min std dev"
+              }
+            ]
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min std dev"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the smaller 10 min std dev (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min std dev"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min std dev"
+            }
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the smaller 10 min std dev (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min std dev"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min std dev"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 126,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-59ac114a",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "dev"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 11:00:00 AM or 6/11/2001 11:30:00 AM": "6/12/2001 11:00:00 AM has the smaller 10 min std dev (1.82 against 2.03).",
+          "between 6/12/2001 11:10:00 AM and 6/12/2001 9:00:00 AM, which has the lesser 10 min std dev": "6/12/2001 11:10:00 AM has the smaller 10 min std dev (2.35 against 3.74).",
+          "which has the smaller 10 min std dev, 6/12/2001 11:40:00 PM or 6/11/2001 5:50:00 PM": "6/12/2001 11:40:00 PM has the smaller 10 min std dev (2.19 against 2.62).",
+          "which has the smaller 10 min std dev, 6/12/2001 2:30:00 PM or 6/11/2001 10:50:00 PM": "6/11/2001 10:50:00 PM has the smaller 10 min std dev (2.25 against 3.9).",
+          "between 6/11/2001 2:30:00 PM and 6/11/2001 6:10:00 PM, which has the lesser 10 min std dev": "6/11/2001 6:10:00 PM has the smaller 10 min std dev (2.03 against 2.67).",
+          "whose 10 min std dev is smaller: 6/11/2001 7:40:00 PM or 6/11/2001 9:00:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min std dev (2.41 against 2.89).",
+          "whose 10 min std dev is smaller: 6/12/2001 3:40:00 PM or 6/11/2001 12:00:00 PM": "6/11/2001 12:00:00 PM has the smaller 10 min std dev (2.46 against 3.69).",
+          "between 6/12/2001 6:10:00 PM and 6/12/2001 5:20:00 PM, which has the lesser 10 min std dev": "6/12/2001 5:20:00 PM has the smaller 10 min std dev (3.37 against 4.28).",
+          "between 6/12/2001 3:20:00 PM and 6/12/2001 7:10:00 AM, which has the lesser 10 min std dev": "6/12/2001 7:10:00 AM has the smaller 10 min std dev (3.26 against 3.64).",
+          "which has the smaller 10 min std dev, 6/12/2001 7:20:00 AM or 6/12/2001 3:20:00 PM": "6/12/2001 7:20:00 AM has the smaller 10 min std dev (3.26 against 3.64).",
+          "between 6/12/2001 12:30:00 PM and 6/12/2001 12:00:00 AM, which has the lesser 10 min std dev": "6/12/2001 12:00:00 AM has the smaller 10 min std dev (2.09 against 2.51).",
+          "whose 10 min std dev is smaller: 6/11/2001 9:40:00 PM or 6/11/2001 1:00:00 PM": "6/11/2001 1:00:00 PM has the smaller 10 min std dev (2.09 against 2.14).",
+          "which has the smaller 10 min std dev, 6/12/2001 5:50:00 AM or 6/12/2001 9:30:00 PM": "6/12/2001 5:50:00 AM has the smaller 10 min std dev (1.07 against 2.41).",
+          "whose 10 min std dev is smaller: 6/12/2001 8:00:00 PM or 6/12/2001 5:00:00 PM": "6/12/2001 8:00:00 PM has the smaller 10 min std dev (2.46 against 2.94).",
+          "between 6/12/2001 1:50:00 PM and 6/11/2001 9:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 9:40:00 PM has the smaller 10 min std dev (2.14 against 3.53).",
+          "which has the smaller 10 min std dev, 6/12/2001 2:10:00 AM or 6/11/2001 10:20:00 PM": "6/12/2001 2:10:00 AM has the smaller 10 min std dev (2.09 against 2.41).",
+          "which has the smaller 10 min std dev, 6/12/2001 10:10:00 AM or 6/11/2001 6:20:00 PM": "6/11/2001 6:20:00 PM has the smaller 10 min std dev (2.03 against 2.83).",
+          "whose 10 min std dev is smaller: 6/12/2001 3:00:00 AM or 6/12/2001 10:10:00 PM": "6/12/2001 3:00:00 AM has the smaller 10 min std dev (1.82 against 2.73).",
+          "which has the smaller 10 min std dev, 6/11/2001 1:10:00 PM or 6/12/2001 6:10:00 PM": "6/11/2001 1:10:00 PM has the smaller 10 min std dev (1.6 against 4.28).",
+          "which has the smaller 10 min std dev, 6/11/2001 3:50:00 PM or 6/12/2001 7:10:00 PM": "6/11/2001 3:50:00 PM has the smaller 10 min std dev (1.82 against 3.15).",
+          "whose 10 min std dev is smaller: 6/12/2001 8:20:00 AM or 6/12/2001 11:40:00 PM": "6/12/2001 11:40:00 PM has the smaller 10 min std dev (2.19 against 3.26).",
+          "between 6/11/2001 11:10:00 AM and 6/11/2001 11:00:00 AM, which has the lesser 10 min std dev": "6/11/2001 11:10:00 AM has the smaller 10 min std dev (1.98 against 2.73).",
+          "whose 10 min std dev is smaller: 6/11/2001 7:00:00 PM or 6/11/2001 9:20:00 PM": "6/11/2001 9:20:00 PM has the smaller 10 min std dev (2.3 against 2.41).",
+          "whose 10 min std dev is smaller: 6/12/2001 5:20:00 PM or 6/12/2001 5:30:00 AM": "6/12/2001 5:30:00 AM has the smaller 10 min std dev (1.02 against 3.37).",
+          "which has the smaller 10 min std dev, 6/12/2001 5:00:00 PM or 6/11/2001 3:40:00 PM": "6/11/2001 3:40:00 PM has the smaller 10 min std dev (1.76 against 2.94).",
+          "between 6/12/2001 10:40:00 AM and 6/12/2001 11:20:00 PM, which has the lesser 10 min std dev": "6/12/2001 10:40:00 AM has the smaller 10 min std dev (1.55 against 2.35).",
+          "which has the smaller 10 min std dev, 6/12/2001 9:00:00 PM or 6/12/2001 11:10:00 AM": "6/12/2001 11:10:00 AM has the smaller 10 min std dev (2.35 against 2.73).",
+          "whose 10 min std dev is smaller: 6/12/2001 2:50:00 AM or 6/12/2001 9:50:00 AM": "6/12/2001 2:50:00 AM has the smaller 10 min std dev (2.25 against 2.89).",
+          "between 6/11/2001 12:40:00 PM and 6/12/2001 11:30:00 AM, which has the lesser 10 min std dev": "6/11/2001 12:40:00 PM has the smaller 10 min std dev (1.87 against 13.63).",
+          "between 6/12/2001 5:40:00 AM and 6/12/2001 10:30:00 PM, which has the lesser 10 min std dev": "6/12/2001 5:40:00 AM has the smaller 10 min std dev (1.28 against 2.94).",
+          "whose 10 min std dev is smaller: 6/12/2001 1:00:00 PM or 6/12/2001 9:00:00 PM": "6/12/2001 1:00:00 PM has the smaller 10 min std dev (2.03 against 2.73).",
+          "whose 10 min std dev is smaller: 6/12/2001 9:00:00 AM or 6/12/2001 8:30:00 AM": "6/12/2001 8:30:00 AM has the smaller 10 min std dev (3.32 against 3.74).",
+          "whose 10 min std dev is smaller: 6/11/2001 4:40:00 PM or 6/12/2001 6:40:00 PM": "6/11/2001 4:40:00 PM has the smaller 10 min std dev (2.3 against 2.99).",
+          "whose 10 min std dev is smaller: 6/11/2001 6:10:00 PM or 6/12/2001 10:10:00 AM": "6/11/2001 6:10:00 PM has the smaller 10 min std dev (2.03 against 2.83).",
+          "which has the smaller 10 min std dev, 6/11/2001 1:00:00 PM or 6/12/2001 6:20:00 AM": "6/12/2001 6:20:00 AM has the smaller 10 min std dev (1.39 against 2.09).",
+          "between 6/11/2001 6:20:00 PM and 6/12/2001 3:00:00 AM, which has the lesser 10 min std dev": "6/12/2001 3:00:00 AM has the smaller 10 min std dev (1.82 against 2.03).",
+          "which has the smaller 10 min std dev, 6/12/2001 9:50:00 AM or 6/11/2001 3:20:00 PM": "6/11/2001 3:20:00 PM has the smaller 10 min std dev (1.98 against 2.89).",
+          "which has the smaller 10 min std dev, 6/12/2001 5:30:00 AM or 6/12/2001 10:40:00 AM": "6/12/2001 5:30:00 AM has the smaller 10 min std dev (1.02 against 1.55).",
+          "which has the smaller 10 min std dev, 6/12/2001 10:10:00 PM or 6/12/2001 5:40:00 AM": "6/12/2001 5:40:00 AM has the smaller 10 min std dev (1.28 against 2.73).",
+          "between 6/12/2001 3:00:00 PM and 6/12/2001 3:10:00 PM, which has the lesser 10 min std dev": "6/12/2001 3:10:00 PM has the smaller 10 min std dev (3.05 against 3.26).",
+          "which has the smaller 10 min std dev, 6/11/2001 9:20:00 PM or 6/12/2001 5:00:00 AM": "6/12/2001 5:00:00 AM has the smaller 10 min std dev (1.66 against 2.3).",
+          "whose 10 min std dev is smaller: 6/12/2001 9:10:00 PM or 6/11/2001 5:10:00 PM": "6/11/2001 5:10:00 PM has the smaller 10 min std dev (2.19 against 2.51).",
+          "which has the smaller 10 min std dev, 6/12/2001 12:20:00 AM or 6/11/2001 12:40:00 PM": "6/11/2001 12:40:00 PM has the smaller 10 min std dev (1.87 against 2.03).",
+          "between 6/12/2001 7:10:00 PM and 6/11/2001 6:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 6:40:00 PM has the smaller 10 min std dev (2.19 against 3.15).",
+          "whose 10 min std dev is smaller: 6/12/2001 6:00:00 AM or 6/12/2001 12:40:00 AM": "6/12/2001 6:00:00 AM has the smaller 10 min std dev (1.23 against 1.98).",
+          "which has the smaller 10 min std dev, 6/11/2001 12:00:00 PM or 6/12/2001 7:40:00 AM": "6/11/2001 12:00:00 PM has the smaller 10 min std dev (2.46 against 4.06).",
+          "between 6/11/2001 3:00:00 PM and 6/12/2001 8:00:00 PM, which has the lesser 10 min std dev": "6/11/2001 3:00:00 PM has the smaller 10 min std dev (2.19 against 2.46).",
+          "between 6/12/2001 6:20:00 AM and 6/12/2001 9:10:00 PM, which has the lesser 10 min std dev": "6/12/2001 6:20:00 AM has the smaller 10 min std dev (1.39 against 2.51).",
+          "between 6/12/2001 11:50:00 AM and 6/12/2001 1:00:00 PM, which has the lesser 10 min std dev": "6/12/2001 1:00:00 PM has the smaller 10 min std dev (2.03 against 2.99).",
+          "which has the smaller 10 min std dev, 6/12/2001 1:30:00 AM or 6/12/2001 3:00:00 PM": "6/12/2001 1:30:00 AM has the smaller 10 min std dev (2.09 against 3.26).",
+          "between 6/11/2001 3:20:00 PM and 6/12/2001 9:50:00 PM, which has the lesser 10 min std dev": "6/11/2001 3:20:00 PM has the smaller 10 min std dev (1.98 against 2.62).",
+          "between 6/12/2001 1:10:00 PM and 6/12/2001 2:50:00 AM, which has the lesser 10 min std dev": "6/12/2001 1:10:00 PM has the smaller 10 min std dev (1.98 against 2.25).",
+          "whose 10 min std dev is smaller: 6/12/2001 12:00:00 AM or 6/12/2001 9:40:00 AM": "6/12/2001 12:00:00 AM has the smaller 10 min std dev (2.09 against 2.78).",
+          "whose 10 min std dev is smaller: 6/12/2001 7:20:00 PM or 6/12/2001 2:10:00 AM": "6/12/2001 2:10:00 AM has the smaller 10 min std dev (2.09 against 3.74).",
+          "whose 10 min std dev is smaller: 6/11/2001 11:00:00 AM or 6/12/2001 7:20:00 AM": "6/11/2001 11:00:00 AM has the smaller 10 min std dev (2.73 against 3.26).",
+          "which has the smaller 10 min std dev, 6/12/2001 1:30:00 PM or 6/12/2001 4:00:00 PM": "6/12/2001 1:30:00 PM has the smaller 10 min std dev (2.35 against 3.21).",
+          "between 6/12/2001 7:40:00 AM and 6/12/2001 4:20:00 PM, which has the lesser 10 min std dev": "6/12/2001 4:20:00 PM has the smaller 10 min std dev (3.85 against 4.06).",
+          "between 6/11/2001 2:50:00 PM and 6/11/2001 11:00:00 PM, which has the lesser 10 min std dev": "6/11/2001 11:00:00 PM has the smaller 10 min std dev (2.3 against 2.73).",
+          "whose 10 min std dev is smaller: 6/12/2001 11:30:00 AM or 6/11/2001 2:20:00 PM": "6/11/2001 2:20:00 PM has the smaller 10 min std dev (2.35 against 13.63).",
+          "which has the smaller 10 min std dev, 6/12/2001 2:00:00 AM or 6/11/2001 10:10:00 PM": "6/11/2001 10:10:00 PM has the smaller 10 min std dev (1.87 against 2.03).",
+          "which has the smaller 10 min std dev, 6/11/2001 5:10:00 PM or 6/11/2001 2:30:00 PM": "6/11/2001 5:10:00 PM has the smaller 10 min std dev (2.19 against 2.67).",
+          "between 6/12/2001 12:00:00 PM and 6/11/2001 7:00:00 PM, which has the lesser 10 min std dev": "6/12/2001 12:00:00 PM has the smaller 10 min std dev (1.5 against 2.41).",
+          "which has the smaller 10 min std dev, 6/11/2001 2:20:00 PM or 6/12/2001 12:00:00 PM": "6/12/2001 12:00:00 PM has the smaller 10 min std dev (1.5 against 2.35).",
+          "between 6/12/2001 4:00:00 PM and 6/12/2001 11:10:00 PM, which has the lesser 10 min std dev": "6/12/2001 11:10:00 PM has the smaller 10 min std dev (2.14 against 3.21).",
+          "whose 10 min std dev is smaller: 6/12/2001 11:20:00 PM or 6/12/2001 10:50:00 AM": "6/12/2001 10:50:00 AM has the smaller 10 min std dev (2.14 against 2.35).",
+          "whose 10 min std dev is smaller: 6/11/2001 6:30:00 PM or 6/12/2001 10:30:00 AM": "6/11/2001 6:30:00 PM has the smaller 10 min std dev (2.73 against 4.17).",
+          "between 6/11/2001 2:10:00 PM and 6/12/2001 7:20:00 PM, which has the lesser 10 min std dev": "6/11/2001 2:10:00 PM has the smaller 10 min std dev (2.57 against 3.74).",
+          "whose 10 min std dev is smaller: 6/12/2001 10:20:00 PM or 6/12/2001 2:00:00 AM": "6/12/2001 2:00:00 AM has the smaller 10 min std dev (2.03 against 2.46).",
+          "which has the smaller 10 min std dev, 6/12/2001 3:40:00 AM or 6/11/2001 2:50:00 PM": "6/12/2001 3:40:00 AM has the smaller 10 min std dev (1.6 against 2.73).",
+          "which has the smaller 10 min std dev, 6/12/2001 10:50:00 AM or 6/12/2001 12:30:00 PM": "6/12/2001 10:50:00 AM has the smaller 10 min std dev (2.14 against 2.51).",
+          "which has the smaller 10 min std dev, 6/12/2001 6:40:00 PM or 6/11/2001 11:10:00 PM": "6/11/2001 11:10:00 PM has the smaller 10 min std dev (1.98 against 2.99).",
+          "whose 10 min std dev is smaller: 6/12/2001 9:50:00 PM or 6/11/2001 3:50:00 PM": "6/11/2001 3:50:00 PM has the smaller 10 min std dev (1.82 against 2.62).",
+          "between 6/11/2001 10:20:00 PM and 6/11/2001 4:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 4:40:00 PM has the smaller 10 min std dev (2.3 against 2.41).",
+          "between 6/12/2001 5:00:00 AM and 6/12/2001 2:00:00 PM, which has the lesser 10 min std dev": "6/12/2001 5:00:00 AM has the smaller 10 min std dev (1.66 against 2.67).",
+          "whose 10 min std dev is smaller: 6/12/2001 5:10:00 PM or 6/11/2001 11:50:00 PM": "6/11/2001 11:50:00 PM has the smaller 10 min std dev (2.09 against 3.64).",
+          "between 6/12/2001 9:30:00 PM and 6/12/2001 6:00:00 AM, which has the lesser 10 min std dev": "6/12/2001 6:00:00 AM has the smaller 10 min std dev (1.23 against 2.41).",
+          "between 6/11/2001 10:50:00 PM and 6/11/2001 6:30:00 PM, which has the lesser 10 min std dev": "6/11/2001 10:50:00 PM has the smaller 10 min std dev (2.25 against 2.73).",
+          "between 6/11/2001 11:50:00 AM and 6/12/2001 3:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 11:50:00 AM has the smaller 10 min std dev (2.3 against 3.69).",
+          "between 6/11/2001 3:40:00 PM and 6/12/2001 1:20:00 AM, which has the lesser 10 min std dev": "6/11/2001 3:40:00 PM has the smaller 10 min std dev (1.76 against 1.92).",
+          "which has the smaller 10 min std dev, 6/11/2001 11:50:00 PM or 6/11/2001 11:10:00 AM": "6/11/2001 11:10:00 AM has the smaller 10 min std dev (1.98 against 2.09).",
+          "which has the smaller 10 min std dev, 6/11/2001 9:00:00 PM or 6/11/2001 2:10:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min std dev (2.41 against 2.57).",
+          "which has the smaller 10 min std dev, 6/12/2001 3:30:00 PM or 6/12/2001 1:10:00 PM": "6/12/2001 1:10:00 PM has the smaller 10 min std dev (1.98 against 3.69).",
+          "whose 10 min std dev is smaller: 6/11/2001 11:00:00 PM or 6/12/2001 3:30:00 PM": "6/11/2001 11:00:00 PM has the smaller 10 min std dev (2.3 against 3.69).",
+          "whose 10 min std dev is smaller: 6/12/2001 11:10:00 PM or 6/11/2001 1:10:00 PM": "6/11/2001 1:10:00 PM has the smaller 10 min std dev (1.6 against 2.14).",
+          "between 6/11/2001 4:30:00 PM and 6/12/2001 6:10:00 AM, which has the lesser 10 min std dev": "6/12/2001 6:10:00 AM has the smaller 10 min std dev (1.23 against 2.62).",
+          "whose 10 min std dev is smaller: 6/12/2001 6:10:00 AM or 6/11/2001 11:30:00 PM": "6/12/2001 6:10:00 AM has the smaller 10 min std dev (1.23 against 2.19).",
+          "between 6/11/2001 10:10:00 PM and 6/11/2001 7:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 10:10:00 PM has the smaller 10 min std dev (1.87 against 2.89).",
+          "whose 10 min std dev is smaller: 6/11/2001 6:40:00 PM or 6/12/2001 12:20:00 AM": "6/12/2001 12:20:00 AM has the smaller 10 min std dev (2.03 against 2.19).",
+          "between 6/11/2001 8:40:00 PM and 6/12/2001 10:20:00 PM, which has the lesser 10 min std dev": "6/11/2001 8:40:00 PM has the smaller 10 min std dev (2.19 against 2.46).",
+          "between 6/11/2001 11:30:00 AM and 6/12/2001 5:10:00 PM, which has the lesser 10 min std dev": "6/11/2001 11:30:00 AM has the smaller 10 min std dev (2.03 against 3.64).",
+          "which has the smaller 10 min std dev, 6/12/2001 9:40:00 AM or 6/11/2001 8:40:00 PM": "6/11/2001 8:40:00 PM has the smaller 10 min std dev (2.19 against 2.78).",
+          "whose 10 min std dev is smaller: 6/12/2001 10:30:00 PM or 6/12/2001 3:40:00 AM": "6/12/2001 3:40:00 AM has the smaller 10 min std dev (1.6 against 2.94).",
+          "whose 10 min std dev is smaller: 6/12/2001 1:20:00 AM or 6/12/2001 2:30:00 PM": "6/12/2001 1:20:00 AM has the smaller 10 min std dev (1.92 against 3.9).",
+          "which has the smaller 10 min std dev, 6/12/2001 8:30:00 AM or 6/11/2001 3:00:00 PM": "6/11/2001 3:00:00 PM has the smaller 10 min std dev (2.19 against 3.32).",
+          "whose 10 min std dev is smaller: 6/12/2001 2:00:00 PM or 6/12/2001 1:30:00 PM": "6/12/2001 1:30:00 PM has the smaller 10 min std dev (2.35 against 2.67).",
+          "which has the smaller 10 min std dev, 6/12/2001 10:30:00 AM or 6/11/2001 11:50:00 AM": "6/11/2001 11:50:00 AM has the smaller 10 min std dev (2.3 against 4.17).",
+          "which has the smaller 10 min std dev, 6/11/2001 11:30:00 PM or 6/12/2001 1:50:00 PM": "6/11/2001 11:30:00 PM has the smaller 10 min std dev (2.19 against 3.53).",
+          "whose 10 min std dev is smaller: 6/12/2001 4:20:00 PM or 6/12/2001 1:30:00 AM": "6/12/2001 1:30:00 AM has the smaller 10 min std dev (2.09 against 3.85).",
+          "which has the smaller 10 min std dev, 6/12/2001 12:40:00 AM or 6/12/2001 11:50:00 AM": "6/12/2001 12:40:00 AM has the smaller 10 min std dev (1.98 against 2.99).",
+          "whose 10 min std dev is smaller: 6/12/2001 3:10:00 PM or 6/12/2001 11:00:00 AM": "6/12/2001 11:00:00 AM has the smaller 10 min std dev (1.82 against 3.05)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-429d6a37",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "dev"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "smaller: 6/11/2001 7:40:00 PM or 6/11/2001 9:00:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min std dev (2.41 against 2.89).",
+          "smaller: 6/12/2001 3:40:00 PM or 6/11/2001 12:00:00 PM": "6/11/2001 12:00:00 PM has the smaller 10 min std dev (2.46 against 3.69).",
+          "smaller: 6/11/2001 9:40:00 PM or 6/11/2001 1:00:00 PM": "6/11/2001 1:00:00 PM has the smaller 10 min std dev (2.09 against 2.14).",
+          "smaller: 6/12/2001 8:00:00 PM or 6/12/2001 5:00:00 PM": "6/12/2001 8:00:00 PM has the smaller 10 min std dev (2.46 against 2.94).",
+          "smaller: 6/12/2001 3:00:00 AM or 6/12/2001 10:10:00 PM": "6/12/2001 3:00:00 AM has the smaller 10 min std dev (1.82 against 2.73).",
+          "smaller: 6/12/2001 8:20:00 AM or 6/12/2001 11:40:00 PM": "6/12/2001 11:40:00 PM has the smaller 10 min std dev (2.19 against 3.26).",
+          "smaller: 6/11/2001 7:00:00 PM or 6/11/2001 9:20:00 PM": "6/11/2001 9:20:00 PM has the smaller 10 min std dev (2.3 against 2.41).",
+          "smaller: 6/12/2001 5:20:00 PM or 6/12/2001 5:30:00 AM": "6/12/2001 5:30:00 AM has the smaller 10 min std dev (1.02 against 3.37).",
+          "smaller: 6/12/2001 2:50:00 AM or 6/12/2001 9:50:00 AM": "6/12/2001 2:50:00 AM has the smaller 10 min std dev (2.25 against 2.89).",
+          "smaller: 6/12/2001 1:00:00 PM or 6/12/2001 9:00:00 PM": "6/12/2001 1:00:00 PM has the smaller 10 min std dev (2.03 against 2.73).",
+          "smaller: 6/12/2001 9:00:00 AM or 6/12/2001 8:30:00 AM": "6/12/2001 8:30:00 AM has the smaller 10 min std dev (3.32 against 3.74).",
+          "smaller: 6/11/2001 4:40:00 PM or 6/12/2001 6:40:00 PM": "6/11/2001 4:40:00 PM has the smaller 10 min std dev (2.3 against 2.99).",
+          "smaller: 6/11/2001 6:10:00 PM or 6/12/2001 10:10:00 AM": "6/11/2001 6:10:00 PM has the smaller 10 min std dev (2.03 against 2.83).",
+          "smaller: 6/12/2001 9:10:00 PM or 6/11/2001 5:10:00 PM": "6/11/2001 5:10:00 PM has the smaller 10 min std dev (2.19 against 2.51).",
+          "smaller: 6/12/2001 6:00:00 AM or 6/12/2001 12:40:00 AM": "6/12/2001 6:00:00 AM has the smaller 10 min std dev (1.23 against 1.98).",
+          "smaller: 6/12/2001 12:00:00 AM or 6/12/2001 9:40:00 AM": "6/12/2001 12:00:00 AM has the smaller 10 min std dev (2.09 against 2.78).",
+          "smaller: 6/12/2001 7:20:00 PM or 6/12/2001 2:10:00 AM": "6/12/2001 2:10:00 AM has the smaller 10 min std dev (2.09 against 3.74).",
+          "smaller: 6/11/2001 11:00:00 AM or 6/12/2001 7:20:00 AM": "6/11/2001 11:00:00 AM has the smaller 10 min std dev (2.73 against 3.26).",
+          "smaller: 6/12/2001 11:30:00 AM or 6/11/2001 2:20:00 PM": "6/11/2001 2:20:00 PM has the smaller 10 min std dev (2.35 against 13.63).",
+          "smaller: 6/12/2001 11:20:00 PM or 6/12/2001 10:50:00 AM": "6/12/2001 10:50:00 AM has the smaller 10 min std dev (2.14 against 2.35).",
+          "smaller: 6/11/2001 6:30:00 PM or 6/12/2001 10:30:00 AM": "6/11/2001 6:30:00 PM has the smaller 10 min std dev (2.73 against 4.17).",
+          "smaller: 6/12/2001 10:20:00 PM or 6/12/2001 2:00:00 AM": "6/12/2001 2:00:00 AM has the smaller 10 min std dev (2.03 against 2.46).",
+          "smaller: 6/12/2001 9:50:00 PM or 6/11/2001 3:50:00 PM": "6/11/2001 3:50:00 PM has the smaller 10 min std dev (1.82 against 2.62).",
+          "smaller: 6/12/2001 5:10:00 PM or 6/11/2001 11:50:00 PM": "6/11/2001 11:50:00 PM has the smaller 10 min std dev (2.09 against 3.64).",
+          "smaller: 6/11/2001 11:00:00 PM or 6/12/2001 3:30:00 PM": "6/11/2001 11:00:00 PM has the smaller 10 min std dev (2.3 against 3.69).",
+          "smaller: 6/12/2001 11:10:00 PM or 6/11/2001 1:10:00 PM": "6/11/2001 1:10:00 PM has the smaller 10 min std dev (1.6 against 2.14).",
+          "smaller: 6/12/2001 6:10:00 AM or 6/11/2001 11:30:00 PM": "6/12/2001 6:10:00 AM has the smaller 10 min std dev (1.23 against 2.19).",
+          "smaller: 6/11/2001 6:40:00 PM or 6/12/2001 12:20:00 AM": "6/12/2001 12:20:00 AM has the smaller 10 min std dev (2.03 against 2.19).",
+          "smaller: 6/12/2001 10:30:00 PM or 6/12/2001 3:40:00 AM": "6/12/2001 3:40:00 AM has the smaller 10 min std dev (1.6 against 2.94).",
+          "smaller: 6/12/2001 1:20:00 AM or 6/12/2001 2:30:00 PM": "6/12/2001 1:20:00 AM has the smaller 10 min std dev (1.92 against 3.9).",
+          "smaller: 6/12/2001 2:00:00 PM or 6/12/2001 1:30:00 PM": "6/12/2001 1:30:00 PM has the smaller 10 min std dev (2.35 against 2.67).",
+          "smaller: 6/12/2001 4:20:00 PM or 6/12/2001 1:30:00 AM": "6/12/2001 1:30:00 AM has the smaller 10 min std dev (2.09 against 3.85).",
+          "smaller: 6/12/2001 3:10:00 PM or 6/12/2001 11:00:00 AM": "6/12/2001 11:00:00 AM has the smaller 10 min std dev (1.82 against 3.05)."
+        }
+      },
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0161a195",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 11:50:00 AM and 6/12/2001 3:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 11:50:00 AM has the smaller 10 min std dev (2.3 against 3.69)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0543c001",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 7:40:00 PM or 6/11/2001 9:00:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min std dev (2.41 against 2.89)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-05dac508",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 9:10:00 PM or 6/11/2001 5:10:00 PM": "6/11/2001 5:10:00 PM has the smaller 10 min std dev (2.19 against 2.51)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-09ccd8e3",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 12:20:00 AM or 6/11/2001 12:40:00 PM": "6/11/2001 12:40:00 PM has the smaller 10 min std dev (1.87 against 2.03)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-09e2150d",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 4:30:00 PM and 6/12/2001 6:10:00 AM, which has the lesser 10 min std dev": "6/12/2001 6:10:00 AM has the smaller 10 min std dev (1.23 against 2.62)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0b5b5843",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 6:30:00 PM or 6/12/2001 10:30:00 AM": "6/11/2001 6:30:00 PM has the smaller 10 min std dev (2.73 against 4.17)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0d60bd5e",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 2:10:00 PM and 6/12/2001 7:20:00 PM, which has the lesser 10 min std dev": "6/11/2001 2:10:00 PM has the smaller 10 min std dev (2.57 against 3.74)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0dd59810",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 1:50:00 PM and 6/11/2001 9:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 9:40:00 PM has the smaller 10 min std dev (2.14 against 3.53)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0ebfdbc6",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 10:50:00 PM and 6/11/2001 6:30:00 PM, which has the lesser 10 min std dev": "6/11/2001 10:50:00 PM has the smaller 10 min std dev (2.25 against 2.73)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0f0881d3",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 2:50:00 PM and 6/11/2001 11:00:00 PM, which has the lesser 10 min std dev": "6/11/2001 11:00:00 PM has the smaller 10 min std dev (2.3 against 2.73)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-155a4634",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 10:20:00 PM or 6/12/2001 2:00:00 AM": "6/12/2001 2:00:00 AM has the smaller 10 min std dev (2.03 against 2.46)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1659d038",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 9:50:00 AM or 6/11/2001 3:20:00 PM": "6/11/2001 3:20:00 PM has the smaller 10 min std dev (1.98 against 2.89)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-16a80b29",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 2:50:00 AM or 6/12/2001 9:50:00 AM": "6/12/2001 2:50:00 AM has the smaller 10 min std dev (2.25 against 2.89)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1a5d5002",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 9:20:00 PM or 6/12/2001 5:00:00 AM": "6/12/2001 5:00:00 AM has the smaller 10 min std dev (1.66 against 2.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1a84840a",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 6:10:00 PM or 6/12/2001 10:10:00 AM": "6/11/2001 6:10:00 PM has the smaller 10 min std dev (2.03 against 2.83)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1af2fe06",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 5:20:00 PM or 6/12/2001 5:30:00 AM": "6/12/2001 5:30:00 AM has the smaller 10 min std dev (1.02 against 3.37)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-22b3d868",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 12:00:00 AM or 6/12/2001 9:40:00 AM": "6/12/2001 12:00:00 AM has the smaller 10 min std dev (2.09 against 2.78)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-23a0454f",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 5:30:00 AM or 6/12/2001 10:40:00 AM": "6/12/2001 5:30:00 AM has the smaller 10 min std dev (1.02 against 1.55)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2856120b",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 2:00:00 AM or 6/11/2001 10:10:00 PM": "6/11/2001 10:10:00 PM has the smaller 10 min std dev (1.87 against 2.03)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2a6a1f16",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 11:40:00 PM or 6/11/2001 5:50:00 PM": "6/12/2001 11:40:00 PM has the smaller 10 min std dev (2.19 against 2.62)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-306c94b1",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 4:40:00 PM or 6/12/2001 6:40:00 PM": "6/11/2001 4:40:00 PM has the smaller 10 min std dev (2.3 against 2.99)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3087046c",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 2:30:00 PM and 6/11/2001 6:10:00 PM, which has the lesser 10 min std dev": "6/11/2001 6:10:00 PM has the smaller 10 min std dev (2.03 against 2.67)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3212bc5d",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 5:50:00 AM or 6/12/2001 9:30:00 PM": "6/12/2001 5:50:00 AM has the smaller 10 min std dev (1.07 against 2.41)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-376d5282",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 12:00:00 PM or 6/12/2001 7:40:00 AM": "6/11/2001 12:00:00 PM has the smaller 10 min std dev (2.46 against 4.06)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-38c36698",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 3:20:00 PM and 6/12/2001 9:50:00 PM, which has the lesser 10 min std dev": "6/11/2001 3:20:00 PM has the smaller 10 min std dev (1.98 against 2.62)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3b3cda80",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 12:00:00 PM and 6/11/2001 7:00:00 PM, which has the lesser 10 min std dev": "6/12/2001 12:00:00 PM has the smaller 10 min std dev (1.5 against 2.41)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3e3bb205",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 1:20:00 AM or 6/12/2001 2:30:00 PM": "6/12/2001 1:20:00 AM has the smaller 10 min std dev (1.92 against 3.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4283b059",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 5:40:00 AM and 6/12/2001 10:30:00 PM, which has the lesser 10 min std dev": "6/12/2001 5:40:00 AM has the smaller 10 min std dev (1.28 against 2.94)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4435a507",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 6:20:00 PM and 6/12/2001 3:00:00 AM, which has the lesser 10 min std dev": "6/12/2001 3:00:00 AM has the smaller 10 min std dev (1.82 against 2.03)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-46005cbc",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 3:50:00 PM or 6/12/2001 7:10:00 PM": "6/11/2001 3:50:00 PM has the smaller 10 min std dev (1.82 against 3.15)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4bca95e2",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 11:50:00 AM and 6/12/2001 1:00:00 PM, which has the lesser 10 min std dev": "6/12/2001 1:00:00 PM has the smaller 10 min std dev (2.03 against 2.99)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4c989ec0",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 7:10:00 PM and 6/11/2001 6:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 6:40:00 PM has the smaller 10 min std dev (2.19 against 3.15)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4ec615ac",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 7:00:00 PM or 6/11/2001 9:20:00 PM": "6/11/2001 9:20:00 PM has the smaller 10 min std dev (2.3 against 2.41)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-562786b2",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 6:10:00 PM and 6/12/2001 5:20:00 PM, which has the lesser 10 min std dev": "6/12/2001 5:20:00 PM has the smaller 10 min std dev (3.37 against 4.28)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-575e7a48",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 1:00:00 PM or 6/12/2001 9:00:00 PM": "6/12/2001 1:00:00 PM has the smaller 10 min std dev (2.03 against 2.73)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-590c25ea",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 6:40:00 PM or 6/12/2001 12:20:00 AM": "6/12/2001 12:20:00 AM has the smaller 10 min std dev (2.03 against 2.19)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5cdfa272",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 2:30:00 PM or 6/11/2001 10:50:00 PM": "6/11/2001 10:50:00 PM has the smaller 10 min std dev (2.25 against 3.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-615c1632",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 3:00:00 PM and 6/12/2001 8:00:00 PM, which has the lesser 10 min std dev": "6/11/2001 3:00:00 PM has the smaller 10 min std dev (2.19 against 2.46)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-63a3a6c2",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 1:30:00 AM or 6/12/2001 3:00:00 PM": "6/12/2001 1:30:00 AM has the smaller 10 min std dev (2.09 against 3.26)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-63c06fde",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 2:10:00 AM or 6/11/2001 10:20:00 PM": "6/12/2001 2:10:00 AM has the smaller 10 min std dev (2.09 against 2.41)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6de85560",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 1:10:00 PM or 6/12/2001 6:10:00 PM": "6/11/2001 1:10:00 PM has the smaller 10 min std dev (1.6 against 4.28)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-70507063",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 6:40:00 PM or 6/11/2001 11:10:00 PM": "6/11/2001 11:10:00 PM has the smaller 10 min std dev (1.98 against 2.99)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-715dcaa2",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 10:10:00 PM or 6/12/2001 5:40:00 AM": "6/12/2001 5:40:00 AM has the smaller 10 min std dev (1.28 against 2.73)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7759b818",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 3:10:00 PM or 6/12/2001 11:00:00 AM": "6/12/2001 11:00:00 AM has the smaller 10 min std dev (1.82 against 3.05)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-775c01af",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 11:30:00 AM and 6/12/2001 5:10:00 PM, which has the lesser 10 min std dev": "6/11/2001 11:30:00 AM has the smaller 10 min std dev (2.03 against 3.64)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-79e4b672",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 6:10:00 AM or 6/11/2001 11:30:00 PM": "6/12/2001 6:10:00 AM has the smaller 10 min std dev (1.23 against 2.19)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7ab337be",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 6:00:00 AM or 6/12/2001 12:40:00 AM": "6/12/2001 6:00:00 AM has the smaller 10 min std dev (1.23 against 1.98)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7f000ade",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 11:30:00 AM or 6/11/2001 2:20:00 PM": "6/11/2001 2:20:00 PM has the smaller 10 min std dev (2.35 against 13.63)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7f5f8384",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 8:30:00 AM or 6/11/2001 3:00:00 PM": "6/11/2001 3:00:00 PM has the smaller 10 min std dev (2.19 against 3.32)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7fbf91fd",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 12:40:00 AM or 6/12/2001 11:50:00 AM": "6/12/2001 12:40:00 AM has the smaller 10 min std dev (1.98 against 2.99)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-806d22ac",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 2:00:00 PM or 6/12/2001 1:30:00 PM": "6/12/2001 1:30:00 PM has the smaller 10 min std dev (2.35 against 2.67)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-80e0ad86",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 11:00:00 AM or 6/12/2001 7:20:00 AM": "6/11/2001 11:00:00 AM has the smaller 10 min std dev (2.73 against 3.26)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-875d1c80",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 3:00:00 AM or 6/12/2001 10:10:00 PM": "6/12/2001 3:00:00 AM has the smaller 10 min std dev (1.82 against 2.73)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-894e0d03",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 3:40:00 PM and 6/12/2001 1:20:00 AM, which has the lesser 10 min std dev": "6/11/2001 3:40:00 PM has the smaller 10 min std dev (1.76 against 1.92)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8b3a43c0",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 10:50:00 AM or 6/12/2001 12:30:00 PM": "6/12/2001 10:50:00 AM has the smaller 10 min std dev (2.14 against 2.51)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8ba6acc9",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 1:00:00 PM or 6/12/2001 6:20:00 AM": "6/12/2001 6:20:00 AM has the smaller 10 min std dev (1.39 against 2.09)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8ef68c30",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 8:40:00 PM and 6/12/2001 10:20:00 PM, which has the lesser 10 min std dev": "6/11/2001 8:40:00 PM has the smaller 10 min std dev (2.19 against 2.46)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8fcab195",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 8:00:00 PM or 6/12/2001 5:00:00 PM": "6/12/2001 8:00:00 PM has the smaller 10 min std dev (2.46 against 2.94)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-90114050",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 11:10:00 AM and 6/12/2001 9:00:00 AM, which has the lesser 10 min std dev": "6/12/2001 11:10:00 AM has the smaller 10 min std dev (2.35 against 3.74)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-930a8817",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 9:50:00 PM or 6/11/2001 3:50:00 PM": "6/11/2001 3:50:00 PM has the smaller 10 min std dev (1.82 against 2.62)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9928e90d",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 3:40:00 AM or 6/11/2001 2:50:00 PM": "6/12/2001 3:40:00 AM has the smaller 10 min std dev (1.6 against 2.73)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a7bfd7b9",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 3:00:00 PM and 6/12/2001 3:10:00 PM, which has the lesser 10 min std dev": "6/12/2001 3:10:00 PM has the smaller 10 min std dev (3.05 against 3.26)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ad391945",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 9:40:00 AM or 6/11/2001 8:40:00 PM": "6/11/2001 8:40:00 PM has the smaller 10 min std dev (2.19 against 2.78)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b055621c",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 6:20:00 AM and 6/12/2001 9:10:00 PM, which has the lesser 10 min std dev": "6/12/2001 6:20:00 AM has the smaller 10 min std dev (1.39 against 2.51)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b0f2c024",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 9:00:00 PM or 6/11/2001 2:10:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min std dev (2.41 against 2.57)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b1191ab3",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 8:20:00 AM or 6/12/2001 11:40:00 PM": "6/12/2001 11:40:00 PM has the smaller 10 min std dev (2.19 against 3.26)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b7611fdd",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 2:20:00 PM or 6/12/2001 12:00:00 PM": "6/12/2001 12:00:00 PM has the smaller 10 min std dev (1.5 against 2.35)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b7c45f90",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 5:00:00 PM or 6/11/2001 3:40:00 PM": "6/11/2001 3:40:00 PM has the smaller 10 min std dev (1.76 against 2.94)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b9817b3d",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 11:10:00 PM or 6/11/2001 1:10:00 PM": "6/11/2001 1:10:00 PM has the smaller 10 min std dev (1.6 against 2.14)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bb9d0fab",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 11:50:00 PM or 6/11/2001 11:10:00 AM": "6/11/2001 11:10:00 AM has the smaller 10 min std dev (1.98 against 2.09)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bbe093b4",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 10:30:00 PM or 6/12/2001 3:40:00 AM": "6/12/2001 3:40:00 AM has the smaller 10 min std dev (1.6 against 2.94)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bd2e97e0",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 3:30:00 PM or 6/12/2001 1:10:00 PM": "6/12/2001 1:10:00 PM has the smaller 10 min std dev (1.98 against 3.69)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c19fbb64",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 3:20:00 PM and 6/12/2001 7:10:00 AM, which has the lesser 10 min std dev": "6/12/2001 7:10:00 AM has the smaller 10 min std dev (3.26 against 3.64)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c29d0a3d",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 10:10:00 PM and 6/11/2001 7:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 10:10:00 PM has the smaller 10 min std dev (1.87 against 2.89)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c304bc2e",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 11:00:00 AM or 6/11/2001 11:30:00 AM": "6/12/2001 11:00:00 AM has the smaller 10 min std dev (1.82 against 2.03)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c33ed7c0",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 1:10:00 PM and 6/12/2001 2:50:00 AM, which has the lesser 10 min std dev": "6/12/2001 1:10:00 PM has the smaller 10 min std dev (1.98 against 2.25)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c34744ab",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 4:20:00 PM or 6/12/2001 1:30:00 AM": "6/12/2001 1:30:00 AM has the smaller 10 min std dev (2.09 against 3.85)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c80fa289",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 9:00:00 AM or 6/12/2001 8:30:00 AM": "6/12/2001 8:30:00 AM has the smaller 10 min std dev (3.32 against 3.74)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c8c096f0",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 7:20:00 PM or 6/12/2001 2:10:00 AM": "6/12/2001 2:10:00 AM has the smaller 10 min std dev (2.09 against 3.74)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cd04f753",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 10:20:00 PM and 6/11/2001 4:40:00 PM, which has the lesser 10 min std dev": "6/11/2001 4:40:00 PM has the smaller 10 min std dev (2.3 against 2.41)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ce18bb6e",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 7:40:00 AM and 6/12/2001 4:20:00 PM, which has the lesser 10 min std dev": "6/12/2001 4:20:00 PM has the smaller 10 min std dev (3.85 against 4.06)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d3e4e981",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 7:20:00 AM or 6/12/2001 3:20:00 PM": "6/12/2001 7:20:00 AM has the smaller 10 min std dev (3.26 against 3.64)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d4f39ce6",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 5:10:00 PM or 6/11/2001 11:50:00 PM": "6/11/2001 11:50:00 PM has the smaller 10 min std dev (2.09 against 3.64)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d57bfe83",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 5:00:00 AM and 6/12/2001 2:00:00 PM, which has the lesser 10 min std dev": "6/12/2001 5:00:00 AM has the smaller 10 min std dev (1.66 against 2.67)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e3e48de2",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 9:30:00 PM and 6/12/2001 6:00:00 AM, which has the lesser 10 min std dev": "6/12/2001 6:00:00 AM has the smaller 10 min std dev (1.23 against 2.41)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e506cb4c",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 11:10:00 AM and 6/11/2001 11:00:00 AM, which has the lesser 10 min std dev": "6/11/2001 11:10:00 AM has the smaller 10 min std dev (1.98 against 2.73)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e8ef4466",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 9:40:00 PM or 6/11/2001 1:00:00 PM": "6/11/2001 1:00:00 PM has the smaller 10 min std dev (2.09 against 2.14)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ead7f77e",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 11:30:00 PM or 6/12/2001 1:50:00 PM": "6/11/2001 11:30:00 PM has the smaller 10 min std dev (2.19 against 3.53)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-eb19da49",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/11/2001 5:10:00 PM or 6/11/2001 2:30:00 PM": "6/11/2001 5:10:00 PM has the smaller 10 min std dev (2.19 against 2.67)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ee8b0957",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 12:30:00 PM and 6/12/2001 12:00:00 AM, which has the lesser 10 min std dev": "6/12/2001 12:00:00 AM has the smaller 10 min std dev (2.09 against 2.51)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-efa4e324",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 1:30:00 PM or 6/12/2001 4:00:00 PM": "6/12/2001 1:30:00 PM has the smaller 10 min std dev (2.35 against 3.21)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f040bfca",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 12:40:00 PM and 6/12/2001 11:30:00 AM, which has the lesser 10 min std dev": "6/11/2001 12:40:00 PM has the smaller 10 min std dev (1.87 against 13.63)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f21d49bf",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 10:40:00 AM and 6/12/2001 11:20:00 PM, which has the lesser 10 min std dev": "6/12/2001 10:40:00 AM has the smaller 10 min std dev (1.55 against 2.35)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f32b1bc8",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "dev",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 4:00:00 PM and 6/12/2001 11:10:00 PM, which has the lesser 10 min std dev": "6/12/2001 11:10:00 PM has the smaller 10 min std dev (2.14 against 3.21)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f3d3861e",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 3:40:00 PM or 6/11/2001 12:00:00 PM": "6/11/2001 12:00:00 PM has the smaller 10 min std dev (2.46 against 3.69)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f49bcb49",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/12/2001 11:20:00 PM or 6/12/2001 10:50:00 AM": "6/12/2001 10:50:00 AM has the smaller 10 min std dev (2.14 against 2.35)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f7d1d7ff",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min std dev is smaller: 6/11/2001 11:00:00 PM or 6/12/2001 3:30:00 PM": "6/11/2001 11:00:00 PM has the smaller 10 min std dev (2.3 against 3.69)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f8252c64",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 10:30:00 AM or 6/11/2001 11:50:00 AM": "6/11/2001 11:50:00 AM has the smaller 10 min std dev (2.3 against 4.17)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f941932b",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 9:00:00 PM or 6/12/2001 11:10:00 AM": "6/12/2001 11:10:00 AM has the smaller 10 min std dev (2.35 against 2.73)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fbf3838a",
+      "task": "10-min-std-dev-of-tim-2f50-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dev",
+            "has",
+            "min",
+            "pm",
+            "smaller",
+            "std"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min std dev, 6/12/2001 10:10:00 AM or 6/11/2001 6:20:00 PM": "6/11/2001 6:20:00 PM has the smaller 10 min std dev (2.03 against 2.83)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
     "de819f759cd7420f7f9be46e01bda7d270304042d8fe47a1d10f878edf88ed2c",
-    "875a389f100365cdd6de3b781f87ed943dbd7aa3033ed92be2b0a0f95b376a77"
+    "875a389f100365cdd6de3b781f87ed943dbd7aa3033ed92be2b0a0f95b376a77",
+    "063ff4b8b8d727ba885f2ffa3120d7519709dcaf1b54a057b0404a5f8ac1b4c7"
   ]
 }

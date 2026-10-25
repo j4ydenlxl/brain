@@ -2,41 +2,338 @@
   "task": "10-min-sampled-avg-of-352a-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:32:13.919Z",
+  "at": "2026-10-25T16:08:54.227Z",
   "stats": {
-    "generated": 82088,
-    "distinct": 94343,
-    "kept": 4,
-    "know": 4,
+    "generated": 200870,
+    "distinct": 78485,
+    "kept": 111,
+    "know": 9,
     "byFamily": {
-      "transform": 4
+      "route": 3,
+      "transform": 4,
+      "compare": 2,
+      "memory": 102
     },
     "bySource": {
+      "enum": 1,
       "open": 2,
-      "enum": 2
+      "parent": 4,
+      "yesno": 1,
+      "memory": 102,
+      "template": 1
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 51347,
-    "cellsPerSecond": 1599,
+    "ms": 170181,
+    "cellsPerSecond": 1180,
     "capped": "ms",
     "packs": [
       "fr-datasets-time-series-with-error-bars-excel-54fe73"
     ],
     "cursor": {
       "v": 1,
-      "basis": "9f8cd067b5e7c808eb21babc8a34bc1ca6cb97c5d779ec2008bf140003e9562b",
-      "round": 2,
-      "at": 152738,
+      "basis": "cf929d533073a93266769bab27c3777739594da1f3352e78b1bba4304200cb68",
+      "round": 0,
+      "at": 94817,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "aggregate.mean",
-      "tpl": 5442
+      "cost": 5,
+      "prim": "compute.hypot",
+      "tpl": 3000
     }
   },
   "cells": [
+    {
+      "id": "n-009c866b",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "bigger than",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 33,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-43d75252",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [
+        "n-009c866b"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "compare",
+              "greater",
+              "larger",
+              "makes",
+              "std",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 33,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
     {
       "id": "n-0e19bab1",
       "task": "10-min-sampled-avg-of-352a-smaller",
@@ -635,10 +932,5320 @@
         "fired": 100,
         "rows": 100
       }
+    },
+    {
+      "id": "n-83682727",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "bigger than",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.greater",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min sampled avg"
+              }
+            ]
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min sampled avg"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the smaller 10 min sampled avg (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the smaller 10 min sampled avg (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 126,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e282b44b",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [
+        "n-83682727"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "compare",
+              "greater",
+              "larger",
+              "makes",
+              "std",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.greater",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min sampled avg"
+              }
+            ]
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "10 min sampled avg"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the smaller 10 min sampled avg (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " has the smaller 10 min sampled avg (",
+              {
+                "slot": 1
+              },
+              " against ",
+              {
+                "slot": 2
+              },
+              ")."
+            ]
+          },
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min sampled avg"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+            },
+            {
+              "lit": "time"
+            },
+            {
+              "lit": "10 min sampled avg"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 126,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3ab78dc8",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "avg"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 10:20:00 PM and 6/12/2001 5:30:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 5:30:00 AM has the smaller 10 min sampled avg (7.9 against 27.1).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 12:00:00 PM or 6/12/2001 9:20:00 AM": "6/12/2001 9:20:00 AM has the smaller 10 min sampled avg (18.6 against 24.8).",
+          "between 6/11/2001 1:30:00 PM and 6/12/2001 3:00:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 3:00:00 AM has the smaller 10 min sampled avg (15 against 22.4).",
+          "between 6/11/2001 11:50:00 PM and 6/11/2001 12:00:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 11:50:00 PM has the smaller 10 min sampled avg (15.9 against 24.8).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 6:30:00 AM or 6/11/2001 1:00:00 PM": "6/12/2001 6:30:00 AM has the smaller 10 min sampled avg (15 against 21.3).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 5:50:00 PM or 6/12/2001 4:50:00 AM": "6/12/2001 4:50:00 AM has the smaller 10 min sampled avg (9.5 against 17.5).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 11:50:00 AM or 6/12/2001 11:50:00 AM": "6/12/2001 11:50:00 AM has the smaller 10 min sampled avg (15.4 against 25.2).",
+          "between 6/11/2001 5:20:00 PM and 6/12/2001 8:40:00 AM, which has the lesser 10 min sampled avg": "6/11/2001 5:20:00 PM has the smaller 10 min sampled avg (17.1 against 27.8).",
+          "between 6/12/2001 8:40:00 PM and 6/11/2001 9:10:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 9:10:00 PM has the smaller 10 min sampled avg (19.2 against 25.5).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 5:30:00 AM or 6/12/2001 3:30:00 PM": "6/12/2001 5:30:00 AM has the smaller 10 min sampled avg (7.9 against 26.9).",
+          "between 6/12/2001 3:20:00 AM and 6/12/2001 5:50:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 3:20:00 AM has the smaller 10 min sampled avg (11.3 against 28.6).",
+          "between 6/12/2001 11:30:00 AM and 6/12/2001 6:30:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 11:30:00 AM has the smaller 10 min sampled avg (14.4 against 15).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 2:40:00 PM or 6/11/2001 6:10:00 PM": "6/11/2001 6:10:00 PM has the smaller 10 min sampled avg (18.6 against 21.9).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 9:20:00 AM or 6/12/2001 9:10:00 PM": "6/12/2001 9:20:00 AM has the smaller 10 min sampled avg (18.6 against 25.2).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 7:20:00 PM or 6/11/2001 5:20:00 PM": "6/11/2001 7:20:00 PM has the smaller 10 min sampled avg (14.7 against 17.1).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 11:20:00 PM or 6/12/2001 9:30:00 AM": "6/12/2001 9:30:00 AM has the smaller 10 min sampled avg (12.1 against 22.9).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 4:40:00 PM or 6/12/2001 8:30:00 AM": "6/12/2001 4:40:00 PM has the smaller 10 min sampled avg (28.5 against 30.9).",
+          "between 6/11/2001 12:40:00 PM and 6/12/2001 4:40:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 12:40:00 PM has the smaller 10 min sampled avg (20.3 against 28.5).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 9:30:00 PM or 6/12/2001 4:50:00 PM": "6/12/2001 9:30:00 PM has the smaller 10 min sampled avg (27.1 against 27.5).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 9:50:00 AM or 6/12/2001 4:30:00 AM": "6/12/2001 4:30:00 AM has the smaller 10 min sampled avg (9.3 against 13.8).",
+          "between 6/12/2001 9:30:00 AM and 6/11/2001 4:00:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 9:30:00 AM has the smaller 10 min sampled avg (12.1 against 17.6).",
+          "between 6/11/2001 4:20:00 PM and 6/12/2001 5:30:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 4:20:00 PM has the smaller 10 min sampled avg (11.4 against 26.6).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 5:10:00 AM or 6/11/2001 7:00:00 PM": "6/12/2001 5:10:00 AM has the smaller 10 min sampled avg (7.2 against 18.7).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 8:30:00 AM or 6/12/2001 8:40:00 PM": "6/12/2001 8:40:00 PM has the smaller 10 min sampled avg (25.5 against 30.9).",
+          "between 6/11/2001 11:30:00 AM and 6/11/2001 11:50:00 AM, which has the lesser 10 min sampled avg": "6/11/2001 11:30:00 AM has the smaller 10 min sampled avg (22 against 25.2).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 8:10:00 PM or 6/11/2001 11:30:00 AM": "6/11/2001 11:30:00 AM has the smaller 10 min sampled avg (22 against 26.8).",
+          "between 6/11/2001 7:10:00 PM and 6/12/2001 10:10:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 10:10:00 AM has the smaller 10 min sampled avg (10.7 against 16.7).",
+          "between 6/12/2001 6:20:00 PM and 6/12/2001 5:20:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 5:20:00 AM has the smaller 10 min sampled avg (8 against 30.2).",
+          "between 6/12/2001 4:50:00 AM and 6/12/2001 9:50:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 4:50:00 AM has the smaller 10 min sampled avg (9.5 against 27.6).",
+          "between 6/12/2001 3:20:00 PM and 6/11/2001 9:50:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 9:50:00 PM has the smaller 10 min sampled avg (15.4 against 25).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 4:30:00 PM or 6/12/2001 6:00:00 PM": "6/11/2001 4:30:00 PM has the smaller 10 min sampled avg (16.6 against 32.5).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 11:00:00 AM or 6/12/2001 11:30:00 AM": "6/12/2001 11:30:00 AM has the smaller 10 min sampled avg (14.4 against 22.3).",
+          "between 6/11/2001 6:30:00 PM and 6/11/2001 10:40:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 10:40:00 PM has the smaller 10 min sampled avg (14 against 15).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 12:50:00 PM or 6/12/2001 9:00:00 AM": "6/12/2001 12:50:00 PM has the smaller 10 min sampled avg (12.5 against 23.6).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 9:50:00 PM or 6/12/2001 12:40:00 AM": "6/12/2001 12:40:00 AM has the smaller 10 min sampled avg (14.7 against 27.6).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 10:00:00 AM or 6/11/2001 7:10:00 PM": "6/12/2001 10:00:00 AM has the smaller 10 min sampled avg (13.3 against 16.7).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 4:10:00 PM or 6/11/2001 12:40:00 PM": "6/11/2001 12:40:00 PM has the smaller 10 min sampled avg (20.3 against 24.4).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 4:30:00 AM or 6/12/2001 11:00:00 AM": "6/12/2001 4:30:00 AM has the smaller 10 min sampled avg (9.3 against 11.3).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 4:00:00 PM or 6/12/2001 7:00:00 AM": "6/12/2001 7:00:00 AM has the smaller 10 min sampled avg (15.9 against 17.6).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 8:10:00 AM or 6/12/2001 10:40:00 PM": "6/12/2001 10:40:00 PM has the smaller 10 min sampled avg (23.1 against 28.5).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 11:10:00 AM or 6/11/2001 9:30:00 PM": "6/11/2001 9:30:00 PM has the smaller 10 min sampled avg (16 against 16.8).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 3:30:00 PM or 6/11/2001 10:10:00 PM": "6/11/2001 10:10:00 PM has the smaller 10 min sampled avg (15.5 against 26.9).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 2:20:00 AM or 6/12/2001 8:10:00 AM": "6/12/2001 2:20:00 AM has the smaller 10 min sampled avg (15.4 against 28.5).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 1:20:00 AM or 6/12/2001 2:40:00 PM": "6/12/2001 1:20:00 AM has the smaller 10 min sampled avg (14.5 against 21.9).",
+          "between 6/11/2001 3:00:00 PM and 6/12/2001 12:00:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 12:00:00 PM has the smaller 10 min sampled avg (10 against 29).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 9:50:00 PM or 6/11/2001 7:20:00 PM": "6/11/2001 7:20:00 PM has the smaller 10 min sampled avg (14.7 against 15.4).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 3:50:00 PM or 6/11/2001 5:00:00 PM": "6/11/2001 5:00:00 PM has the smaller 10 min sampled avg (17 against 27.1).",
+          "between 6/12/2001 9:10:00 PM and 6/12/2001 9:40:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 9:40:00 AM has the smaller 10 min sampled avg (14.9 against 25.2).",
+          "between 6/11/2001 6:10:00 PM and 6/11/2001 12:50:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 6:10:00 PM has the smaller 10 min sampled avg (18.6 against 21.5).",
+          "between 6/12/2001 9:00:00 PM and 6/12/2001 1:20:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 1:20:00 AM has the smaller 10 min sampled avg (14.5 against 24.9).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 6:20:00 AM or 6/11/2001 11:50:00 PM": "6/12/2001 6:20:00 AM has the smaller 10 min sampled avg (12.1 against 15.9).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 9:00:00 AM or 6/11/2001 4:20:00 PM": "6/11/2001 4:20:00 PM has the smaller 10 min sampled avg (11.4 against 23.6).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 2:30:00 PM or 6/12/2001 10:20:00 PM": "6/12/2001 2:30:00 PM has the smaller 10 min sampled avg (23.3 against 27.1).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 3:00:00 AM or 6/11/2001 2:40:00 PM": "6/12/2001 3:00:00 AM has the smaller 10 min sampled avg (15 against 26.3).",
+          "between 6/11/2001 9:30:00 PM and 6/12/2001 1:30:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 1:30:00 AM has the smaller 10 min sampled avg (15.1 against 16).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 10:40:00 PM or 6/12/2001 9:30:00 PM": "6/11/2001 10:40:00 PM has the smaller 10 min sampled avg (14 against 27.1).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 5:20:00 AM or 6/12/2001 11:10:00 AM": "6/12/2001 5:20:00 AM has the smaller 10 min sampled avg (8 against 16.8).",
+          "between 6/12/2001 3:30:00 AM and 6/12/2001 3:50:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 3:30:00 AM has the smaller 10 min sampled avg (11.8 against 27.1).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 11:40:00 PM or 6/12/2001 12:10:00 AM": "6/12/2001 12:10:00 AM has the smaller 10 min sampled avg (16.1 against 22.2).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 12:40:00 AM or 6/12/2001 10:50:00 AM": "6/12/2001 12:40:00 AM has the smaller 10 min sampled avg (14.7 against 18.3).",
+          "between 6/12/2001 4:50:00 PM and 6/12/2001 12:50:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 12:50:00 PM has the smaller 10 min sampled avg (12.5 against 27.5).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 8:40:00 AM or 6/12/2001 7:10:00 PM": "6/12/2001 7:10:00 PM has the smaller 10 min sampled avg (24.5 against 27.8).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 1:20:00 PM or 6/12/2001 6:20:00 PM": "6/11/2001 1:20:00 PM has the smaller 10 min sampled avg (21.3 against 30.2).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 1:30:00 AM or 6/12/2001 8:10:00 PM": "6/12/2001 1:30:00 AM has the smaller 10 min sampled avg (15.1 against 26.8).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 3:00:00 PM or 6/11/2001 11:00:00 AM": "6/11/2001 11:00:00 AM has the smaller 10 min sampled avg (22.3 against 24.6).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 8:10:00 PM or 6/12/2001 3:20:00 PM": "6/11/2001 8:10:00 PM has the smaller 10 min sampled avg (17.7 against 25).",
+          "between 6/11/2001 10:20:00 PM and 6/12/2001 2:20:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 2:20:00 AM has the smaller 10 min sampled avg (15.4 against 17.4).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 10:10:00 AM or 6/12/2001 7:10:00 AM": "6/12/2001 10:10:00 AM has the smaller 10 min sampled avg (10.7 against 19.6).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 12:00:00 PM or 6/12/2001 10:00:00 AM": "6/12/2001 12:00:00 PM has the smaller 10 min sampled avg (10 against 13.3).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 9:40:00 AM or 6/11/2001 5:50:00 PM": "6/12/2001 9:40:00 AM has the smaller 10 min sampled avg (14.9 against 17.5).",
+          "between 6/12/2001 8:00:00 AM and 6/12/2001 11:40:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 8:00:00 AM has the smaller 10 min sampled avg (17.2 against 22.2).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 11:50:00 AM or 6/11/2001 1:30:00 PM": "6/12/2001 11:50:00 AM has the smaller 10 min sampled avg (15.4 against 22.4).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 1:00:00 PM or 6/12/2001 3:30:00 AM": "6/12/2001 3:30:00 AM has the smaller 10 min sampled avg (11.8 against 21.3).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 2:40:00 PM or 6/11/2001 5:10:00 PM": "6/11/2001 5:10:00 PM has the smaller 10 min sampled avg (17.2 against 26.3).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 8:20:00 AM or 6/12/2001 2:30:00 PM": "6/12/2001 2:30:00 PM has the smaller 10 min sampled avg (23.3 against 29.9).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 12:10:00 PM or 6/12/2001 4:10:00 PM": "6/11/2001 12:10:00 PM has the smaller 10 min sampled avg (24 against 24.4).",
+          "between 6/12/2001 10:40:00 PM and 6/11/2001 4:30:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 4:30:00 PM has the smaller 10 min sampled avg (16.6 against 23.1).",
+          "between 6/12/2001 6:50:00 AM and 6/12/2001 8:20:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 6:50:00 AM has the smaller 10 min sampled avg (14.9 against 29.9).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 12:50:00 PM or 6/11/2001 9:00:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min sampled avg (18.1 against 21.5).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 6:00:00 PM or 6/11/2001 7:40:00 PM": "6/11/2001 7:40:00 PM has the smaller 10 min sampled avg (16 against 32.5).",
+          "between 6/12/2001 10:50:00 AM and 6/12/2001 3:00:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 10:50:00 AM has the smaller 10 min sampled avg (18.3 against 24.6).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 7:00:00 AM or 6/12/2001 6:50:00 AM": "6/12/2001 6:50:00 AM has the smaller 10 min sampled avg (14.9 against 15.9).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 5:00:00 PM or 6/12/2001 11:10:00 PM": "6/11/2001 5:00:00 PM has the smaller 10 min sampled avg (17 against 21.2).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 7:10:00 PM or 6/12/2001 9:00:00 PM": "6/12/2001 7:10:00 PM has the smaller 10 min sampled avg (24.5 against 24.9).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 12:10:00 AM or 6/12/2001 2:10:00 PM": "6/12/2001 12:10:00 AM has the smaller 10 min sampled avg (16.1 against 22.6).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 3:50:00 PM or 6/11/2001 8:10:00 PM": "6/11/2001 3:50:00 PM has the smaller 10 min sampled avg (17.1 against 17.7).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 5:50:00 PM or 6/12/2001 7:30:00 PM": "6/12/2001 7:30:00 PM has the smaller 10 min sampled avg (25.9 against 28.6).",
+          "which has the smaller 10 min sampled avg, 6/11/2001 9:00:00 PM or 6/11/2001 3:00:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min sampled avg (18.1 against 29).",
+          "between 6/11/2001 10:10:00 PM and 6/12/2001 10:10:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 10:10:00 PM has the smaller 10 min sampled avg (15.5 against 26.4).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 11:30:00 PM or 6/11/2001 6:30:00 PM": "6/11/2001 6:30:00 PM has the smaller 10 min sampled avg (15 against 21.6).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 7:20:00 PM or 6/12/2001 11:30:00 PM": "6/12/2001 11:30:00 PM has the smaller 10 min sampled avg (21.6 against 26.7).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 10:10:00 PM or 6/11/2001 1:20:00 PM": "6/11/2001 1:20:00 PM has the smaller 10 min sampled avg (21.3 against 26.4).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 7:30:00 PM or 6/12/2001 7:20:00 AM": "6/12/2001 7:20:00 AM has the smaller 10 min sampled avg (24.9 against 25.9).",
+          "between 6/12/2001 7:20:00 AM and 6/11/2001 12:10:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 12:10:00 PM has the smaller 10 min sampled avg (24 against 24.9).",
+          "between 6/11/2001 7:40:00 PM and 6/12/2001 7:20:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 7:40:00 PM has the smaller 10 min sampled avg (16 against 26.7).",
+          "whose 10 min sampled avg is smaller: 6/11/2001 9:10:00 PM or 6/12/2001 11:20:00 PM": "6/11/2001 9:10:00 PM has the smaller 10 min sampled avg (19.2 against 22.9).",
+          "between 6/12/2001 11:10:00 PM and 6/12/2001 9:50:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 9:50:00 AM has the smaller 10 min sampled avg (13.8 against 21.2).",
+          "whose 10 min sampled avg is smaller: 6/12/2001 5:30:00 PM or 6/12/2001 5:10:00 AM": "6/12/2001 5:10:00 AM has the smaller 10 min sampled avg (7.2 against 26.6).",
+          "between 6/12/2001 2:10:00 PM and 6/11/2001 3:50:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 3:50:00 PM has the smaller 10 min sampled avg (17.1 against 22.6).",
+          "which has the smaller 10 min sampled avg, 6/12/2001 7:10:00 AM or 6/11/2001 10:20:00 PM": "6/11/2001 10:20:00 PM has the smaller 10 min sampled avg (17.4 against 19.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-aa7954cb",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "avg"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "smaller: 6/11/2001 12:00:00 PM or 6/12/2001 9:20:00 AM": "6/12/2001 9:20:00 AM has the smaller 10 min sampled avg (18.6 against 24.8).",
+          "smaller: 6/12/2001 6:30:00 AM or 6/11/2001 1:00:00 PM": "6/12/2001 6:30:00 AM has the smaller 10 min sampled avg (15 against 21.3).",
+          "smaller: 6/11/2001 11:50:00 AM or 6/12/2001 11:50:00 AM": "6/12/2001 11:50:00 AM has the smaller 10 min sampled avg (15.4 against 25.2).",
+          "smaller: 6/12/2001 5:30:00 AM or 6/12/2001 3:30:00 PM": "6/12/2001 5:30:00 AM has the smaller 10 min sampled avg (7.9 against 26.9).",
+          "smaller: 6/12/2001 4:40:00 PM or 6/12/2001 8:30:00 AM": "6/12/2001 4:40:00 PM has the smaller 10 min sampled avg (28.5 against 30.9).",
+          "smaller: 6/12/2001 9:50:00 AM or 6/12/2001 4:30:00 AM": "6/12/2001 4:30:00 AM has the smaller 10 min sampled avg (9.3 against 13.8).",
+          "smaller: 6/11/2001 4:30:00 PM or 6/12/2001 6:00:00 PM": "6/11/2001 4:30:00 PM has the smaller 10 min sampled avg (16.6 against 32.5).",
+          "smaller: 6/12/2001 12:50:00 PM or 6/12/2001 9:00:00 AM": "6/12/2001 12:50:00 PM has the smaller 10 min sampled avg (12.5 against 23.6).",
+          "smaller: 6/12/2001 9:50:00 PM or 6/12/2001 12:40:00 AM": "6/12/2001 12:40:00 AM has the smaller 10 min sampled avg (14.7 against 27.6).",
+          "smaller: 6/11/2001 4:00:00 PM or 6/12/2001 7:00:00 AM": "6/12/2001 7:00:00 AM has the smaller 10 min sampled avg (15.9 against 17.6).",
+          "smaller: 6/12/2001 2:20:00 AM or 6/12/2001 8:10:00 AM": "6/12/2001 2:20:00 AM has the smaller 10 min sampled avg (15.4 against 28.5).",
+          "smaller: 6/12/2001 1:20:00 AM or 6/12/2001 2:40:00 PM": "6/12/2001 1:20:00 AM has the smaller 10 min sampled avg (14.5 against 21.9).",
+          "smaller: 6/11/2001 9:50:00 PM or 6/11/2001 7:20:00 PM": "6/11/2001 7:20:00 PM has the smaller 10 min sampled avg (14.7 against 15.4).",
+          "smaller: 6/12/2001 3:50:00 PM or 6/11/2001 5:00:00 PM": "6/11/2001 5:00:00 PM has the smaller 10 min sampled avg (17 against 27.1).",
+          "smaller: 6/12/2001 3:00:00 AM or 6/11/2001 2:40:00 PM": "6/12/2001 3:00:00 AM has the smaller 10 min sampled avg (15 against 26.3).",
+          "smaller: 6/11/2001 10:40:00 PM or 6/12/2001 9:30:00 PM": "6/11/2001 10:40:00 PM has the smaller 10 min sampled avg (14 against 27.1).",
+          "smaller: 6/12/2001 5:20:00 AM or 6/12/2001 11:10:00 AM": "6/12/2001 5:20:00 AM has the smaller 10 min sampled avg (8 against 16.8).",
+          "smaller: 6/12/2001 11:40:00 PM or 6/12/2001 12:10:00 AM": "6/12/2001 12:10:00 AM has the smaller 10 min sampled avg (16.1 against 22.2).",
+          "smaller: 6/12/2001 8:40:00 AM or 6/12/2001 7:10:00 PM": "6/12/2001 7:10:00 PM has the smaller 10 min sampled avg (24.5 against 27.8).",
+          "smaller: 6/12/2001 1:30:00 AM or 6/12/2001 8:10:00 PM": "6/12/2001 1:30:00 AM has the smaller 10 min sampled avg (15.1 against 26.8).",
+          "smaller: 6/12/2001 3:00:00 PM or 6/11/2001 11:00:00 AM": "6/11/2001 11:00:00 AM has the smaller 10 min sampled avg (22.3 against 24.6).",
+          "smaller: 6/12/2001 10:10:00 AM or 6/12/2001 7:10:00 AM": "6/12/2001 10:10:00 AM has the smaller 10 min sampled avg (10.7 against 19.6).",
+          "smaller: 6/12/2001 12:00:00 PM or 6/12/2001 10:00:00 AM": "6/12/2001 12:00:00 PM has the smaller 10 min sampled avg (10 against 13.3).",
+          "smaller: 6/12/2001 9:40:00 AM or 6/11/2001 5:50:00 PM": "6/12/2001 9:40:00 AM has the smaller 10 min sampled avg (14.9 against 17.5).",
+          "smaller: 6/12/2001 8:20:00 AM or 6/12/2001 2:30:00 PM": "6/12/2001 2:30:00 PM has the smaller 10 min sampled avg (23.3 against 29.9).",
+          "smaller: 6/11/2001 12:10:00 PM or 6/12/2001 4:10:00 PM": "6/11/2001 12:10:00 PM has the smaller 10 min sampled avg (24 against 24.4).",
+          "smaller: 6/11/2001 12:50:00 PM or 6/11/2001 9:00:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min sampled avg (18.1 against 21.5).",
+          "smaller: 6/11/2001 3:50:00 PM or 6/11/2001 8:10:00 PM": "6/11/2001 3:50:00 PM has the smaller 10 min sampled avg (17.1 against 17.7).",
+          "smaller: 6/12/2001 5:50:00 PM or 6/12/2001 7:30:00 PM": "6/12/2001 7:30:00 PM has the smaller 10 min sampled avg (25.9 against 28.6).",
+          "smaller: 6/12/2001 7:20:00 PM or 6/12/2001 11:30:00 PM": "6/12/2001 11:30:00 PM has the smaller 10 min sampled avg (21.6 against 26.7).",
+          "smaller: 6/12/2001 10:10:00 PM or 6/11/2001 1:20:00 PM": "6/11/2001 1:20:00 PM has the smaller 10 min sampled avg (21.3 against 26.4).",
+          "smaller: 6/11/2001 9:10:00 PM or 6/12/2001 11:20:00 PM": "6/11/2001 9:10:00 PM has the smaller 10 min sampled avg (19.2 against 22.9).",
+          "smaller: 6/12/2001 5:30:00 PM or 6/12/2001 5:10:00 AM": "6/12/2001 5:10:00 AM has the smaller 10 min sampled avg (7.2 against 26.6)."
+        }
+      },
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0c435d96",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "pm"
+          ]
+        ],
+        [
+          "has",
+          "between"
+        ],
+        [
+          "has",
+          "lesser"
+        ],
+        [
+          "has",
+          "sampled"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " min sampled ",
+            {
+              "slot": 2
+            },
+            " (",
+            {
+              "slot": 3
+            },
+            " against ",
+            {
+              "slot": 4
+            },
+            ")."
+          ]
+        },
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "sense.lastWord"
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+          },
+          {
+            "lit": "time"
+          },
+          {
+            "lit": "10 min sampled avg"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+          },
+          {
+            "lit": "time"
+          },
+          {
+            "lit": "10 min sampled avg"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 55,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0568ed95",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 11:50:00 AM or 6/12/2001 11:50:00 AM": "6/12/2001 11:50:00 AM has the smaller 10 min sampled avg (15.4 against 25.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-06ae83b5",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 11:50:00 AM or 6/11/2001 1:30:00 PM": "6/12/2001 11:50:00 AM has the smaller 10 min sampled avg (15.4 against 22.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-07ab8a4f",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 9:20:00 AM or 6/12/2001 9:10:00 PM": "6/12/2001 9:20:00 AM has the smaller 10 min sampled avg (18.6 against 25.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-07f29dd6",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 10:20:00 PM and 6/12/2001 2:20:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 2:20:00 AM has the smaller 10 min sampled avg (15.4 against 17.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0bc2ff0b",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 6:10:00 PM and 6/11/2001 12:50:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 6:10:00 PM has the smaller 10 min sampled avg (18.6 against 21.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0c1ff835",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 4:50:00 PM and 6/12/2001 12:50:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 12:50:00 PM has the smaller 10 min sampled avg (12.5 against 27.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-167f6e18",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 8:10:00 PM or 6/12/2001 3:20:00 PM": "6/11/2001 8:10:00 PM has the smaller 10 min sampled avg (17.7 against 25)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-169cb986",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 11:40:00 PM or 6/12/2001 12:10:00 AM": "6/12/2001 12:10:00 AM has the smaller 10 min sampled avg (16.1 against 22.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-16ed29da",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 8:10:00 PM or 6/11/2001 11:30:00 AM": "6/11/2001 11:30:00 AM has the smaller 10 min sampled avg (22 against 26.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-16f565d9",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 4:50:00 AM and 6/12/2001 9:50:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 4:50:00 AM has the smaller 10 min sampled avg (9.5 against 27.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-18943192",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 11:20:00 PM or 6/12/2001 9:30:00 AM": "6/12/2001 9:30:00 AM has the smaller 10 min sampled avg (12.1 against 22.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1896ffde",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 3:00:00 PM and 6/12/2001 12:00:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 12:00:00 PM has the smaller 10 min sampled avg (10 against 29)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-192974e0",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 1:20:00 PM or 6/12/2001 6:20:00 PM": "6/11/2001 1:20:00 PM has the smaller 10 min sampled avg (21.3 against 30.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-19a57fd1",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 7:10:00 PM and 6/12/2001 10:10:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 10:10:00 AM has the smaller 10 min sampled avg (10.7 against 16.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1a0b472e",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 10:40:00 PM and 6/11/2001 4:30:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 4:30:00 PM has the smaller 10 min sampled avg (16.6 against 23.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1c3908cf",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 1:30:00 PM and 6/12/2001 3:00:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 3:00:00 AM has the smaller 10 min sampled avg (15 against 22.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2837df8f",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 9:10:00 PM or 6/12/2001 11:20:00 PM": "6/11/2001 9:10:00 PM has the smaller 10 min sampled avg (19.2 against 22.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-28f68e99",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 11:50:00 PM and 6/11/2001 12:00:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 11:50:00 PM has the smaller 10 min sampled avg (15.9 against 24.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-318534db",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 3:00:00 PM or 6/11/2001 11:00:00 AM": "6/11/2001 11:00:00 AM has the smaller 10 min sampled avg (22.3 against 24.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3376367d",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 3:00:00 AM or 6/11/2001 2:40:00 PM": "6/12/2001 3:00:00 AM has the smaller 10 min sampled avg (15 against 26.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-346c8b9d",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 10:10:00 AM or 6/12/2001 7:10:00 AM": "6/12/2001 10:10:00 AM has the smaller 10 min sampled avg (10.7 against 19.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-372169f4",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 8:40:00 PM and 6/11/2001 9:10:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 9:10:00 PM has the smaller 10 min sampled avg (19.2 against 25.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4156647e",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 10:40:00 PM or 6/12/2001 9:30:00 PM": "6/11/2001 10:40:00 PM has the smaller 10 min sampled avg (14 against 27.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-45bb2d5f",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 3:50:00 PM or 6/11/2001 5:00:00 PM": "6/11/2001 5:00:00 PM has the smaller 10 min sampled avg (17 against 27.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-461e4968",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 5:00:00 PM or 6/12/2001 11:10:00 PM": "6/11/2001 5:00:00 PM has the smaller 10 min sampled avg (17 against 21.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4d4486f8",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 9:30:00 PM or 6/12/2001 4:50:00 PM": "6/12/2001 9:30:00 PM has the smaller 10 min sampled avg (27.1 against 27.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-53f22c93",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 5:50:00 PM or 6/12/2001 7:30:00 PM": "6/12/2001 7:30:00 PM has the smaller 10 min sampled avg (25.9 against 28.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5490f574",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 11:10:00 AM or 6/11/2001 9:30:00 PM": "6/11/2001 9:30:00 PM has the smaller 10 min sampled avg (16 against 16.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-553b2885",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 3:20:00 PM and 6/11/2001 9:50:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 9:50:00 PM has the smaller 10 min sampled avg (15.4 against 25)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-56d6c554",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 7:40:00 PM and 6/12/2001 7:20:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 7:40:00 PM has the smaller 10 min sampled avg (16 against 26.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-57ca7c8e",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 10:10:00 PM and 6/12/2001 10:10:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 10:10:00 PM has the smaller 10 min sampled avg (15.5 against 26.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5b6c3dea",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 5:20:00 PM and 6/12/2001 8:40:00 AM, which has the lesser 10 min sampled avg": "6/11/2001 5:20:00 PM has the smaller 10 min sampled avg (17.1 against 27.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5b86b9f6",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 9:50:00 PM or 6/11/2001 7:20:00 PM": "6/11/2001 7:20:00 PM has the smaller 10 min sampled avg (14.7 against 15.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5de796e0",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 9:10:00 PM and 6/12/2001 9:40:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 9:40:00 AM has the smaller 10 min sampled avg (14.9 against 25.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5f37d12e",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 9:30:00 PM and 6/12/2001 1:30:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 1:30:00 AM has the smaller 10 min sampled avg (15.1 against 16)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5f8faf37",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 10:00:00 AM or 6/11/2001 7:10:00 PM": "6/12/2001 10:00:00 AM has the smaller 10 min sampled avg (13.3 against 16.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-612291b2",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 8:20:00 AM or 6/12/2001 2:30:00 PM": "6/12/2001 2:30:00 PM has the smaller 10 min sampled avg (23.3 against 29.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6675f3a3",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 4:40:00 PM or 6/12/2001 8:30:00 AM": "6/12/2001 4:40:00 PM has the smaller 10 min sampled avg (28.5 against 30.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6ab949bf",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 8:10:00 AM or 6/12/2001 10:40:00 PM": "6/12/2001 10:40:00 PM has the smaller 10 min sampled avg (23.1 against 28.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6b621f71",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 1:30:00 AM or 6/12/2001 8:10:00 PM": "6/12/2001 1:30:00 AM has the smaller 10 min sampled avg (15.1 against 26.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6fd4f7cc",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 4:00:00 PM or 6/12/2001 7:00:00 AM": "6/12/2001 7:00:00 AM has the smaller 10 min sampled avg (15.9 against 17.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-70b29f18",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 8:30:00 AM or 6/12/2001 8:40:00 PM": "6/12/2001 8:40:00 PM has the smaller 10 min sampled avg (25.5 against 30.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7125f222",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 8:00:00 AM and 6/12/2001 11:40:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 8:00:00 AM has the smaller 10 min sampled avg (17.2 against 22.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-73fcce1e",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 6:20:00 PM and 6/12/2001 5:20:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 5:20:00 AM has the smaller 10 min sampled avg (8 against 30.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-762e803f",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 9:50:00 AM or 6/12/2001 4:30:00 AM": "6/12/2001 4:30:00 AM has the smaller 10 min sampled avg (9.3 against 13.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-76ce765b",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 2:20:00 AM or 6/12/2001 8:10:00 AM": "6/12/2001 2:20:00 AM has the smaller 10 min sampled avg (15.4 against 28.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7b4646b4",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 4:30:00 PM or 6/12/2001 6:00:00 PM": "6/11/2001 4:30:00 PM has the smaller 10 min sampled avg (16.6 against 32.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-800aaa59",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 7:10:00 AM or 6/11/2001 10:20:00 PM": "6/11/2001 10:20:00 PM has the smaller 10 min sampled avg (17.4 against 19.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-811322f5",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 7:00:00 AM or 6/12/2001 6:50:00 AM": "6/12/2001 6:50:00 AM has the smaller 10 min sampled avg (14.9 against 15.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-85682b8d",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 7:30:00 PM or 6/12/2001 7:20:00 AM": "6/12/2001 7:20:00 AM has the smaller 10 min sampled avg (24.9 against 25.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-87542355",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 7:20:00 AM and 6/11/2001 12:10:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 12:10:00 PM has the smaller 10 min sampled avg (24 against 24.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8d6b2f1e",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 9:50:00 PM or 6/12/2001 12:40:00 AM": "6/12/2001 12:40:00 AM has the smaller 10 min sampled avg (14.7 against 27.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9892397a",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 1:00:00 PM or 6/12/2001 3:30:00 AM": "6/12/2001 3:30:00 AM has the smaller 10 min sampled avg (11.8 against 21.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9b1d3672",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 12:40:00 AM or 6/12/2001 10:50:00 AM": "6/12/2001 12:40:00 AM has the smaller 10 min sampled avg (14.7 against 18.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9f7712bf",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 7:20:00 PM or 6/11/2001 5:20:00 PM": "6/11/2001 7:20:00 PM has the smaller 10 min sampled avg (14.7 against 17.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a1bd75af",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 6:20:00 AM or 6/11/2001 11:50:00 PM": "6/12/2001 6:20:00 AM has the smaller 10 min sampled avg (12.1 against 15.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a26a95fd",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 12:40:00 PM and 6/12/2001 4:40:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 12:40:00 PM has the smaller 10 min sampled avg (20.3 against 28.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a558ea1b",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 9:00:00 AM or 6/11/2001 4:20:00 PM": "6/11/2001 4:20:00 PM has the smaller 10 min sampled avg (11.4 against 23.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a59775ce",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 5:10:00 AM or 6/11/2001 7:00:00 PM": "6/12/2001 5:10:00 AM has the smaller 10 min sampled avg (7.2 against 18.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a81ff42b",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 4:20:00 PM and 6/12/2001 5:30:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 4:20:00 PM has the smaller 10 min sampled avg (11.4 against 26.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a927a39b",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 11:30:00 AM and 6/11/2001 11:50:00 AM, which has the lesser 10 min sampled avg": "6/11/2001 11:30:00 AM has the smaller 10 min sampled avg (22 against 25.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b11a961f",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 9:40:00 AM or 6/11/2001 5:50:00 PM": "6/12/2001 9:40:00 AM has the smaller 10 min sampled avg (14.9 against 17.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b548fafc",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 10:20:00 PM and 6/12/2001 5:30:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 5:30:00 AM has the smaller 10 min sampled avg (7.9 against 27.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b632c1c7",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 10:50:00 AM and 6/12/2001 3:00:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 10:50:00 AM has the smaller 10 min sampled avg (18.3 against 24.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b7d067eb",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 11:10:00 PM and 6/12/2001 9:50:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 9:50:00 AM has the smaller 10 min sampled avg (13.8 against 21.2)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ba44a832",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 4:10:00 PM or 6/11/2001 12:40:00 PM": "6/11/2001 12:40:00 PM has the smaller 10 min sampled avg (20.3 against 24.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bbd1ba1e",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 6:30:00 AM or 6/11/2001 1:00:00 PM": "6/12/2001 6:30:00 AM has the smaller 10 min sampled avg (15 against 21.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bf4d56da",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 3:50:00 PM or 6/11/2001 8:10:00 PM": "6/11/2001 3:50:00 PM has the smaller 10 min sampled avg (17.1 against 17.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c3c68e89",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 3:30:00 PM or 6/11/2001 10:10:00 PM": "6/11/2001 10:10:00 PM has the smaller 10 min sampled avg (15.5 against 26.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c3fac75b",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 2:30:00 PM or 6/12/2001 10:20:00 PM": "6/12/2001 2:30:00 PM has the smaller 10 min sampled avg (23.3 against 27.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c4efb8f8",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 10:10:00 PM or 6/11/2001 1:20:00 PM": "6/11/2001 1:20:00 PM has the smaller 10 min sampled avg (21.3 against 26.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ce06a599",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 5:30:00 AM or 6/12/2001 3:30:00 PM": "6/12/2001 5:30:00 AM has the smaller 10 min sampled avg (7.9 against 26.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cfbfa8c8",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 9:00:00 PM or 6/11/2001 3:00:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min sampled avg (18.1 against 29)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d2008188",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 2:40:00 PM or 6/11/2001 5:10:00 PM": "6/11/2001 5:10:00 PM has the smaller 10 min sampled avg (17.2 against 26.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d24cac6e",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 8:40:00 AM or 6/12/2001 7:10:00 PM": "6/12/2001 7:10:00 PM has the smaller 10 min sampled avg (24.5 against 27.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d25a9d6d",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 1:20:00 AM or 6/12/2001 2:40:00 PM": "6/12/2001 1:20:00 AM has the smaller 10 min sampled avg (14.5 against 21.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d2f1513c",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 12:50:00 PM or 6/12/2001 9:00:00 AM": "6/12/2001 12:50:00 PM has the smaller 10 min sampled avg (12.5 against 23.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d5c35bde",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 7:20:00 PM or 6/12/2001 11:30:00 PM": "6/12/2001 11:30:00 PM has the smaller 10 min sampled avg (21.6 against 26.7)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d648f8a6",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 6:00:00 PM or 6/11/2001 7:40:00 PM": "6/11/2001 7:40:00 PM has the smaller 10 min sampled avg (16 against 32.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d77f7e3f",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 11:00:00 AM or 6/12/2001 11:30:00 AM": "6/12/2001 11:30:00 AM has the smaller 10 min sampled avg (14.4 against 22.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-db50aa0d",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 11:30:00 AM and 6/12/2001 6:30:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 11:30:00 AM has the smaller 10 min sampled avg (14.4 against 15)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dd4dc1a0",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 5:20:00 AM or 6/12/2001 11:10:00 AM": "6/12/2001 5:20:00 AM has the smaller 10 min sampled avg (8 against 16.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e1bb1a87",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 12:00:00 PM or 6/12/2001 9:20:00 AM": "6/12/2001 9:20:00 AM has the smaller 10 min sampled avg (18.6 against 24.8)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e2f8df98",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 4:30:00 AM or 6/12/2001 11:00:00 AM": "6/12/2001 4:30:00 AM has the smaller 10 min sampled avg (9.3 against 11.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e4228afa",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 9:00:00 PM and 6/12/2001 1:20:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 1:20:00 AM has the smaller 10 min sampled avg (14.5 against 24.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e501b0ab",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 2:40:00 PM or 6/11/2001 6:10:00 PM": "6/11/2001 6:10:00 PM has the smaller 10 min sampled avg (18.6 against 21.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e674a7bf",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 9:30:00 AM and 6/11/2001 4:00:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 9:30:00 AM has the smaller 10 min sampled avg (12.1 against 17.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e983a2d7",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 3:20:00 AM and 6/12/2001 5:50:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 3:20:00 AM has the smaller 10 min sampled avg (11.3 against 28.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e989aa43",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 11:30:00 PM or 6/11/2001 6:30:00 PM": "6/11/2001 6:30:00 PM has the smaller 10 min sampled avg (15 against 21.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e9a1bb62",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 6:50:00 AM and 6/12/2001 8:20:00 AM, which has the lesser 10 min sampled avg": "6/12/2001 6:50:00 AM has the smaller 10 min sampled avg (14.9 against 29.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ed7e46e7",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 12:00:00 PM or 6/12/2001 10:00:00 AM": "6/12/2001 12:00:00 PM has the smaller 10 min sampled avg (10 against 13.3)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f1bd9427",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 7:10:00 PM or 6/12/2001 9:00:00 PM": "6/12/2001 7:10:00 PM has the smaller 10 min sampled avg (24.5 against 24.9)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f22111fa",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/12/2001 12:10:00 AM or 6/12/2001 2:10:00 PM": "6/12/2001 12:10:00 AM has the smaller 10 min sampled avg (16.1 against 22.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f3089ce5",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 12:10:00 PM or 6/12/2001 4:10:00 PM": "6/11/2001 12:10:00 PM has the smaller 10 min sampled avg (24 against 24.4)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f31898fa",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 3:30:00 AM and 6/12/2001 3:50:00 PM, which has the lesser 10 min sampled avg": "6/12/2001 3:30:00 AM has the smaller 10 min sampled avg (11.8 against 27.1)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f5276653",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/11/2001 6:30:00 PM and 6/11/2001 10:40:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 10:40:00 PM has the smaller 10 min sampled avg (14 against 15)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f67c945c",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/11/2001 12:50:00 PM or 6/11/2001 9:00:00 PM": "6/11/2001 9:00:00 PM has the smaller 10 min sampled avg (18.1 against 21.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f8639378",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "has",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the smaller 10 min sampled avg, 6/11/2001 5:50:00 PM or 6/12/2001 4:50:00 AM": "6/12/2001 4:50:00 AM has the smaller 10 min sampled avg (9.5 against 17.5)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ff492b8f",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "between",
+            "has",
+            "lesser",
+            "min",
+            "pm",
+            "sampled"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "between 6/12/2001 2:10:00 PM and 6/11/2001 3:50:00 PM, which has the lesser 10 min sampled avg": "6/11/2001 3:50:00 PM has the smaller 10 min sampled avg (17.1 against 22.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ffe673ec",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avg",
+            "min",
+            "pm",
+            "sampled",
+            "smaller"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose 10 min sampled avg is smaller: 6/12/2001 5:30:00 PM or 6/12/2001 5:10:00 AM": "6/12/2001 5:10:00 AM has the smaller 10 min sampled avg (7.2 against 26.6)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
     "5c49de45c634aa00d0413b76f43c533703ba9f498e79aa55092de311bd49a325",
-    "28090ebf0226df64f26d89835a919ff3e4a31c337fb19ec1a96dcb86985ca0a9"
+    "28090ebf0226df64f26d89835a919ff3e4a31c337fb19ec1a96dcb86985ca0a9",
+    "6dd81ad423c84497554f0c4e33adf2d4edca352dfd48e840522f81535592994d"
   ]
 }

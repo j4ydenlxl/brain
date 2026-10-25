@@ -2,28 +2,28 @@
   "task": "lukes-iso3166-country-to-numeric-code",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:31:10.780Z",
+  "at": "2026-10-25T16:05:48.807Z",
   "stats": {
-    "generated": 160589,
-    "distinct": 122033,
-    "kept": 612,
-    "know": 29,
+    "generated": 200253,
+    "distinct": 61104,
+    "kept": 620,
+    "know": 36,
     "byFamily": {
       "memory": 84,
-      "compute": 50,
+      "compute": 58,
       "transform": 237,
       "aggregate": 188,
       "sense": 53
     },
     "bySource": {
-      "parent": 589,
-      "enum": 23
+      "parent": 571,
+      "enum": 49
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 52725,
-    "cellsPerSecond": 3046,
+    "ms": 112371,
+    "cellsPerSecond": 1782,
     "capped": null,
     "packs": [
       "corpora-programming-languages",
@@ -32,13 +32,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "ebdf893fb873f0535956469fb96289ff36b4857c1103b07d801d8e81382d11ff",
-      "round": 1,
-      "at": 212798,
+      "basis": "adb0de728cd5cb3089ed4e5cb1c9b647b1ddf87f52020249d58006da29394dc0",
+      "round": 0,
+      "at": 120592,
       "maxCost": 7,
       "done": false,
-      "cost": 7,
-      "prim": "aggregate.commonLetter",
+      "cost": 6,
+      "prim": "compute.root",
       "tpl": 1679
     }
   },
@@ -809,6 +809,68 @@
       }
     },
     {
+      "id": "n-1e6c02de",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "lowest terms",
+            "montserrat",
+            "nth",
+            "number of consonants",
+            "reduce the fraction",
+            "simplest form",
+            "simplify the fraction"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "compute.fraction",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-programming-languages"
+                },
+                {
+                  "lit": "item"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-21f24c2f",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -1186,6 +1248,69 @@
       }
     },
     {
+      "id": "n-39ac5e13",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "growth rate",
+            "how many consonants",
+            "item number",
+            "montserrat",
+            "nth",
+            "number of consonants",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "percentage change"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.percentChange",
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-programming-languages"
+                },
+                {
+                  "lit": "item"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3ef2d038",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -1374,6 +1499,130 @@
       }
     },
     {
+      "id": "n-78ace0a5",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "montserrat",
+            "nth",
+            "number of consonants",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 10
+          },
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-programming-languages"
+                },
+                {
+                  "lit": "item"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7c6c7724",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many vowels",
+            "item number",
+            "lowest terms",
+            "montserrat",
+            "nth",
+            "number of vowels",
+            "reduce the fraction",
+            "simplest form",
+            "simplify the fraction",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-programming-languages"
+                },
+                {
+                  "lit": "item"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7e3456ce",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -1488,6 +1737,69 @@
               }
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9a260b61",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "growth rate",
+            "how many vowels",
+            "item number",
+            "montserrat",
+            "nth",
+            "number of vowels",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "percentage change",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.percentChange",
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-programming-languages"
+                },
+                {
+                  "lit": "item"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 12
+          }
         ]
       ],
       "mem": null,
@@ -2003,6 +2315,68 @@
       }
     },
     {
+      "id": "n-f80131d2",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many vowels",
+            "item number",
+            "lowest terms",
+            "montserrat",
+            "nth",
+            "number of vowels",
+            "reduce the fraction",
+            "simplest form",
+            "simplify the fraction",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "compute.fraction",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-programming-languages"
+                },
+                {
+                  "lit": "item"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-fbe28d00",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -2053,6 +2427,68 @@
           {
             "lit": 12
           }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fc0df427",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "how many vowels",
+            "item number",
+            "montserrat",
+            "nth",
+            "number of vowels",
+            "percent is",
+            "vowel count",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 10
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-programming-languages"
+                },
+                {
+                  "lit": "item"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
         ]
       ],
       "mem": null,
@@ -7049,6 +7485,53 @@
             "aggregate.consonants",
             [
               "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-202853b9",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cubed",
+            "guam",
+            "increase by",
+            "plus tax",
+            "raise by",
+            "to the third power",
+            "with tax"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.increase",
+          {
+            "lit": 100
+          },
+          [
+            "transform.cube",
+            [
+              "sense.wordCount"
             ]
           ]
         ]
@@ -32982,6 +33465,7 @@
   ],
   "stages": [
     "48c67d9ad720a9427abc03732abba83a82a16b482407b57b2be5fe6c20158d40",
-    "a1f8e8a12311d45814a99db49d68737c45ab20908871727b2178dfa21d09f6a2"
+    "a1f8e8a12311d45814a99db49d68737c45ab20908871727b2178dfa21d09f6a2",
+    "b7a2fb86d8e69b1b45333714508cda7a43b5049bf1c6bcfe97dbc648dd34cc91"
   ]
 }
