@@ -2,27 +2,29 @@
   "task": "samayo-tld-country-to-top-level-domain",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T04:14:01.990Z",
+  "at": "2026-10-27T13:02:44.272Z",
   "stats": {
-    "generated": 160936,
-    "distinct": 76726,
-    "kept": 934,
-    "know": 813,
+    "generated": 200255,
+    "distinct": 87428,
+    "kept": 936,
+    "know": 815,
     "byFamily": {
       "memory": 83,
-      "transform": 571,
+      "transform": 572,
       "know": 46,
-      "aggregate": 233,
+      "aggregate": 234,
       "sense": 1
     },
     "bySource": {
-      "parent": 934
+      "parent": 933,
+      "enum": 1,
+      "template": 2
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 49691,
-    "cellsPerSecond": 3239,
+    "ms": 110281,
+    "cellsPerSecond": 1816,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -31,13 +33,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "5e6502cbaba5df98f0c61a0b81c7fc5fe40ddbec8737c397d7692de1de7d04ca",
-      "round": 2,
-      "at": 354763,
+      "basis": "1f3309981e3106bb955ee1bdc39ca285352e77d9d73348905b0fd42bf24a235b",
+      "round": 0,
+      "at": 99404,
       "maxCost": 7,
       "done": false,
-      "cost": 7,
-      "prim": "compute.asPercent",
+      "cost": 6,
+      "prim": "transform.double",
       "tpl": 1136
     }
   },
@@ -2813,7 +2815,7 @@
     {
       "id": "n-7c3dcb05",
       "task": "samayo-tld-country-to-top-level-domain",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -6823,6 +6825,85 @@
           "sense.after",
           {
             "lit": "domain"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9837687e",
+      "task": "samayo-tld-country-to-top-level-domain",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "guam",
+            "item number",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            "-",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " of Guam is .gu."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ]
+        ],
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
           }
         ]
       ],
@@ -32037,6 +32118,102 @@
             ],
             {
               "lit": 1
+            }
+          ]
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ]
+        ],
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 18,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-34d53283",
+      "task": "samayo-tld-country-to-top-level-domain",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "join",
+            "joined with",
+            "kitts",
+            "nth",
+            "position",
+            "separated by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            "-",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " of Saint Kitts and Nevis is .kn."
+          ]
+        },
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "datasets-country-codes"
+            },
+            {
+              "lit": "currency code"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
             }
           ]
         ],
@@ -89842,6 +90019,7 @@
   "stages": [
     "70d06eff08a6f9139943dff409976a410e73f75fcc087ce3d0c61c9f3ed39519",
     "e33582e311f7afb53cc5689418ba3835e5391f0ecf18e248cb74acd406869dbe",
-    "7bb02dacae06681cad579d69865b6c9a0818d3cfc2db379212a396edb70e6fa3"
+    "7bb02dacae06681cad579d69865b6c9a0818d3cfc2db379212a396edb70e6fa3",
+    "42a2e9ad010dde5c4a56650c8b0d17e8cfee0f210503d0770ab5461ca15ef3d6"
   ]
 }

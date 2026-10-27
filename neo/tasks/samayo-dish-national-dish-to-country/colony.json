@@ -2,30 +2,28 @@
   "task": "samayo-dish-national-dish-to-country",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-27T03:59:16.858Z",
+  "at": "2026-10-27T12:56:00.541Z",
   "stats": {
-    "generated": 200215,
-    "distinct": 87263,
-    "kept": 1794,
-    "know": 921,
+    "generated": 161830,
+    "distinct": 130622,
+    "kept": 1800,
+    "know": 927,
     "byFamily": {
       "memory": 84,
-      "transform": 1503,
+      "transform": 1509,
       "iterate": 16,
       "aggregate": 140,
       "sense": 51
     },
     "bySource": {
-      "parent": 1431,
-      "enum": 327,
-      "template": 35,
-      "memory": 1
+      "parent": 1450,
+      "enum": 350
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 229279,
-    "cellsPerSecond": 873,
+    "ms": 218851,
+    "cellsPerSecond": 739,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "3cdfe40b906094fdeace12611fe9d72318c3440eaf81e97bd84dd8f657f2cfc0",
-      "round": 0,
-      "at": 108749,
+      "round": 1,
+      "at": 215817,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "iterate.powers",
+      "cost": 7,
+      "prim": "transform.padStart",
       "tpl": 1521
     }
   },
@@ -18633,6 +18631,74 @@
               "sense.after",
               {
                 "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3aa23319",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.acronym",
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
               }
             ]
           ]
@@ -60883,6 +60949,95 @@
       }
     },
     {
+      "id": "n-ac7175c0",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.acronym",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "cryptocurrency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 18,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ac74d52e",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -65478,6 +65633,77 @@
       }
     },
     {
+      "id": "n-04145fb9",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-27699b16",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -66535,6 +66761,222 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9bd0aa49",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b0e0c0c9",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b683ec30",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -118060,6 +118502,7 @@
     "29394e20b1b3b2f74b5c8f833c7653b501fcef49c3496e7d4741b1f4a127ddfe",
     "6bbff5cdd3cd6e051c73f2611a2423d3c49c84e0b6b5f704f6210cf834cdb6ca",
     "c40f8d750c20cc07d3c969014f3fe62ec2beba1cec26246dde0c94ac2140bd8b",
-    "1bf75756bdfef4aa709c4e7254175b8999b54da61547c0e3468c3389b7a9c892"
+    "1bf75756bdfef4aa709c4e7254175b8999b54da61547c0e3468c3389b7a9c892",
+    "f937e699487708796ea330959d5f3b7c3a2854df3d73695c921779bab2c58094"
   ]
 }
