@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "b6ee7568fb12a06f6629e65b0632470e630d7e234ea4110c9648b5d2c44f49e8";
+const VERSION = "296fb04134e200026048da2e7b08283452818c48b4286f22e569b0a9585b4e88";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"c5aa8d86dd5168e8fc82274f6ae8e5a4b9a71c58100cdeea03522c075ba81557"},
+  {"url":"/organism/cells.json","sha256":"9e076f93e3b86365d1a3a14f512aa138a2afc444cb90aaacb4c57e25bcdac9e0"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -478,10 +478,11 @@ const PRECACHE = [
   {"url":"/organism/cells/lower-error-bound-of-3341-compare-neo-g10.mjs","sha256":"989a8cd917ee7ce6821b5b496f0511d842315145e223c6c81428f5c47db42b60"},
   {"url":"/organism/cells/us-of-date-3976-compare-neo-g10.mjs","sha256":"1abb581d04a2b6f772470c776de4b2b39ad69825b4c54846fac6fa28ef8d74bc"},
   {"url":"/organism/cells/cpi-of-year-month-f845-larger-neo-g10.mjs","sha256":"58fdaa418e95f85270eb29bf7c7b9b7d38582b6a2b35811a5623e0ace01c5ae9"},
+  {"url":"/organism/cells/discards-of-year-2783-compare-neo-g10.mjs","sha256":"53869aec305909ef907e560c34925deeee242b1b3dd3c9b534cef3a8d774fb52"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"8cce1d454bab4c21c0e6f93084430dafac713248bb24ce6cd8924d139635e7ae"}
+  {"url":"/organism/era/tasks.json","sha256":"0dfe68b8451f3324253aa4386583abdfecdba65dc6f3295421bb652db1164636"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -687,7 +688,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/description-of-title-7b38-rev.json","sha256":"6c5ee7ed8bfee40fa50207604a076ef11b0a2143669bb5c854538fb19f710b70"},
   {"url":"/organism/era/tasks/description-of-title-a4af.json","sha256":"d389f696a99d0b89e4d2446ffb68aadb9a986911b3b449d7205fd66d188b1d70"},
   {"url":"/organism/era/tasks/director-of-title-8f45.json","sha256":"e5c7f67953fb85428fac63079123b98b52f682d4fe7eb8e84bbad7ae24f14c6e"},
-  {"url":"/organism/era/tasks/discards-of-year-2783-compare.json","sha256":"cd879fa5d1cd7ecfa7d24d8f03613a6b22b10adca09b22c590e384843919a064"},
   {"url":"/organism/era/tasks/dish-country.json","sha256":"37e12d6128d9a4231523cca81fa403bb723fb92e29f7110cbb35cef3f8e98a36"},
   {"url":"/organism/era/tasks/dividend-of-date-9f73.json","sha256":"6b455aa9ab3bce8c317dabf61641e31534dd09b6285a88bb101b558b6d892c7e"},
   {"url":"/organism/era/tasks/dividend-of-date-9f73-compare.json","sha256":"5cf2a49526fac30de89137661d7b267809bfec1f9cae3976daf41d624f7ed7c3"},
@@ -726,8 +726,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/female-of-county-de5d-compare.json","sha256":"166b3d28c37b14a67c741c3ae251cf760f73984b3534315912ec75d9afe2bfb1"},
   {"url":"/organism/era/tasks/file-of-lang-edee.json","sha256":"a3277d714a9a7e4c6950d0d8b2ccd595478c32de3f6d86b52dc3bd9345d14c88"},
   {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"},
-  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"}
+  {"url":"/organism/era/tasks/final-description-of-date-d707-rev.json","sha256":"2d39279009a1e4bb06d50927b2a9a1a0078e2ccc09b851e9558ffa8759f96fc6"},
+  {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
