@@ -2,28 +2,30 @@
   "task": "samayo-dish-national-dish-to-country",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-22T00:58:43.805Z",
+  "at": "2026-10-27T03:59:16.858Z",
   "stats": {
-    "generated": 161337,
-    "distinct": 172680,
-    "kept": 1753,
-    "know": 903,
+    "generated": 200215,
+    "distinct": 87263,
+    "kept": 1794,
+    "know": 921,
     "byFamily": {
-      "memory": 83,
-      "transform": 1472,
+      "memory": 84,
+      "transform": 1503,
       "iterate": 16,
-      "aggregate": 133,
-      "sense": 49
+      "aggregate": 140,
+      "sense": 51
     },
     "bySource": {
-      "parent": 1301,
-      "enum": 452
+      "parent": 1431,
+      "enum": 327,
+      "template": 35,
+      "memory": 1
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 235037,
-    "cellsPerSecond": 686,
+    "ms": 229279,
+    "cellsPerSecond": 873,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -32,13 +34,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "81918a904b161807798fe15701b0b50bac4fecf0c62cbba88de3af5d72ead734",
-      "round": 2,
-      "at": 329565,
+      "basis": "3cdfe40b906094fdeace12611fe9d72318c3440eaf81e97bd84dd8f657f2cfc0",
+      "round": 0,
+      "at": 108749,
       "maxCost": 7,
       "done": false,
-      "cost": 7,
-      "prim": "transform.padStart",
+      "cost": 6,
+      "prim": "iterate.powers",
       "tpl": 1521
     }
   },
@@ -7433,6 +7435,71 @@
       }
     },
     {
+      "id": "n-2f7f83f6",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.acronym",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-340de965",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -13778,6 +13845,71 @@
             "aggregate.commonLetter",
             [
               "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f96b790b",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.acronym",
+            [
+              "sense.lastWord"
             ]
           ]
         ]
@@ -33549,6 +33681,85 @@
       }
     },
     {
+      "id": "n-226bd0e1",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.text"
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-256f4a5b",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -34844,6 +35055,85 @@
       }
     },
     {
+      "id": "n-bf282b74",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "stew",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.text"
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-c7eb3d85",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -35604,6 +35894,85 @@
       }
     },
     {
+      "id": "n-fafee4fa",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "stew",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0f821d06",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -36181,6 +36550,83 @@
       "mem": null,
       "height": 4,
       "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-04a6a177",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -39487,6 +39933,83 @@
       }
     },
     {
+      "id": "n-6391ef1d",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6914104a",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -42771,6 +43294,83 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bcd46dee",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "bermuda",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
           ]
         ]
       ],
@@ -50695,6 +51295,97 @@
       }
     },
     {
+      "id": "n-2ecb62d4",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "stew",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-356cbb18",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -51315,6 +52006,97 @@
       }
     },
     {
+      "id": "n-5f1e511e",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6146bf6f",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -51469,6 +52251,97 @@
             ],
             {
               "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-63902517",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chicken",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Bangladesh."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
             }
           ]
         ],
@@ -53036,6 +53909,97 @@
             ],
             {
               "lit": 2
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9c82316d",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
             }
           ]
         ],
@@ -54638,6 +55602,97 @@
       }
     },
     {
+      "id": "n-bed56a8e",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-beec89e7",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -55172,6 +56227,97 @@
       }
     },
     {
+      "id": "n-cd7e6f7a",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "stew",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ce4ec45b",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -55317,6 +56463,97 @@
               },
               {
                 "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d2dd40b0",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "stew",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
               }
             ],
             {
@@ -64844,6 +66081,87 @@
       }
     },
     {
+      "id": "n-5e4f0c7a",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chicken",
+            "item number",
+            "join",
+            "joined with",
+            "nth",
+            "position",
+            "separated by"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Bangladesh."
+          ]
+        },
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+            },
+            {
+              "lit": "column"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6ef25572",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -66370,6 +67688,96 @@
       }
     },
     {
+      "id": "n-17d72cf5",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chicken",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Bangladesh."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1e388ae6",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -66749,6 +68157,96 @@
         },
         [
           "render.and",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-59e5e644",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chicken",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "fish"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Bangladesh."
+          ]
+        },
+        [
+          "render.list",
           [
             "transform.split",
             [
@@ -82597,6 +84095,48 @@
       }
     },
     {
+      "id": "n-2507600c",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "stew"
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The country ",
+            {
+              "slot": 0
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 2,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2922efd2",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -83513,6 +85053,48 @@
       }
     },
     {
+      "id": "n-6500b162",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "feijoada"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The country ",
+            {
+              "slot": 0
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 2,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6f582980",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -83948,6 +85530,56 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-931bef28",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "crack",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Crack conch with peas and rice is Bahamas."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
       "size": 4,
       "fit": {
         "ok": 1,
@@ -84662,6 +86294,53 @@
       }
     },
     {
+      "id": "n-e281e5dd",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Feijoada is Brazil."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e4153be5",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -85146,6 +86825,55 @@
           ],
           {
             "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-066a7bc3",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "broth",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Mountain chicken, Fish broth is Dominica."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
           }
         ]
       ],
@@ -92115,6 +93843,63 @@
       }
     },
     {
+      "id": "n-8cbce225",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8cf3b6fd",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -93209,6 +94994,71 @@
       "mem": null,
       "height": 3,
       "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-00591ccd",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "feijoada",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.upper",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -95778,6 +97628,66 @@
       }
     },
     {
+      "id": "n-3f3d4dc0",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "stew"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3fe64fbd",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -95819,6 +97729,70 @@
         ],
         [
           "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-458586a6",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "feijoada",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.title",
           [
             "sense.after",
             {
@@ -95944,6 +97918,66 @@
               "lit": "country"
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4f0024ca",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "stew"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
         ]
       ],
       "mem": null,
@@ -96229,6 +98263,66 @@
           ],
           {
             "lit": 1
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-543e4c57",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
           }
         ],
         [
@@ -97908,6 +100002,69 @@
           {
             "lit": "country"
           }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-82f2bbba",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "invert case",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ]
         ]
       ],
       "mem": null,
@@ -100843,6 +103000,66 @@
       }
     },
     {
+      "id": "n-cf0e6fce",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-cf93204e",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -101068,6 +103285,69 @@
         ],
         [
           "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d3ff5d58",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "lower case",
+            "lowercase",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.lower",
           [
             "sense.after",
             {
@@ -102849,6 +105129,73 @@
       }
     },
     {
+      "id": "n-0c85886b",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "nth",
+            "position",
+            "stew",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.title",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0d73e9a6",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -103296,6 +105643,69 @@
       }
     },
     {
+      "id": "n-20155904",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "first n",
+            "take",
+            "top"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-23a590c0",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -103485,6 +105895,69 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2c1fe283",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "feijoada",
+            "first n",
+            "take",
+            "top"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Brazil."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 8,
       "fit": {
         "ok": 1,
@@ -105405,6 +107878,74 @@
       }
     },
     {
+      "id": "n-5a1e0414",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "item number",
+            "nth",
+            "position",
+            "stew",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.upper",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5a5d0985",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -105970,6 +108511,69 @@
       }
     },
     {
+      "id": "n-647e7974",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first n",
+            "stew",
+            "take",
+            "top"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6697f103",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -106116,6 +108720,69 @@
               "slot": 1
             },
             " is North Macedonia."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6b8ac9f7",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first n",
+            "stew",
+            "take",
+            "top"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
           ]
         },
         [
@@ -107019,6 +109686,72 @@
       }
     },
     {
+      "id": "n-857bd06b",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters",
+            "stew"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.lower",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8927f500",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -107318,6 +110051,72 @@
         ],
         [
           "transform.lower",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9588d5f9",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "stew",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "sauerkraut"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Estonia."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.swapCase",
           [
             "sense.after",
             {
@@ -112678,6 +115477,50 @@
       }
     },
     {
+      "id": "n-e7669e7f",
+      "task": "samayo-dish-national-dish-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "feijoada"
+          ]
+        ],
+        [
+          "has",
+          "feijoada"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of Feijoada": "The country of Feijoada is Brazil."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ece94bb0",
       "task": "samayo-dish-national-dish-to-country",
       "gen": 10,
@@ -115216,6 +118059,7 @@
   "stages": [
     "29394e20b1b3b2f74b5c8f833c7653b501fcef49c3496e7d4741b1f4a127ddfe",
     "6bbff5cdd3cd6e051c73f2611a2423d3c49c84e0b6b5f704f6210cf834cdb6ca",
-    "c40f8d750c20cc07d3c969014f3fe62ec2beba1cec26246dde0c94ac2140bd8b"
+    "c40f8d750c20cc07d3c969014f3fe62ec2beba1cec26246dde0c94ac2140bd8b",
+    "1bf75756bdfef4aa709c4e7254175b8999b54da61547c0e3468c3389b7a9c892"
   ]
 }
