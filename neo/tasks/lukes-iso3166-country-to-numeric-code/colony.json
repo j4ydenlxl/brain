@@ -2,28 +2,30 @@
   "task": "lukes-iso3166-country-to-numeric-code",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-27T03:27:07.978Z",
+  "at": "2026-11-03T18:19:25.133Z",
   "stats": {
-    "generated": 160620,
-    "distinct": 118453,
-    "kept": 622,
+    "generated": 200263,
+    "distinct": 62080,
+    "kept": 624,
     "know": 37,
     "byFamily": {
-      "memory": 84,
+      "memory": 85,
       "compute": 58,
       "transform": 239,
-      "aggregate": 188,
+      "aggregate": 189,
       "sense": 53
     },
     "bySource": {
-      "parent": 601,
-      "enum": 21
+      "parent": 570,
+      "enum": 49,
+      "template": 2,
+      "memory": 3
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 58690,
-    "cellsPerSecond": 2737,
+    "ms": 116435,
+    "cellsPerSecond": 1720,
     "capped": null,
     "packs": [
       "corpora-programming-languages",
@@ -32,13 +34,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "adb0de728cd5cb3089ed4e5cb1c9b647b1ddf87f52020249d58006da29394dc0",
-      "round": 1,
-      "at": 215529,
+      "basis": "ebdf893fb873f0535956469fb96289ff36b4857c1103b07d801d8e81382d11ff",
+      "round": 0,
+      "at": 119826,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "transform.words",
+      "prim": "compute.root",
       "tpl": 1679
     }
   },
@@ -6049,6 +6051,56 @@
       }
     },
     {
+      "id": "n-981dbf32",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "comoros",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " code of Comoros is 174."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a0366177",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -7756,55 +7808,6 @@
       }
     },
     {
-      "id": "n-2f60f6f1",
-      "task": "lukes-iso3166-country-to-numeric-code",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "federation",
-            "item number",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "tell"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " code of Russian Federation is 643."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-3388e207",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -9138,6 +9141,55 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b5751b42",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "federation",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " code of Russian Federation is 643."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -32143,43 +32195,6 @@
       }
     },
     {
-      "id": "n-16311444",
-      "task": "lukes-iso3166-country-to-numeric-code",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "fiji"
-        ],
-        [
-          "has",
-          "tell"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "tell me the numeric code of Fiji": "The numeric code of Fiji is 242."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-16f94a0b",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -32917,6 +32932,47 @@
       }
     },
     {
+      "id": "n-93986281",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "australia"
+        ],
+        [
+          "has",
+          "numeric"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the numeric code of Australia": "The numeric code of Australia is 036."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-98e4e0ef",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -33067,6 +33123,47 @@
       "mem": {
         "table": {
           "name the numeric code of Moldova, Republic of": "The numeric code of Moldova, Republic of is 498."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b1ab9b91",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "kenya"
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the numeric code of Kenya": "The numeric code of Kenya is 404."
         }
       },
       "height": 3,
@@ -33242,18 +33339,18 @@
       }
     },
     {
-      "id": "n-e381e0bb",
+      "id": "n-e298e7e4",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
       "parents": [],
       "guard": [
         [
           "has",
-          "kenya"
+          "fiji"
         ],
         [
           "has",
-          "tell"
+          "numeric"
         ]
       ],
       "pyramid": [
@@ -33267,7 +33364,7 @@
       ],
       "mem": {
         "table": {
-          "tell me the numeric code of Kenya": "The numeric code of Kenya is 404."
+          "tell me the numeric code of Fiji": "The numeric code of Fiji is 242."
         }
       },
       "height": 3,
@@ -33570,12 +33667,136 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-2f60f6f1",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "federation",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " code of Russian Federation is 643."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-16311444",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "fiji"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the numeric code of Fiji": "The numeric code of Fiji is 242."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e381e0bb",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "kenya"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the numeric code of Kenya": "The numeric code of Kenya is 404."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
     "48c67d9ad720a9427abc03732abba83a82a16b482407b57b2be5fe6c20158d40",
     "a1f8e8a12311d45814a99db49d68737c45ab20908871727b2178dfa21d09f6a2",
     "b7a2fb86d8e69b1b45333714508cda7a43b5049bf1c6bcfe97dbc648dd34cc91",
-    "962f6975e9a7a7061371c3605a7d6d09aea2b88bb5a54c50d8e1e4bfaf127176"
+    "962f6975e9a7a7061371c3605a7d6d09aea2b88bb5a54c50d8e1e4bfaf127176",
+    "9eab3e06ee719cde8ea347c7b9069457096ad44adbc34d61075a5a33b1ecaf9c"
   ]
 }

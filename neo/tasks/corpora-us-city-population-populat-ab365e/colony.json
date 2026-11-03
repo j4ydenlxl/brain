@@ -2,29 +2,30 @@
   "task": "corpora-us-city-population-populat-ab365e",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-27T03:24:44.529Z",
+  "at": "2026-11-03T18:14:18.915Z",
   "stats": {
-    "generated": 160327,
-    "distinct": 75735,
-    "kept": 297,
-    "know": 235,
+    "generated": 66652,
+    "distinct": 54704,
+    "kept": 299,
+    "know": 237,
     "byFamily": {
       "know": 21,
-      "transform": 198,
+      "transform": 200,
       "sense": 12,
       "memory": 62,
       "aggregate": 4
     },
     "bySource": {
-      "parent": 294,
-      "enum": 3
+      "parent": 297,
+      "enum": 1,
+      "open": 1
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 143396,
-    "cellsPerSecond": 1118,
-    "capped": null,
+    "ms": 192701,
+    "cellsPerSecond": 346,
+    "capped": "ms",
     "packs": [
       "corpora-us-city-population",
       "crypto-tickers",
@@ -32,13 +33,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "b5bc2cfb67da93958b10006243bdd26c989eb1ca779c7eb3197c927ae79daedf",
+      "basis": "d7114255c6ddf23a2592f9ddaf3b5a3d9132d0cf5cf00132a313b7201a8dd4ea",
       "round": 1,
-      "at": 209395,
+      "at": 161647,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compare.between",
+      "prim": "aggregate.stdev",
       "tpl": 1187
     }
   },
@@ -15275,6 +15276,74 @@
       }
     },
     {
+      "id": "n-00447e69",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "city",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-10572380",
       "task": "corpora-us-city-population-populat-ab365e",
       "gen": 10,
@@ -15361,6 +15430,70 @@
         "render.sentence",
         [
           "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "population"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "population"
+            },
+            {
+              "lit": "city, state"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3b2117af",
+      "task": "corpora-us-city-population-populat-ab365e",
+      "gen": 10,
+      "parents": [
+        "n-00447e69"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "cotton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
           [
             "know.lookup",
             [
@@ -25308,6 +25441,7 @@
     "72617de47ef9becc16ce2f5d2eff353eed9ddb58904f7386ad5d71b99c951995",
     "a2a24e1217a86d64f59f07eb5179f3036a1c82ff46d80a0fa1e3f2ae9d1b1001",
     "3129b42d3d1308e3084a7587e7982cb66bf3327c4c4dbb6d9396e1fde1ebecc7",
-    "ee0c67a2caf9fb116d91097628f14855d213487b3d03d54c69be17d68a6e15ad"
+    "ee0c67a2caf9fb116d91097628f14855d213487b3d03d54c69be17d68a6e15ad",
+    "726fea02a8138ad474415456fbaffc6f9c63a42dda7039a371699fb22bb17b6c"
   ]
 }
