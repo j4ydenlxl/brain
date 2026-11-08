@@ -2,29 +2,29 @@
   "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T19:46:44.407Z",
+  "at": "2026-11-08T03:24:47.635Z",
   "stats": {
-    "generated": 153697,
-    "distinct": 79959,
-    "kept": 120,
-    "know": 77,
+    "generated": 47370,
+    "distinct": 49137,
+    "kept": 125,
+    "know": 82,
     "byFamily": {
       "know": 2,
-      "transform": 70,
+      "transform": 75,
       "sense": 3,
       "memory": 43,
       "compute": 2
     },
     "bySource": {
       "open": 9,
-      "parent": 85,
-      "enum": 26
+      "parent": 106,
+      "enum": 10
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 74406,
-    "cellsPerSecond": 2066,
+    "ms": 98655,
+    "cellsPerSecond": 480,
     "capped": "ms",
     "packs": [
       "crypto-tickers",
@@ -33,19 +33,19 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "6bd22702a567935b1d147142ec3872fb47619fc9098afc60d253c9ce6c39dd3f",
+      "basis": "d29e026d55e20a64de6bfda812b44d9f5a43eb76317ed8d27bfbf7a7f47cf3a7",
       "round": 1,
-      "at": 196933,
+      "at": 145568,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compare.between",
+      "prim": "aggregate.mean",
       "tpl": 1223
     }
   },
   "cells": [
     {
-      "id": "n-07d6af73",
+      "id": "n-4fa4f3d6",
       "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
       "gen": 10,
       "parents": [
@@ -57,10 +57,13 @@
           [
             "hasAny",
             [
+              "association87",
               "author",
+              "country",
               "date",
               "month",
               "number",
+              "pc",
               "player",
               "raw",
               "sugar",
@@ -227,6 +230,78 @@
       }
     },
     {
+      "id": "n-1dceff23",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-1f3c2b4d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "association87",
+              "author",
+              "country",
+              "date",
+              "month",
+              "number",
+              "pc",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1f3c2b4d",
       "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
       "gen": 10,
@@ -289,7 +364,7 @@
       }
     },
     {
-      "id": "n-25a5e4b8",
+      "id": "n-f3393acd",
       "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
       "gen": 10,
       "parents": [
@@ -301,10 +376,13 @@
           [
             "hasAny",
             [
+              "association87",
               "author",
+              "country",
               "date",
               "month",
               "number",
+              "pc",
               "player",
               "raw",
               "sugar",
@@ -358,11 +436,11 @@
       }
     },
     {
-      "id": "n-570ba5ed",
+      "id": "n-07438544",
       "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
       "gen": 10,
       "parents": [
-        "n-1f3c2b4d"
+        "n-286974c3"
       ],
       "guard": [
         [
@@ -370,10 +448,13 @@
           [
             "hasAny",
             [
+              "association87",
               "author",
+              "country",
               "date",
               "month",
               "number",
+              "pc",
               "player",
               "raw",
               "sugar",
@@ -387,39 +468,192 @@
       "pyramid": [
         "render.str",
         [
-          "transform.pascal",
+          "transform.swapCase",
           [
-            "know.lookup",
+            "transform.pascal",
             [
-              "transform.nthStr",
+              "know.lookup",
               [
-                "know.find",
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-food-beverages-d60df1"
+                  },
+                  {
+                    "lit": "coffee substitute"
+                  }
+                ],
                 {
-                  "lit": "fr-tidytuesday-food-beverages-d60df1"
-                },
-                {
-                  "lit": "coffee substitute"
+                  "lit": 1
                 }
               ],
               {
-                "lit": 1
+                "lit": "fr-tidytuesday-food-beverages-d60df1"
+              },
+              {
+                "lit": "coffee substitute"
+              },
+              {
+                "lit": "glucose"
               }
-            ],
-            {
-              "lit": "fr-tidytuesday-food-beverages-d60df1"
-            },
-            {
-              "lit": "coffee substitute"
-            },
-            {
-              "lit": "glucose"
-            }
+            ]
           ]
         ]
       ],
       "mem": null,
-      "height": 5,
-      "size": 11,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0c0b899d",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-4757c33c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "association87",
+              "author",
+              "country",
+              "date",
+              "month",
+              "number",
+              "pc",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-food-beverages-d60df1"
+                  },
+                  {
+                    "lit": "coffee substitute"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-food-beverages-d60df1"
+              },
+              {
+                "lit": "coffee substitute"
+              },
+              {
+                "lit": "glucose"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-27882feb",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-58c87ef6"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "association87",
+              "author",
+              "country",
+              "date",
+              "month",
+              "number",
+              "pc",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-food-beverages-d60df1"
+                  },
+                  {
+                    "lit": "coffee substitute"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-food-beverages-d60df1"
+              },
+              {
+                "lit": "coffee substitute"
+              },
+              {
+                "lit": "glucose"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 40,
         "fired": 40,
@@ -590,222 +824,6 @@
           "transform.words",
           [
             "transform.pascal",
-            [
-              "know.lookup",
-              [
-                "transform.nthStr",
-                [
-                  "know.find",
-                  {
-                    "lit": "fr-tidytuesday-food-beverages-d60df1"
-                  },
-                  {
-                    "lit": "coffee substitute"
-                  }
-                ],
-                {
-                  "lit": 1
-                }
-              ],
-              {
-                "lit": "fr-tidytuesday-food-beverages-d60df1"
-              },
-              {
-                "lit": "coffee substitute"
-              },
-              {
-                "lit": "glucose"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 6,
-      "size": 12,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-5a71b74c",
-      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
-      "gen": 10,
-      "parents": [
-        "n-286974c3"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "author",
-              "date",
-              "month",
-              "number",
-              "player",
-              "raw",
-              "sugar",
-              "symbol",
-              "winner",
-              "year"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.swapCase",
-          [
-            "transform.pascal",
-            [
-              "know.lookup",
-              [
-                "transform.nthStr",
-                [
-                  "know.find",
-                  {
-                    "lit": "fr-tidytuesday-food-beverages-d60df1"
-                  },
-                  {
-                    "lit": "coffee substitute"
-                  }
-                ],
-                {
-                  "lit": 1
-                }
-              ],
-              {
-                "lit": "fr-tidytuesday-food-beverages-d60df1"
-              },
-              {
-                "lit": "coffee substitute"
-              },
-              {
-                "lit": "glucose"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 6,
-      "size": 12,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-6db2a6dd",
-      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
-      "gen": 10,
-      "parents": [
-        "n-58c87ef6"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "author",
-              "date",
-              "month",
-              "number",
-              "player",
-              "raw",
-              "sugar",
-              "symbol",
-              "winner",
-              "year"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.words",
-          [
-            "transform.pascal",
-            [
-              "know.lookup",
-              [
-                "transform.nthStr",
-                [
-                  "know.find",
-                  {
-                    "lit": "fr-tidytuesday-food-beverages-d60df1"
-                  },
-                  {
-                    "lit": "coffee substitute"
-                  }
-                ],
-                {
-                  "lit": 1
-                }
-              ],
-              {
-                "lit": "fr-tidytuesday-food-beverages-d60df1"
-              },
-              {
-                "lit": "coffee substitute"
-              },
-              {
-                "lit": "glucose"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 6,
-      "size": 12,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-b6846512",
-      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
-      "gen": 10,
-      "parents": [
-        "n-4757c33c"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "author",
-              "date",
-              "month",
-              "number",
-              "player",
-              "raw",
-              "sugar",
-              "symbol",
-              "winner",
-              "year"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.words",
-          [
-            "transform.camel",
             [
               "know.lookup",
               [
@@ -1224,6 +1242,94 @@
       }
     },
     {
+      "id": "n-878d6fc2",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-e8ad8647"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "sugar",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "sugar"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bcb5cb9f",
       "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
       "gen": 10,
@@ -1312,7 +1418,96 @@
       }
     },
     {
-      "id": "n-a9296f54",
+      "id": "n-e8ad8647",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "glucose",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "sugar"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-84859f6b",
       "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
       "gen": 10,
       "parents": [
@@ -1326,10 +1521,13 @@
             [
               "159822",
               "96470",
+              "association87",
               "atomic",
               "author",
+              "country",
               "date",
               "month",
+              "pc",
               "player",
               "raw",
               "sugar",
@@ -1440,6 +1638,135 @@
           ],
           {
             "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 35,
+        "fired": 35,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-62416ad0",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "glucose",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ],
+          {
+            "lit": "NA"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 35,
+        "fired": 35,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7b10bc66",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-62416ad0"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "sugar",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ],
+          {
+            "lit": "NA"
           }
         ]
       ],
@@ -4037,6 +4364,74 @@
           },
           [
             "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f22a4801",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "glucose",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
           ]
         ]
       ],
@@ -7775,6 +8170,503 @@
       }
     },
     {
+      "id": "n-07d6af73",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-630d51fc"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "author",
+              "date",
+              "month",
+              "number",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-food-beverages-d60df1"
+              },
+              {
+                "lit": "coffee substitute"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-food-beverages-d60df1"
+          },
+          {
+            "lit": "coffee substitute"
+          },
+          {
+            "lit": "glucose"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-25a5e4b8",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-194d924e"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "author",
+              "date",
+              "month",
+              "number",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-570ba5ed",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-1f3c2b4d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "author",
+              "date",
+              "month",
+              "number",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5a71b74c",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-286974c3"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "author",
+              "date",
+              "month",
+              "number",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-food-beverages-d60df1"
+                  },
+                  {
+                    "lit": "coffee substitute"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-food-beverages-d60df1"
+              },
+              {
+                "lit": "coffee substitute"
+              },
+              {
+                "lit": "glucose"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6db2a6dd",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-58c87ef6"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "author",
+              "date",
+              "month",
+              "number",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-food-beverages-d60df1"
+                  },
+                  {
+                    "lit": "coffee substitute"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-food-beverages-d60df1"
+              },
+              {
+                "lit": "coffee substitute"
+              },
+              {
+                "lit": "glucose"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b6846512",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-4757c33c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "author",
+              "date",
+              "month",
+              "number",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-food-beverages-d60df1"
+                  },
+                  {
+                    "lit": "coffee substitute"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-food-beverages-d60df1"
+              },
+              {
+                "lit": "coffee substitute"
+              },
+              {
+                "lit": "glucose"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a9296f54",
+      "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
+      "gen": 10,
+      "parents": [
+        "n-bfe36fba"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "159822",
+              "96470",
+              "atomic",
+              "author",
+              "date",
+              "month",
+              "player",
+              "raw",
+              "sugar",
+              "symbol",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-food-beverages-d60df1"
+                },
+                {
+                  "lit": "coffee substitute"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-food-beverages-d60df1"
+            },
+            {
+              "lit": "coffee substitute"
+            },
+            {
+              "lit": "glucose"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-db89b097",
       "task": "fr-tidytuesday-food-beverages-d60d-6c339d",
       "gen": 10,
@@ -7972,6 +8864,7 @@
   ],
   "stages": [
     "1f8144655f782e4311e0274c351d04a991d6753e2953b47e802ddc307d062ad0",
-    "e90107aa0159208d2e706137e137fce5c3ea64315afc922a687506c971d6cd0f"
+    "e90107aa0159208d2e706137e137fce5c3ea64315afc922a687506c971d6cd0f",
+    "acda4f420e8187ad6c55a61aa91839e795e5edd9332f73bdf1bedc60c03f0282"
   ]
 }
