@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "488e7f1e735da952527e35de826b62482bb1ea596c7067c1ae7148c89031bf2c";
+const VERSION = "136937e178f2bb665e6392d0aff8acd0ba8c96c6973efe49dcf5703b9b9a1b3e";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"b31d8d3d3c85f76692f417e4bb32d184832b4380eca4ea17dca62e6ead9de10c"},
+  {"url":"/organism/cells.json","sha256":"3a39b829cf94dbc08afeefe1b58ca7ddad6c894ad54565d34efb153ffb1d9bfe"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -480,10 +480,11 @@ const PRECACHE = [
   {"url":"/organism/cells/cpi-of-year-month-f845-larger-neo-g10.mjs","sha256":"58fdaa418e95f85270eb29bf7c7b9b7d38582b6a2b35811a5623e0ace01c5ae9"},
   {"url":"/organism/cells/discards-of-year-2783-compare-neo-g10.mjs","sha256":"53869aec305909ef907e560c34925deeee242b1b3dd3c9b534cef3a8d774fb52"},
   {"url":"/organism/cells/fr-tidytuesday-cheeses-4d829a-regi-eca5ef-neo-g10.mjs","sha256":"b6ae26b74989820402b823aa26058439a19e386dbbe51cc7034fbb65295f811f"},
+  {"url":"/organism/cells/album-of-title-5d02-neo-g10.mjs","sha256":"61de17a231ddb1d3dffbcb4dd00f6917ac6bd7929448208c3941d7b86d450aa4"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"e31593135bc68ffffd350508ef9de21decc3490b640ce67359bde97e0122e23a"}
+  {"url":"/organism/era/tasks.json","sha256":"7f1407b2650e09fb30c69d90418633093f4c020eefed09e3dfead171bb4916a9"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -508,7 +509,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/album-id-of-track-name-b920.json","sha256":"8d83a46f9bce7a73131bdafb5e81bf1cb50014552487088ee0095f2ecfd0430b"},
   {"url":"/organism/era/tasks/album-name-of-track-name-f785.json","sha256":"ac385c6ec739b6261afd6918173afdbf1109751a3c88509fc9ede9cb8e37e331"},
   {"url":"/organism/era/tasks/album-name-of-track-name-fb82.json","sha256":"cf07444404c31a8057c5b43ec69e33075b16d2647e484d32de35f9afd825d538"},
-  {"url":"/organism/era/tasks/album-of-title-5d02.json","sha256":"71549bae38053a6bbac40b84be1e64c241011f6797911e6f3832fb6b49010a8d"},
   {"url":"/organism/era/tasks/album-release-of-track-na-4310.json","sha256":"c5e0475be359c37fe165a292725d7a89cd7d61804784d0988228f83a718726df"},
   {"url":"/organism/era/tasks/album-release-of-track-na-d51d.json","sha256":"94e8ad111a88ab5712b2dc966e003a8cb2c001ade7c3e5fd8e57d50245278e53"},
   {"url":"/organism/era/tasks/album-release-year-of-tra-9874.json","sha256":"c1d1f52377a2166379ea77f3f286735a9ddbedd419849047e55a0571b4996256"},
@@ -728,7 +728,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/file-of-lang-edee.json","sha256":"a3277d714a9a7e4c6950d0d8b2ccd595478c32de3f6d86b52dc3bd9345d14c88"},
   {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"},
   {"url":"/organism/era/tasks/final-description-of-date-d707-rev.json","sha256":"2d39279009a1e4bb06d50927b2a9a1a0078e2ccc09b851e9558ffa8759f96fc6"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"}
+  {"url":"/organism/era/tasks/final-four-appearance-a3c0-sum.json","sha256":"8666b3230c18bc997becdf567182b6c3f88da674852efe53b89995daf4e62a3f"},
+  {"url":"/organism/era/tasks/fr-covid-19-reference-7c87a7-iso2-248ece.json","sha256":"88834ed68a7dffa4807039adfbd94ca394f2e88a8bd98c12fd747b8f99a6c802"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
