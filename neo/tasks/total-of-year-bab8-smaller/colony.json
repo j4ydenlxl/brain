@@ -2,30 +2,29 @@
   "task": "total-of-year-bab8-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-24T12:13:48.416Z",
+  "at": "2026-11-08T22:44:20.527Z",
   "stats": {
-    "generated": 160186,
-    "distinct": 48271,
-    "kept": 171,
-    "know": 67,
+    "generated": 240,
+    "distinct": 41743,
+    "kept": 173,
+    "know": 69,
     "byFamily": {
       "route": 1,
-      "transform": 65,
+      "transform": 67,
       "compare": 2,
       "memory": 102,
       "iterate": 1
     },
     "bySource": {
-      "open": 9,
-      "parent": 160,
-      "enum": 2
+      "parent": 169,
+      "open": 4
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 97994,
-    "cellsPerSecond": 1635,
-    "capped": null,
+    "ms": 220806,
+    "cellsPerSecond": 1,
+    "capped": "ms",
     "packs": [
       "fr-co2-fossil-global-global-6f35f5"
     ],
@@ -33,11 +32,11 @@
       "v": 1,
       "basis": "ec30f5c2f2c0b57472cf982366c97f29e8040deb8b9a5aebff951e5b3226cbb2",
       "round": 3,
-      "at": 386623,
+      "at": 258609,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "iterate.rangeFrom",
+      "prim": "aggregate.sum",
       "tpl": 3939
     }
   },
@@ -2131,6 +2130,103 @@
       }
     },
     {
+      "id": "n-85fc850b",
+      "task": "total-of-year-bab8-smaller",
+      "gen": 10,
+      "parents": [
+        "n-78e8b78e",
+        "n-862f8eec",
+        "n-c1b99a25"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1760",
+              "1762",
+              "1769",
+              "add",
+              "compare",
+              "country",
+              "description",
+              "emissions",
+              "fuel",
+              "greater",
+              "larger",
+              "makes",
+              "of",
+              "person",
+              "sum",
+              "volcano",
+              "wreck",
+              "yarn"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-fossil-global-global-6f35f5"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-co2-fossil-global-global-6f35f5"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-co2-fossil-global-global-6f35f5"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "total"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-862f8eec",
       "task": "total-of-year-bab8-smaller",
       "gen": 10,
@@ -2488,6 +2584,100 @@
       "mem": null,
       "height": 6,
       "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5fc26150",
+      "task": "total-of-year-bab8-smaller",
+      "gen": 10,
+      "parents": [
+        "n-aa40f126",
+        "n-c4215060",
+        "n-f219a40d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1760",
+              "1762",
+              "1769",
+              "add",
+              "compare",
+              "country",
+              "description",
+              "emissions",
+              "fuel",
+              "greater",
+              "larger",
+              "makes",
+              "of",
+              "person",
+              "sum",
+              "volcano",
+              "wreck",
+              "yarn"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-fossil-global-global-6f35f5"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "series.prev",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-co2-fossil-global-global-6f35f5"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "total"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
       "fit": {
         "ok": 7,
         "fired": 7,
@@ -3103,7 +3293,7 @@
       }
     },
     {
-      "id": "n-449a371c",
+      "id": "n-5a01aec0",
       "task": "total-of-year-bab8-smaller",
       "gen": 10,
       "parents": [],
@@ -3311,7 +3501,6 @@
               "birthday",
               "bound",
               "breed",
-              "cap",
               "carriages",
               "cars",
               "category",
@@ -3419,6 +3608,7 @@
               "recovered",
               "ref",
               "region",
+              "residence",
               "sa10",
               "schedule",
               "season",
@@ -3449,6 +3639,7 @@
               "type",
               "uncertainty",
               "updated",
+              "usd",
               "user",
               "version",
               "w125115",
@@ -3471,6 +3662,7 @@
               "written",
               "x",
               "xtinction",
+              "y",
               "year",
               "years"
             ]
@@ -4956,6 +5148,136 @@
       }
     },
     {
+      "id": "n-6bf555ed",
+      "task": "total-of-year-bab8-smaller",
+      "gen": 10,
+      "parents": [
+        "n-48977310"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20200318",
+              "20200604",
+              "20200622",
+              "20200628",
+              "20201108",
+              "20201120",
+              "20210116",
+              "20210323",
+              "20210404",
+              "20210614",
+              "20210626",
+              "20210627",
+              "20210716",
+              "20210724",
+              "20210731",
+              "20210817",
+              "20210911",
+              "20210927",
+              "20211006",
+              "20211013",
+              "20211107",
+              "20211108",
+              "20220102",
+              "20220208",
+              "20220218",
+              "20220312",
+              "20220328",
+              "added",
+              "age30",
+              "angeles",
+              "az",
+              "cars",
+              "chambers",
+              "china",
+              "chip8",
+              "close",
+              "confirmed",
+              "cougar",
+              "country",
+              "cpi",
+              "date",
+              "descending",
+              "dividend",
+              "eclipse",
+              "edens",
+              "episode",
+              "episodes",
+              "explorer",
+              "fatalities",
+              "fin",
+              "final",
+              "firefox",
+              "high",
+              "hitman",
+              "id",
+              "judge1",
+              "keycap",
+              "larger",
+              "lesbian",
+              "min",
+              "national",
+              "num",
+              "number",
+              "obscur",
+              "open",
+              "pirates",
+              "price",
+              "rate",
+              "rebirth",
+              "recovered",
+              "season",
+              "solid",
+              "sp500",
+              "temp",
+              "title",
+              "toy",
+              "updated"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-fossil-global-global-6f35f5"
+              },
+              {
+                "lit": "total"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.sum",
+            [
+              "sense.listNums"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-76351b59",
       "task": "total-of-year-bab8-smaller",
       "gen": 7,
@@ -5072,136 +5394,6 @@
       ],
       "mem": null,
       "height": 5,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-aa9ec8c2",
-      "task": "total-of-year-bab8-smaller",
-      "gen": 10,
-      "parents": [
-        "n-48977310"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "20200318",
-              "20200604",
-              "20200622",
-              "20200628",
-              "20201108",
-              "20201120",
-              "20210116",
-              "20210323",
-              "20210404",
-              "20210614",
-              "20210626",
-              "20210627",
-              "20210716",
-              "20210724",
-              "20210731",
-              "20210817",
-              "20210911",
-              "20210927",
-              "20211006",
-              "20211013",
-              "20211107",
-              "20211108",
-              "20220102",
-              "20220208",
-              "20220218",
-              "20220312",
-              "20220328",
-              "added",
-              "age30",
-              "angeles",
-              "az",
-              "cars",
-              "chambers",
-              "champs",
-              "china",
-              "chip8",
-              "close",
-              "confirmed",
-              "cougar",
-              "country",
-              "cpi",
-              "descending",
-              "dividend",
-              "eclipse",
-              "edens",
-              "episode",
-              "episodes",
-              "explorer",
-              "fatalities",
-              "fin",
-              "final",
-              "firefox",
-              "high",
-              "hitman",
-              "id",
-              "judge1",
-              "keycap",
-              "larger",
-              "lesbian",
-              "min",
-              "national",
-              "num",
-              "number",
-              "obscur",
-              "open",
-              "pirates",
-              "price",
-              "rate",
-              "rebirth",
-              "recovered",
-              "season",
-              "solid",
-              "sp500",
-              "temp",
-              "title",
-              "toy",
-              "updated"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.caesar",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-co2-fossil-global-global-6f35f5"
-              },
-              {
-                "lit": "total"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "aggregate.sum",
-            [
-              "sense.listNums"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -10516,6 +10708,538 @@
       }
     },
     {
+      "id": "n-449a371c",
+      "task": "total-of-year-bab8-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "10397455e4",
+              "10436516e4",
+              "10873393e4",
+              "11502871e4",
+              "11570694e4",
+              "12140807e4",
+              "13057017e4",
+              "14205331e4",
+              "15542435e4",
+              "15772731e4",
+              "160057e4",
+              "16146914e4",
+              "16282464e4",
+              "16328096e4",
+              "16549861e4",
+              "17303212e4",
+              "17440862e4",
+              "17670321e4",
+              "17776774e4",
+              "1852",
+              "18592953e4",
+              "18878646e4",
+              "19091617e4",
+              "20010999e4",
+              "20200211",
+              "20200216",
+              "20200312",
+              "20200315",
+              "20200318",
+              "20200323",
+              "20200324",
+              "20200329",
+              "20200412",
+              "20200419",
+              "20200430",
+              "20200510",
+              "20200604",
+              "20200616",
+              "20200617",
+              "20200622",
+              "20200624",
+              "20200628",
+              "20200718",
+              "20200722",
+              "20200723",
+              "20200816",
+              "20200830",
+              "20200910",
+              "20201002",
+              "20201006",
+              "20201012",
+              "20201013",
+              "20201022",
+              "20201108",
+              "20201110",
+              "20201112",
+              "20201120",
+              "20201125",
+              "20201127",
+              "20201129",
+              "20201130",
+              "20201204",
+              "20201205",
+              "20201208",
+              "20201217",
+              "20201219",
+              "20201221",
+              "20201955e4",
+              "20210110",
+              "20210114",
+              "20210115",
+              "20210116",
+              "20210127",
+              "20210217",
+              "20210218",
+              "20210322",
+              "20210323",
+              "20210330",
+              "20210404",
+              "20210413",
+              "20210429",
+              "20210502",
+              "20210505",
+              "20210507",
+              "20210510",
+              "20210524",
+              "20210605",
+              "20210614",
+              "20210617",
+              "20210618",
+              "20210623",
+              "20210627",
+              "20210704",
+              "20210715",
+              "20210716",
+              "20210724",
+              "20210730",
+              "20210805",
+              "20210812",
+              "20210817",
+              "20210915",
+              "20210918",
+              "20210927",
+              "20211006",
+              "20211012",
+              "20211013",
+              "20211016",
+              "20211018",
+              "20211020",
+              "20211022",
+              "20211101",
+              "20211103",
+              "20211107",
+              "20211112",
+              "20211118",
+              "20211119",
+              "20211123",
+              "20211130",
+              "20211204",
+              "20211206",
+              "20211207",
+              "20211209",
+              "20211215",
+              "20211216",
+              "20211221",
+              "20211229",
+              "20220112",
+              "20220117",
+              "20220129",
+              "20220130",
+              "20220208",
+              "20220218",
+              "20220224",
+              "20220312",
+              "20220313",
+              "20220314",
+              "20220327",
+              "21811355e4",
+              "22198165e4",
+              "23021112e4",
+              "24199863e4",
+              "26184341e4",
+              "27160547e4",
+              "28360172e4",
+              "29758425e4",
+              "30092799e4",
+              "31651635e4",
+              "32548918e4",
+              "32854915e4",
+              "34588508e4",
+              "35557074e5",
+              "36830985e4",
+              "372",
+              "37693782e4",
+              "38005435e4",
+              "38819431e5",
+              "40935635e4",
+              "42162082e4",
+              "42862305e4",
+              "43995553e4",
+              "45",
+              "46371043e4",
+              "52641459e5",
+              "60375826e4",
+              "60376828e4",
+              "67868772e5",
+              "70598023e4",
+              "72056646e5",
+              "77458848e5",
+              "79499754e5",
+              "7a",
+              "8",
+              "8165482e5",
+              "86109911e5",
+              "8734524e4",
+              "92009106e4",
+              "9385671e5",
+              "94145676e4",
+              "99525801e5",
+              "abbreviation",
+              "add",
+              "added",
+              "adjusted",
+              "adult",
+              "age30",
+              "airbaseairport",
+              "album",
+              "alpha",
+              "angeles",
+              "applicationvndiso1178310zip",
+              "artist",
+              "author",
+              "average",
+              "az",
+              "bg11",
+              "birthday",
+              "bound",
+              "breed",
+              "cap",
+              "carriages",
+              "cars",
+              "category",
+              "cent",
+              "chambers",
+              "china",
+              "choose",
+              "close",
+              "code",
+              "compare",
+              "confirmed",
+              "cougar",
+              "country",
+              "cpi",
+              "date",
+              "descending",
+              "description",
+              "devils",
+              "directed",
+              "director",
+              "divided",
+              "dividend",
+              "divisors",
+              "eclipse",
+              "economy",
+              "electric",
+              "element",
+              "emissions",
+              "ep",
+              "episode",
+              "episodes",
+              "etf",
+              "exchange",
+              "explorer",
+              "factorial",
+              "fatalities",
+              "firefox",
+              "flood",
+              "forename",
+              "fr10",
+              "fr18",
+              "fuel",
+              "galaxy",
+              "gcd",
+              "gdp",
+              "gender",
+              "glucose",
+              "gmsl",
+              "gold",
+              "greater",
+              "healthxp",
+              "high",
+              "hwy",
+              "id",
+              "imdb",
+              "ir12",
+              "j2000",
+              "jp14",
+              "judge1",
+              "kcaltv",
+              "keycap",
+              "language",
+              "larger",
+              "latitude",
+              "lbs",
+              "lcm",
+              "link",
+              "location",
+              "lt59",
+              "make",
+              "max",
+              "mean",
+              "median",
+              "medicine",
+              "members",
+              "min",
+              "minus",
+              "mm17",
+              "mode",
+              "model",
+              "month",
+              "mt35",
+              "multiply",
+              "name",
+              "national",
+              "nationality",
+              "no18",
+              "north",
+              "number",
+              "offset",
+              "older",
+              "open",
+              "origin",
+              "phrase",
+              "plan",
+              "player",
+              "plus",
+              "price",
+              "programme",
+              "puff",
+              "qualification",
+              "range",
+              "rank",
+              "rate",
+              "recovered",
+              "ref",
+              "region",
+              "sa10",
+              "schedule",
+              "season",
+              "security",
+              "share",
+              "si135",
+              "south",
+              "sp500",
+              "species",
+              "spirits",
+              "squared",
+              "stderr",
+              "strcity",
+              "streetaddr",
+              "strstate",
+              "struction",
+              "subcategory",
+              "subtract",
+              "sucode",
+              "sucountry",
+              "sum",
+              "symbol",
+              "test",
+              "time",
+              "times",
+              "title",
+              "toy",
+              "type",
+              "uncertainty",
+              "updated",
+              "user",
+              "version",
+              "w125115",
+              "w129765",
+              "w153863",
+              "w156213",
+              "w166984",
+              "w167663",
+              "w196743",
+              "w198894",
+              "w202503",
+              "w224913",
+              "w226794",
+              "w245143",
+              "w259744",
+              "w259946",
+              "w278654",
+              "winner",
+              "wreck",
+              "written",
+              "x",
+              "xtinction",
+              "year",
+              "years"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-co2-fossil-global-global-6f35f5"
+            },
+            {
+              "lit": "total"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-aa9ec8c2",
+      "task": "total-of-year-bab8-smaller",
+      "gen": 10,
+      "parents": [
+        "n-48977310"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20200318",
+              "20200604",
+              "20200622",
+              "20200628",
+              "20201108",
+              "20201120",
+              "20210116",
+              "20210323",
+              "20210404",
+              "20210614",
+              "20210626",
+              "20210627",
+              "20210716",
+              "20210724",
+              "20210731",
+              "20210817",
+              "20210911",
+              "20210927",
+              "20211006",
+              "20211013",
+              "20211107",
+              "20211108",
+              "20220102",
+              "20220208",
+              "20220218",
+              "20220312",
+              "20220328",
+              "added",
+              "age30",
+              "angeles",
+              "az",
+              "cars",
+              "chambers",
+              "champs",
+              "china",
+              "chip8",
+              "close",
+              "confirmed",
+              "cougar",
+              "country",
+              "cpi",
+              "descending",
+              "dividend",
+              "eclipse",
+              "edens",
+              "episode",
+              "episodes",
+              "explorer",
+              "fatalities",
+              "fin",
+              "final",
+              "firefox",
+              "high",
+              "hitman",
+              "id",
+              "judge1",
+              "keycap",
+              "larger",
+              "lesbian",
+              "min",
+              "national",
+              "num",
+              "number",
+              "obscur",
+              "open",
+              "pirates",
+              "price",
+              "rate",
+              "rebirth",
+              "recovered",
+              "season",
+              "solid",
+              "sp500",
+              "temp",
+              "title",
+              "toy",
+              "updated"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-fossil-global-global-6f35f5"
+              },
+              {
+                "lit": "total"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.sum",
+            [
+              "sense.listNums"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-1debfda2",
       "task": "total-of-year-bab8-smaller",
       "gen": 10,
@@ -15718,6 +16442,7 @@
     "b210508920baca14f4294f56250484bf5343d436cb4bf2d05670e1c294f1da1b",
     "b30acee9a78bb99e1cb16c34b06dd799a1792799e2089db1a008852aa6497922",
     "9683f5c4b98d45fee8bea550e3fa7498b25722b0e070c2ce96726d35c18e0d13",
-    "4b0d876e2f7b2dddcb94f079471e88e8feab69bf98ebc64bc34dfeba73f14cb1"
+    "4b0d876e2f7b2dddcb94f079471e88e8feab69bf98ebc64bc34dfeba73f14cb1",
+    "68e7ffd0e64e63fd5ea7baff53f1eea1b34e2d5be06778e5d093e7bafcdec576"
   ]
 }

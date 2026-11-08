@@ -2,41 +2,41 @@
   "task": "country-area",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T16:05:14.436Z",
+  "at": "2026-11-08T22:18:28.501Z",
   "stats": {
-    "generated": 161730,
-    "distinct": 96377,
-    "kept": 1545,
-    "know": 32,
+    "generated": 38614,
+    "distinct": 82383,
+    "kept": 1630,
+    "know": 55,
     "byFamily": {
-      "compute": 204,
+      "compute": 291,
       "memory": 187,
       "aggregate": 364,
-      "transform": 607,
-      "sense": 183
+      "transform": 606,
+      "sense": 182
     },
     "bySource": {
-      "enum": 183,
-      "parent": 1362
+      "parent": 1543,
+      "enum": 87
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 192841,
-    "cellsPerSecond": 839,
-    "capped": null,
+    "ms": 225457,
+    "cellsPerSecond": 171,
+    "capped": "ms",
     "packs": [
       "samayo-area"
     ],
     "cursor": {
       "v": 1,
       "basis": "a1de6e208504fad63090b5a1e6f71ef6909ce0154c4d71ce122d25ee19ede9b0",
-      "round": 1,
-      "at": 227767,
+      "round": 4,
+      "at": 250959,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compute.compound",
+      "prim": "compute.divisorSum",
       "tpl": 808
     }
   },
@@ -422,6 +422,95 @@
       "fit": {
         "ok": 34,
         "fired": 34,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8ae1d417",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "discount",
+            "element",
+            "item number",
+            "macao",
+            "minor",
+            "multiplicative inverse",
+            "nth",
+            "off",
+            "one over",
+            "position",
+            "reciprocal",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "samayo-area"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "surface area"
+              }
+            ]
+          ],
+          [
+            "transform.reciprocal",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 14,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
         "rows": 100
       }
     },
@@ -895,6 +984,131 @@
       }
     },
     {
+      "id": "n-b1f798af",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "consonant count",
+            "how many consonants",
+            "macao",
+            "norfolk",
+            "number of consonants",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.consonants",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-25842b78",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cubed",
+            "divisor count",
+            "element",
+            "how many divisors",
+            "how many factors",
+            "how many letters",
+            "item number",
+            "letter count",
+            "minor",
+            "nth",
+            "number of divisors",
+            "number of letters",
+            "position",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.cube",
+            [
+              "aggregate.letters",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-4ad78e5f",
       "task": "country-area",
       "gen": 10,
@@ -930,6 +1144,213 @@
             "iterate.collatz",
             [
               "aggregate.vowels",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a35bc952",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cocos",
+            "element",
+            "fib",
+            "fibonacci",
+            "fibonacci number",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.fibonacci",
+            [
+              "aggregate.vowels",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-af920f96",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "divisor count",
+            "element",
+            "fib",
+            "fibonacci",
+            "fibonacci number",
+            "how many consonants",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "minor",
+            "nth",
+            "number of consonants",
+            "number of divisors",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.fibonacci",
+            [
+              "aggregate.consonants",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b527631a",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "divisor count",
+            "element",
+            "how many consonants",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "minor",
+            "nth",
+            "number of consonants",
+            "number of divisors",
+            "position",
+            "sum of the first",
+            "triangular number"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.sumTo",
+            [
+              "aggregate.consonants",
               [
                 "transform.nthStr",
                 [
@@ -1070,6 +1491,219 @@
             "transform.charCodes",
             [
               "transform.pascal",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c9a8a094",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "element",
+            "from roman",
+            "how many divisors",
+            "how many factors",
+            "in arabic numerals",
+            "item number",
+            "macao",
+            "no vowels",
+            "nth",
+            "number of divisors",
+            "position",
+            "remove vowels",
+            "roman numeral value",
+            "what number is",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.fromRoman",
+            [
+              "transform.noVowels",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d061b22f",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "element",
+            "factorial",
+            "how many divisors",
+            "how many factors",
+            "how many words",
+            "item number",
+            "minor",
+            "n factorial",
+            "nth",
+            "number of divisors",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.factorial",
+            [
+              "aggregate.words",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e2c63a4a",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "element",
+            "fib",
+            "fibonacci",
+            "fibonacci number",
+            "how many divisors",
+            "how many factors",
+            "how many letters",
+            "item number",
+            "letter count",
+            "minor",
+            "nth",
+            "number of divisors",
+            "number of letters",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.fibonacci",
+            [
+              "aggregate.letters",
               [
                 "transform.nthStr",
                 [
@@ -1364,6 +1998,73 @@
       }
     },
     {
+      "id": "n-3ffc4db0",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "changes to turn",
+            "edit distance",
+            "element",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "macao",
+            "nth",
+            "position",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.before",
+              {
+                "lit": "area"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-492aea57",
       "task": "country-area",
       "gen": 10,
@@ -1557,6 +2258,73 @@
           {
             "lit": 5
           }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7db50ea6",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "changes to turn",
+            "edit distance",
+            "element",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "macao",
+            "nth",
+            "position",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.before",
+              {
+                "lit": "surface"
+              }
+            ]
+          ]
         ]
       ],
       "mem": null,
@@ -2050,6 +2818,88 @@
       "mem": null,
       "height": 5,
       "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9f678a21",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "character count",
+            "discount",
+            "element",
+            "how many characters",
+            "item number",
+            "length",
+            "macao",
+            "nth",
+            "number of characters",
+            "off",
+            "position",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.chars",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-area"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "samayo-area"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "surface area"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -2732,6 +3582,175 @@
       }
     },
     {
+      "id": "n-493f3f31",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "divisor count",
+            "element",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "minor",
+            "n choose k",
+            "nth",
+            "number of divisors",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.choose",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4defaafd",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "bahrain",
+            "discount",
+            "element",
+            "item number",
+            "next prime",
+            "nth",
+            "off",
+            "position",
+            "reduced by",
+            "sale price",
+            "smallest prime greater than",
+            "the prime after"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "compute.nextPrime",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-5201be53",
       "task": "country-area",
       "gen": 10,
@@ -2809,6 +3828,260 @@
           ],
           {
             "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-70970ab1",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arrangements",
+            "divisor count",
+            "element",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "norfolk",
+            "nth",
+            "number of divisors",
+            "ordered selections",
+            "permutations",
+            "position",
+            "ways to arrange"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.permutations",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7231c1b4",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "discount",
+            "element",
+            "futuna",
+            "item number",
+            "nth",
+            "off",
+            "position",
+            "reduced by",
+            "sale price",
+            "sum of the first",
+            "triangular number"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "islands"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 1
+          },
+          [
+            "compute.sumTo",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-77defdb1",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "discount",
+            "element",
+            "item number",
+            "next",
+            "nth",
+            "off",
+            "one more",
+            "pitcairn",
+            "position",
+            "reduced by",
+            "sale price",
+            "successor"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.next",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 2
           }
         ]
       ],
@@ -2903,6 +4176,513 @@
       }
     },
     {
+      "id": "n-7cd97860",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "difference",
+            "divisor count",
+            "element",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "less",
+            "minor",
+            "minus",
+            "nth",
+            "number of divisors",
+            "position",
+            "subtract",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.sub",
+            {
+              "lit": 1000
+            },
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-93ddeccc",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "element",
+            "growth rate",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "macao",
+            "nth",
+            "number of divisors",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "percentage change",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.percentChange",
+            {
+              "lit": 2
+            },
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b09bc20a",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "divisor count",
+            "element",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "macao",
+            "nth",
+            "number of divisors",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.asPercent",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b216735b",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "divisor count",
+            "element",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "norfolk",
+            "nth",
+            "number of divisors",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.asPercent",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b393b919",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "element",
+            "growth rate",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "macao",
+            "nth",
+            "number of divisors",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "percentage change",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.percentChange",
+            {
+              "lit": 1
+            },
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b776eaa1",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "divisor count",
+            "element",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "macao",
+            "nth",
+            "number of divisors",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.asPercent",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b7cd8167",
       "task": "country-area",
       "gen": 10,
@@ -2950,6 +4730,91 @@
           },
           [
             "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "samayo-area"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "surface area"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cbdf38cc",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "element",
+            "how many divisors",
+            "how many factors",
+            "increase by",
+            "item number",
+            "markup",
+            "minor",
+            "nth",
+            "number of divisors",
+            "plus tax",
+            "position",
+            "raise by",
+            "with tax"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.increase",
+            {
+              "lit": 1000
+            },
             [
               "know.num",
               [
@@ -7278,48 +9143,6 @@
           "sense.after",
           {
             "lit": "surface"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 2,
-      "size": 4,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-28ce5982",
-      "task": "country-area",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "malaysia"
-        ],
-        [
-          "has",
-          "give"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " area of Malaysia is 329758."
-          ]
-        },
-        [
-          "sense.wordAt",
-          {
-            "lit": 3
           }
         ]
       ],
@@ -15662,6 +17485,61 @@
       }
     },
     {
+      "id": "n-266e5609",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add up",
+            "altogether",
+            "in all",
+            "macao",
+            "prime numbers less than",
+            "primes below",
+            "primes under",
+            "primes up to",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "aggregate.sum",
+            [
+              "compute.primesUpTo",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-271a3c17",
       "task": "country-area",
       "gen": 6,
@@ -16031,6 +17909,52 @@
       }
     },
     {
+      "id": "n-29d0aa50",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "christmas",
+            "divisor count",
+            "how many factors",
+            "lcm of all",
+            "least common multiple of the list",
+            "number of divisors"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.lcmAll",
+            [
+              "iterate.squares",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-2a36c8de",
       "task": "country-area",
       "gen": 7,
@@ -16273,6 +18197,58 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2c481106",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "divisor count",
+            "fib",
+            "how many consonants",
+            "how many factors",
+            "minor",
+            "number of consonants",
+            "number of divisors"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.fibonacci",
+            [
+              "aggregate.consonants",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -16568,6 +18544,56 @@
           "aggregate.digitSum",
           [
             "aggregate.product",
+            [
+              "iterate.squares",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-33cd5a2f",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "how many factors",
+            "minor",
+            "number of divisors",
+            "sum of squares",
+            "sum of the squares"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "aggregate.sumSquares",
             [
               "iterate.squares",
               [
@@ -17037,6 +19063,112 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-39cf70eb",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cubed",
+            "divisor count",
+            "how many factors",
+            "minor",
+            "number of divisors",
+            "one less",
+            "predecessor",
+            "previous",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.cube",
+            [
+              "transform.prev",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3a5a5f08",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cubed",
+            "divisor count",
+            "how many factors",
+            "minor",
+            "number of divisors",
+            "one less",
+            "predecessor",
+            "previous",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.prev",
+            [
+              "transform.cube",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -17892,6 +20024,57 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4a8f309b",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cubed",
+            "divisor count",
+            "how many factors",
+            "minor",
+            "number of divisors",
+            "to the third power",
+            "two times"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.cube",
+            [
+              "transform.double",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -19585,6 +21768,59 @@
       }
     },
     {
+      "id": "n-6360806c",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "how many factors",
+            "how many letters",
+            "letter count",
+            "minor",
+            "number of divisors",
+            "number of letters",
+            "sum of the first",
+            "triangular number"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.sumTo",
+            [
+              "aggregate.letters",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-63d796a0",
       "task": "country-area",
       "gen": 7,
@@ -19662,6 +21898,108 @@
               "aggregate.words",
               [
                 "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-64db8448",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "how many factors",
+            "how many letters",
+            "letter count",
+            "minor",
+            "number of divisors",
+            "number of letters",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.divisorSum",
+            [
+              "aggregate.letters",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-64eab965",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "cocos",
+            "fib",
+            "how many characters",
+            "number of characters",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.fibonacci",
+            [
+              "aggregate.chars",
+              [
+                "sense.lastWord"
               ]
             ]
           ]
@@ -21709,6 +24047,55 @@
       }
     },
     {
+      "id": "n-8a6272ae",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "difference between the largest and smallest",
+            "divisor count",
+            "how many factors",
+            "minor",
+            "number of divisors"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "aggregate.range",
+            [
+              "iterate.squares",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-8b2380a8",
       "task": "country-area",
       "gen": 7,
@@ -22641,6 +25028,58 @@
       }
     },
     {
+      "id": "n-9b54b44a",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "divisor count",
+            "how many consonants",
+            "how many factors",
+            "minor",
+            "n factorial",
+            "number of consonants",
+            "number of divisors"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.factorial",
+            [
+              "aggregate.consonants",
+              [
+                "sense.lastWord"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-9b8cd56b",
       "task": "country-area",
       "gen": 6,
@@ -22726,6 +25165,59 @@
             "transform.square",
             [
               "compute.nextPrime",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9e38b109",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "cubed",
+            "digit sum",
+            "macao",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the digits",
+            "sum of the divisors",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "aggregate.digitSum",
+            [
+              "transform.cube",
               [
                 "sense.wordCount"
               ]
@@ -23243,6 +25735,104 @@
             "compute.divisors",
             [
               "compute.nthPrime",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a6a9072f",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cocos",
+            "successor",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.divisorSum",
+            [
+              "transform.next",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a736c0e2",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cubed",
+            "divisor count",
+            "how many factors",
+            "minor",
+            "number of divisors",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.divisorSum",
+            [
+              "transform.cube",
               [
                 "sense.wordCount"
               ]
@@ -23821,6 +26411,59 @@
       }
     },
     {
+      "id": "n-ab7cd1e2",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "cubed",
+            "divisor count",
+            "how many consonants",
+            "how many factors",
+            "minor",
+            "number of consonants",
+            "number of divisors",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.cube",
+            [
+              "aggregate.consonants",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-ada94758",
       "task": "country-area",
       "gen": 7,
@@ -23965,6 +26608,53 @@
       }
     },
     {
+      "id": "n-b4deee7e",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "how many divisors",
+            "how many factors",
+            "minor",
+            "number of divisors",
+            "population variance",
+            "variance"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "aggregate.variance",
+            [
+              "iterate.squares",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b6371359",
       "task": "country-area",
       "gen": 6,
@@ -24011,56 +26701,6 @@
       ],
       "mem": null,
       "height": 5,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-b82170ee",
-      "task": "country-area",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "palestine",
-            "position"
-          ]
-        ],
-        [
-          "has",
-          "tell"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " area of Palestine is 6257."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -24479,6 +27119,51 @@
       }
     },
     {
+      "id": "n-bc09ecb7",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "biggest",
+            "cocos",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "aggregate.max",
+            [
+              "iterate.fibs",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-bc4d6d17",
       "task": "country-area",
       "gen": 7,
@@ -24637,6 +27322,57 @@
       }
     },
     {
+      "id": "n-c0e7da0f",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add up",
+            "altogether",
+            "divisor count",
+            "how many factors",
+            "in all",
+            "macao",
+            "number of divisors"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "aggregate.sum",
+            [
+              "iterate.collatz",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-c2d1bea5",
       "task": "country-area",
       "gen": 7,
@@ -24778,6 +27514,56 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c45278c0",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many numbers",
+            "macao",
+            "number of values",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "aggregate.count",
+            [
+              "iterate.collatz",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -25428,6 +28214,58 @@
       }
     },
     {
+      "id": "n-cc874700",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "how many factors",
+            "minor",
+            "n factorial",
+            "number of divisors",
+            "one less",
+            "predecessor",
+            "previous"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.prev",
+            [
+              "compute.factorial",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-cd90933e",
       "task": "country-area",
       "gen": 6,
@@ -25728,6 +28566,55 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d6da40ec",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "cubed",
+            "divisor count",
+            "how many characters",
+            "how many factors",
+            "number of characters",
+            "number of divisors",
+            "pitcairn",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.cube",
+            [
+              "aggregate.chars",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -26645,6 +29532,59 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e5c71ce9",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cubed",
+            "divisor count",
+            "how many factors",
+            "how many vowels",
+            "minor",
+            "number of divisors",
+            "number of vowels",
+            "to the third power",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "transform.cube",
+            [
+              "aggregate.vowels",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -28414,6 +31354,59 @@
       }
     },
     {
+      "id": "n-ffb70caa",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "digit sum",
+            "macao",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the digits",
+            "sum of the divisors",
+            "sum of the first",
+            "triangular number"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "aggregate.digitSum",
+            [
+              "compute.sumTo",
+              [
+                "sense.wordCount"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-00a3dc13",
       "task": "country-area",
       "gen": 6,
@@ -28864,6 +31857,58 @@
           ],
           {
             "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0471144d",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "norfolk",
+            "reduced by",
+            "sale price",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ],
+          {
+            "lit": 1000
           }
         ]
       ],
@@ -29374,6 +32419,61 @@
       }
     },
     {
+      "id": "n-08ddee90",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "compound interest",
+            "compounded",
+            "grows to",
+            "minor",
+            "one less",
+            "predecessor",
+            "previous"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.compound",
+          [
+            "transform.prev",
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-09329734",
       "task": "country-area",
       "gen": 7,
@@ -29472,6 +32572,60 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0a46084e",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "character count",
+            "how many characters",
+            "macao",
+            "number of characters",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.chars",
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -29639,6 +32793,58 @@
       }
     },
     {
+      "id": "n-0ec43776",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "norfolk",
+            "reduced by",
+            "sale price",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.sub",
+            {
+              "lit": 3
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-0ed597fa",
       "task": "country-area",
       "gen": 10,
@@ -29735,6 +32941,57 @@
             },
             [
               "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0f5e33a4",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "changes to turn",
+            "edit distance",
+            "how many edits",
+            "levenshtein",
+            "macao",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.editDistance",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.before",
+              {
+                "lit": "surface"
+              }
             ]
           ]
         ]
@@ -30010,6 +33267,57 @@
       }
     },
     {
+      "id": "n-1430f900",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "changes to turn",
+            "edit distance",
+            "how many edits",
+            "levenshtein",
+            "macao",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.editDistance",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.before",
+              {
+                "lit": "area"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-14ee82d4",
       "task": "country-area",
       "gen": 6,
@@ -30265,6 +33573,60 @@
                 "lit": "surface"
               }
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-16183b18",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "hypotenuse",
+            "norfolk",
+            "pythagoras",
+            "pythagorean",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 4
+          },
+          [
+            "compute.hypot",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1000
+            }
           ]
         ]
       ],
@@ -30910,6 +34272,61 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-23c40fe2",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "left over",
+            "macao",
+            "mod",
+            "modulo",
+            "reduced by",
+            "remainder",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -32029,6 +35446,61 @@
       }
     },
     {
+      "id": "n-31b729e3",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "growth rate",
+            "norfolk",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "compute.percentChange",
+            {
+              "lit": 5
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-31cd8e24",
       "task": "country-area",
       "gen": 6,
@@ -32086,6 +35558,61 @@
       }
     },
     {
+      "id": "n-32f2f4e9",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "left over",
+            "macao",
+            "mod",
+            "modulo",
+            "reduced by",
+            "remainder",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.mod",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-33748ae9",
       "task": "country-area",
       "gen": 6,
@@ -32131,6 +35658,58 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-343693c8",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "discount",
+            "how many words",
+            "norfolk",
+            "number of words",
+            "off",
+            "reduced by",
+            "sale price",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "surface"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -32970,6 +36549,60 @@
       }
     },
     {
+      "id": "n-49eb5ef0",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "hypotenuse",
+            "minor",
+            "pythagoras",
+            "pythagorean",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "compute.hypot",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-4aa578b0",
       "task": "country-area",
       "gen": 6,
@@ -33219,6 +36852,57 @@
             },
             [
               "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4ea9f9de",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "changes to turn",
+            "edit distance",
+            "how many edits",
+            "levenshtein",
+            "norfolk",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.editDistance",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
             ]
           ]
         ]
@@ -33960,6 +37644,59 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-549ff612",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "compound interest",
+            "compounded",
+            "grows to",
+            "macao",
+            "successor"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.compound",
+          [
+            "transform.next",
+            [
+              "sense.wordCount"
+            ]
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -35223,6 +38960,58 @@
       }
     },
     {
+      "id": "n-68d5bc96",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "macao",
+            "reduced by",
+            "sale price",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-68fd0bfa",
       "task": "country-area",
       "gen": 10,
@@ -35331,6 +39120,165 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6a3807ff",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "principe",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 1000
+          },
+          [
+            "compute.discount",
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6c27139a",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "least common multiple",
+            "lowest common multiple",
+            "macao",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 3
+          },
+          [
+            "compute.lcm",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 100
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6cdd3356",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "as a percentage",
+            "macao",
+            "percent is",
+            "reduced by",
+            "sale price",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 3
+          },
+          [
+            "compute.asPercent",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -36067,6 +40015,58 @@
       }
     },
     {
+      "id": "n-7b4b93f0",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "macao",
+            "reduced by",
+            "sale price",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.sub",
+            {
+              "lit": 5
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-7bb88cf0",
       "task": "country-area",
       "gen": 7,
@@ -36385,6 +40385,61 @@
               "sense.wordCount"
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-84373ae4",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "as a percentage",
+            "minor",
+            "percent is",
+            "reduced by",
+            "sale price",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "compute.asPercent",
+            {
+              "lit": 2
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 12
+          }
         ]
       ],
       "mem": null,
@@ -37152,6 +41207,57 @@
       }
     },
     {
+      "id": "n-98e6295e",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "cocos",
+            "compound interest",
+            "compounded",
+            "divisor count",
+            "grows to",
+            "how many factors",
+            "number of divisors"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.compound",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 100
+            },
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-99576976",
       "task": "country-area",
       "gen": 7,
@@ -37305,6 +41411,60 @@
             [
               "sense.wordCount"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9f227c39",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "hypotenuse",
+            "macao",
+            "pythagoras",
+            "pythagorean",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 2
+          },
+          [
+            "compute.hypot",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1000
+            }
           ]
         ]
       ],
@@ -37477,6 +41637,61 @@
       }
     },
     {
+      "id": "n-a15b3dbb",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "macao",
+            "reduced by",
+            "sale price",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a2d591da",
       "task": "country-area",
       "gen": 6,
@@ -37629,6 +41844,58 @@
               "sense.lastWord"
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a3796123",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "consonant count",
+            "discount",
+            "how many consonants",
+            "norfolk",
+            "number of consonants",
+            "off",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.consonants",
+            [
+              "sense.before",
+              {
+                "lit": "surface"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
         ]
       ],
       "mem": null,
@@ -38339,6 +42606,58 @@
       }
     },
     {
+      "id": "n-b0061da2",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "discount",
+            "how many words",
+            "macao",
+            "number of words",
+            "off",
+            "reduced by",
+            "sale price",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b33e02d1",
       "task": "country-area",
       "gen": 6,
@@ -38824,6 +43143,61 @@
       }
     },
     {
+      "id": "n-bcfcf23a",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "growth rate",
+            "macao",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 12
+          },
+          [
+            "compute.percentChange",
+            {
+              "lit": 2
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-bdd2eb0c",
       "task": "country-area",
       "gen": 7,
@@ -39243,6 +43617,59 @@
       }
     },
     {
+      "id": "n-c214c35e",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "compound interest",
+            "compounded",
+            "grows to",
+            "minor",
+            "successor"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.compound",
+          [
+            "transform.next",
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-c3472c04",
       "task": "country-area",
       "gen": 10,
@@ -39545,6 +43972,60 @@
               "lit": 10
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c78b5b09",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "area of a triangle",
+            "half base times height",
+            "minor",
+            "reduced by",
+            "sale price",
+            "triangle area"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "compute.triangleArea",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ],
+          {
+            "lit": 3
+          }
         ]
       ],
       "mem": null,
@@ -40099,6 +44580,57 @@
       }
     },
     {
+      "id": "n-cf4b8fe8",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "discount",
+            "how many letters",
+            "letter count",
+            "macao",
+            "number of letters",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.letters",
+            [
+              "sense.before",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-d0d639df",
       "task": "country-area",
       "gen": 10,
@@ -40351,6 +44883,68 @@
             "aggregate.vowels",
             [
               "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d456e6a6",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "futuna",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "islands"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 1000
+          },
+          [
+            "compute.percentChange",
+            {
+              "lit": 5
+            },
+            [
+              "sense.wordCount"
             ]
           ]
         ]
@@ -40971,6 +45565,68 @@
       }
     },
     {
+      "id": "n-df6dfd8c",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "reduced by",
+            "sale price",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "islands"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "compute.asPercent",
+            {
+              "lit": 2
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e0d4d339",
       "task": "country-area",
       "gen": 6,
@@ -41351,6 +46007,59 @@
       }
     },
     {
+      "id": "n-e6f24438",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "how many factors",
+            "interest earned",
+            "minor",
+            "number of divisors",
+            "simple interest"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.interest",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            },
+            {
+              "lit": 1000
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e7663f09",
       "task": "country-area",
       "gen": 6,
@@ -41690,6 +46399,57 @@
       }
     },
     {
+      "id": "n-ec744024",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "cocos",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "compute.percentChange",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-ece240f9",
       "task": "country-area",
       "gen": 6,
@@ -41898,6 +46658,68 @@
       }
     },
     {
+      "id": "n-f15dd4d2",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "reduced by",
+            "sale price",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "islands"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 100
+          },
+          [
+            "compute.asPercent",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-f220814d",
       "task": "country-area",
       "gen": 10,
@@ -41991,6 +46813,114 @@
               "sense.wordCount"
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f40e592c",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "how many factors",
+            "interest earned",
+            "minor",
+            "number of divisors",
+            "simple interest"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorCount",
+          [
+            "compute.interest",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            },
+            {
+              "lit": 1000
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f43a4f2d",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "discount",
+            "how many words",
+            "norfolk",
+            "number of words",
+            "reduced by",
+            "sale price",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.words",
+            [
+              "sense.before",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
         ]
       ],
       "mem": null,
@@ -42156,6 +47086,57 @@
               }
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f5511d55",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "minor",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "compute.discount",
+            {
+              "lit": 2
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1000
+          }
         ]
       ],
       "mem": null,
@@ -42376,6 +47357,56 @@
       }
     },
     {
+      "id": "n-f9fccc07",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "cocos",
+            "hypotenuse",
+            "pythagoras",
+            "pythagorean",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "compute.hypot",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-fa5dd395",
       "task": "country-area",
       "gen": 10,
@@ -42426,6 +47457,59 @@
               }
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fb03f667",
+      "task": "country-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "character count",
+            "discount",
+            "how many characters",
+            "kitts",
+            "length",
+            "number of characters",
+            "off",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "aggregate.chars",
+            [
+              "sense.after",
+              {
+                "lit": "surface"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
         ]
       ],
       "mem": null,
@@ -85102,6 +90186,98 @@
       }
     },
     {
+      "id": "n-28ce5982",
+      "task": "country-area",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "malaysia"
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " area of Malaysia is 329758."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 2,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b82170ee",
+      "task": "country-area",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "palestine",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " area of Palestine is 6257."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-ca8fd273",
       "task": "country-area",
       "gen": 6,
@@ -102396,6 +107572,7 @@
     }
   ],
   "stages": [
-    "1096eaeeb8c0eb0541a2a3a164b064a85addb1f1b4ebf86c7be79e602745b1cc"
+    "1096eaeeb8c0eb0541a2a3a164b064a85addb1f1b4ebf86c7be79e602745b1cc",
+    "109b962e7c051b952b0a3d6b4f1f09522ab45f9f29494363e88139cd404b37f4"
   ]
 }
