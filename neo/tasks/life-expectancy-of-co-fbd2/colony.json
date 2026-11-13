@@ -2,11 +2,11 @@
   "task": "life-expectancy-of-co-fbd2",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-27T03:34:45.717Z",
+  "at": "2026-11-13T10:11:34.220Z",
   "stats": {
-    "generated": 116500,
-    "distinct": 54479,
-    "kept": 439,
+    "generated": 82150,
+    "distinct": 97481,
+    "kept": 440,
     "know": 167,
     "byFamily": {
       "aggregate": 192,
@@ -14,30 +14,31 @@
       "sense": 14,
       "memory": 181,
       "know": 2,
-      "compute": 17
+      "compute": 18
     },
     "bySource": {
-      "parent": 424,
-      "enum": 15
+      "parent": 436,
+      "open": 1,
+      "enum": 3
     },
     "maxHeight": 7,
     "devOk": 93,
     "devN": 93,
-    "ms": 155737,
-    "cellsPerSecond": 748,
+    "ms": 107474,
+    "cellsPerSecond": 764,
     "capped": "ms",
     "packs": [
       "fr-datasets-bubble-chart-tutorial-280842"
     ],
     "cursor": {
       "v": 1,
-      "basis": "f5638108d822e98b30ab3e31d74fa908c7f213337475ae74b89e09fbcee00437",
-      "round": 1,
-      "at": 187020,
+      "basis": "c37ed7f33d0b26610634f42e4624ede35ec7f2827b507863924c0b1a502b92d1",
+      "round": 2,
+      "at": 255655,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compare.isPerfect",
+      "prim": "compute.discount",
       "tpl": 839
     }
   },
@@ -2397,7 +2398,7 @@
       }
     },
     {
-      "id": "n-11b32bc4",
+      "id": "n-1b252f79",
       "task": "life-expectancy-of-co-fbd2",
       "gen": 10,
       "parents": [],
@@ -2423,6 +2424,7 @@
               "capita",
               "capital",
               "category",
+              "cheese",
               "china",
               "city",
               "coastline",
@@ -2458,6 +2460,7 @@
               "location",
               "mali",
               "mauritania",
+              "milk",
               "netherlands",
               "network",
               "niger",
@@ -22640,6 +22643,62 @@
       }
     },
     {
+      "id": "n-7faf43a2",
+      "task": "life-expectancy-of-co-fbd2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "increase by",
+            "percent is",
+            "plus tax",
+            "raise by",
+            "taiwan",
+            "what percent",
+            "what percentage",
+            "with tax"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "life"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.increase",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 93
+      }
+    },
+    {
       "id": "n-84231b4a",
       "task": "life-expectancy-of-co-fbd2",
       "gen": 10,
@@ -28784,12 +28843,158 @@
         "fired": 1,
         "rows": 93
       }
+    },
+    {
+      "id": "n-11b32bc4",
+      "task": "life-expectancy-of-co-fbd2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "abbreviation",
+              "airline",
+              "alcohol",
+              "algeria",
+              "author",
+              "bahrain",
+              "banking",
+              "benin",
+              "bosnia",
+              "bulgaria",
+              "burkina",
+              "cambodia",
+              "cameroon",
+              "capita",
+              "capital",
+              "category",
+              "china",
+              "city",
+              "coastline",
+              "code",
+              "college",
+              "combined",
+              "continent",
+              "country",
+              "currency",
+              "dandelion",
+              "date",
+              "denmark",
+              "density",
+              "dish",
+              "domain",
+              "egypt",
+              "emoji",
+              "etf",
+              "fowler",
+              "france",
+              "governed",
+              "government",
+              "iceland",
+              "imdb",
+              "independence",
+              "india",
+              "iso",
+              "iso2",
+              "iso3",
+              "lanka",
+              "larger",
+              "latitude",
+              "location",
+              "mali",
+              "mauritania",
+              "netherlands",
+              "network",
+              "niger",
+              "north",
+              "official",
+              "person",
+              "poland",
+              "population",
+              "ref",
+              "region",
+              "religion",
+              "rwanda",
+              "series",
+              "singapore",
+              "smaller",
+              "song",
+              "south",
+              "strstate",
+              "subregion",
+              "sudan",
+              "sum",
+              "sunlight",
+              "surface",
+              "sweden",
+              "syria",
+              "temperature",
+              "time",
+              "title",
+              "weight",
+              "zambia",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-bubble-chart-tutorial-280842"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-bubble-chart-tutorial-280842"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "life expectancy"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 31,
+        "fired": 31,
+        "rows": 93
+      }
     }
   ],
   "stages": [
     "f21398db9826b91844ee14fc639227a294bfe1d9f0bb8f7909d7f22dc2567c2f",
     "3d661ac44b0c22417fffe9a343e3cbf635c8fd278ba6d346f86adea0b1339eed",
     "d367c648982b540b9b2a5d258906e02d167fbd4a7550169f126a8f20ddf37a18",
-    "5355a3d1179d3bcaad546e4c1e464e321ffbd2f66edc5bd91daa4a1aa87e319c"
+    "5355a3d1179d3bcaad546e4c1e464e321ffbd2f66edc5bd91daa4a1aa87e319c",
+    "e1415904d8f3a3ff025fa29cb0dbca1b7fd75f3f13c132ccd494820a185db353"
   ]
 }
