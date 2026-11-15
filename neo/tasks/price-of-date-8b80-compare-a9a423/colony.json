@@ -2,10 +2,10 @@
   "task": "price-of-date-8b80-compare-a9a423",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T21:34:34.997Z",
+  "at": "2026-11-15T20:08:32.385Z",
   "stats": {
-    "generated": 103657,
-    "distinct": 100800,
+    "generated": 80841,
+    "distinct": 95387,
     "kept": 104,
     "know": 1,
     "byFamily": {
@@ -13,13 +13,14 @@
       "transform": 1
     },
     "bySource": {
-      "parent": 104
+      "parent": 103,
+      "open": 1
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 65514,
-    "cellsPerSecond": 1582,
+    "ms": 60747,
+    "cellsPerSecond": 1331,
     "capped": "ms",
     "packs": [
       "fr-gold-prices-monthly-processed-29ea8c"
@@ -27,12 +28,12 @@
     "cursor": {
       "v": 1,
       "basis": "2b1a344ce6928970fb09ad38fd060cea73dd01f3ba81ec4d46e4f2e30930684a",
-      "round": 1,
-      "at": 157557,
+      "round": 2,
+      "at": 176471,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.hypot",
+      "prim": "compute.nthPrime",
       "tpl": 2666
     }
   },
@@ -374,7 +375,7 @@
       }
     },
     {
-      "id": "n-e7abdaed",
+      "id": "n-4bb34a30",
       "task": "price-of-date-8b80-compare-a9a423",
       "gen": 10,
       "parents": [],
@@ -384,41 +385,42 @@
           [
             "hasAny",
             [
-              "19970201",
-              "19970901",
+              "19990601",
               "20000501",
               "20021101",
               "20030501",
               "20040801",
               "20060501",
               "20070201",
-              "20070301",
               "20070701",
               "20070901",
               "20080101",
               "20080301",
-              "20091001",
-              "20100301",
+              "20090901",
               "20100501",
               "20110101",
               "20110401",
               "20110501",
+              "20111101",
               "20120201",
               "20120301",
               "20130901",
               "20150601",
               "20150901",
               "20180201",
+              "20181201",
               "20190701",
+              "20191201",
               "20200601",
               "20210201",
-              "20230101",
+              "20220601",
               "20230201",
               "20230401",
               "20240901",
               "20260601",
               "add",
               "angeles",
+              "az",
               "cpi",
               "dividend",
               "greater",
@@ -426,7 +428,6 @@
               "lesser",
               "makes",
               "national",
-              "phoenix",
               "rate",
               "smaller",
               "sp500"
@@ -4296,10 +4297,302 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-e7abdaed",
+      "task": "price-of-date-8b80-compare-a9a423",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19970201",
+              "19970901",
+              "20000501",
+              "20021101",
+              "20030501",
+              "20040801",
+              "20060501",
+              "20070201",
+              "20070301",
+              "20070701",
+              "20070901",
+              "20080101",
+              "20080301",
+              "20091001",
+              "20100301",
+              "20100501",
+              "20110101",
+              "20110401",
+              "20110501",
+              "20120201",
+              "20120301",
+              "20130901",
+              "20150601",
+              "20150901",
+              "20180201",
+              "20190701",
+              "20200601",
+              "20210201",
+              "20230101",
+              "20230201",
+              "20230401",
+              "20240901",
+              "20260601",
+              "add",
+              "angeles",
+              "cpi",
+              "dividend",
+              "greater",
+              "larger",
+              "lesser",
+              "makes",
+              "national",
+              "phoenix",
+              "rate",
+              "smaller",
+              "sp500"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            " and that of ",
+            {
+              "slot": 3
+            },
+            " is ",
+            {
+              "slot": 4
+            },
+            ", so ",
+            {
+              "slot": 5
+            },
+            " has the larger price."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-gold-prices-monthly-processed-29ea8c"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-gold-prices-monthly-processed-29ea8c"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-gold-prices-monthly-processed-29ea8c"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-gold-prices-monthly-processed-29ea8c"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-gold-prices-monthly-processed-29ea8c"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-gold-prices-monthly-processed-29ea8c"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-gold-prices-monthly-processed-29ea8c"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-gold-prices-monthly-processed-29ea8c"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-gold-prices-monthly-processed-29ea8c"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-gold-prices-monthly-processed-29ea8c"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-gold-prices-monthly-processed-29ea8c"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-gold-prices-monthly-processed-29ea8c"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 65,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
     }
   ],
   "stages": [
     "0a33445fd7f24b0c9e37323502f3cdee10a088be719a6e83f08ea478d13c1a59",
-    "99a1a3cd9027a5357e8e6787fe11751e4e0594a47f971fa3342b341896e8f08b"
+    "99a1a3cd9027a5357e8e6787fe11751e4e0594a47f971fa3342b341896e8f08b",
+    "302fdeebf44f66ed117c0abcefb424a2ae641ff322c00fb21852114193b7f405"
   ]
 }
