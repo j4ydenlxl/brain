@@ -2,40 +2,41 @@
   "task": "airport-code-city",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T13:21:57.592Z",
+  "at": "2026-11-17T21:00:01.291Z",
   "stats": {
-    "generated": 137993,
-    "distinct": 45870,
-    "kept": 888,
-    "know": 425,
+    "generated": 200108,
+    "distinct": 79642,
+    "kept": 891,
+    "know": 429,
     "byFamily": {
       "memory": 206,
-      "transform": 434,
-      "aggregate": 98,
+      "transform": 438,
+      "aggregate": 97,
       "sense": 150
     },
     "bySource": {
-      "parent": 884,
-      "enum": 4
+      "parent": 724,
+      "enum": 163,
+      "template": 4
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 100773,
-    "cellsPerSecond": 1369,
-    "capped": "ms",
+    "ms": 181080,
+    "cellsPerSecond": 1105,
+    "capped": null,
     "packs": [
       "openflights-airports"
     ],
     "cursor": {
       "v": 1,
-      "basis": "ac8faad744c1a2a018fd8caa307d444fc024f1fe3a3d9a2d00e5488b4b2d59d9",
-      "round": 1,
-      "at": 232640,
+      "basis": "8e7431270f34253e0a224adff2068e22c9324aa4461c90d33d6c14bc79869397",
+      "round": 0,
+      "at": 105591,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compute.asPercent",
+      "prim": "aggregate.indexOf",
       "tpl": 995
     }
   },
@@ -19517,6 +19518,75 @@
       }
     },
     {
+      "id": "n-5640004e",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "airport",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "in"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "openflights-airports"
+                },
+                {
+                  "lit": "airport code"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "openflights-airports"
+            },
+            {
+              "lit": "airport code"
+            },
+            {
+              "lit": "city"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 34,
+        "fired": 34,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-73f82c96",
       "task": "airport-code-city",
       "gen": 10,
@@ -19540,6 +19610,75 @@
       ],
       "pyramid": [
         "render.code",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "openflights-airports"
+                },
+                {
+                  "lit": "airport code"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "openflights-airports"
+            },
+            {
+              "lit": "airport code"
+            },
+            {
+              "lit": "city"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 34,
+        "fired": 34,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f56954cc",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "airport",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "in"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
         [
           "transform.remove",
           [
@@ -30050,67 +30189,6 @@
       }
     },
     {
-      "id": "n-22271d4c",
-      "task": "airport-code-city",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "dbt",
-            "item number",
-            "nth"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Debre Tabor."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 3
-          }
-        ],
-        [
-          "render.list",
-          [
-            "know.find",
-            {
-              "lit": "openflights-airports"
-            },
-            {
-              "lit": "airport code"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-267f1560",
       "task": "airport-code-city",
       "gen": 10,
@@ -31099,6 +31177,71 @@
       }
     },
     {
+      "id": "n-6c4cf292",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "toi"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Troy."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "openflights-airports"
+            },
+            {
+              "lit": "airport code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-6ed650f9",
       "task": "airport-code-city",
       "gen": 10,
@@ -31444,6 +31587,71 @@
           ],
           {
             "lit": 5
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "openflights-airports"
+            },
+            {
+              "lit": "airport code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7f1cf6c6",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dbt",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "city"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Debre Tabor."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
           }
         ],
         [
@@ -37421,82 +37629,6 @@
       }
     },
     {
-      "id": "n-3b2da903",
-      "task": "airport-code-city",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "dbt",
-            "item number",
-            "nth"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " DBT is in ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 3
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "openflights-airports"
-              },
-              {
-                "lit": "airport code"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "openflights-airports"
-          },
-          {
-            "lit": "airport code"
-          },
-          {
-            "lit": "city"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-3fc72efb",
       "task": "airport-code-city",
       "gen": 10,
@@ -39565,6 +39697,86 @@
       }
     },
     {
+      "id": "n-9cf56716",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "toi"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " TOI is in ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "openflights-airports"
+              },
+              {
+                "lit": "airport code"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "openflights-airports"
+          },
+          {
+            "lit": "airport code"
+          },
+          {
+            "lit": "city"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a2b1388d",
       "task": "airport-code-city",
       "gen": 10,
@@ -40428,6 +40640,86 @@
               "slot": 0
             },
             " LSF is in ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "openflights-airports"
+              },
+              {
+                "lit": "airport code"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "openflights-airports"
+          },
+          {
+            "lit": "airport code"
+          },
+          {
+            "lit": "city"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d0e634b7",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dbt",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "city"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " DBT is in ",
             {
               "slot": 1
             },
@@ -49628,49 +49920,6 @@
               "slot": 0
             },
             " is in Malta."
-          ]
-        },
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 4,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-d0043555",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "dbt",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The airport ",
-            {
-              "slot": 0
-            },
-            " is in Debre Tabor."
           ]
         },
         [
@@ -62436,6 +62685,186 @@
       },
       "height": 3,
       "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-22271d4c",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dbt",
+            "item number",
+            "nth"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Debre Tabor."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "openflights-airports"
+            },
+            {
+              "lit": "airport code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3b2da903",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dbt",
+            "item number",
+            "nth"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " DBT is in ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "openflights-airports"
+              },
+              {
+                "lit": "airport code"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "openflights-airports"
+          },
+          {
+            "lit": "airport code"
+          },
+          {
+            "lit": "city"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d0043555",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dbt",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The airport ",
+            {
+              "slot": 0
+            },
+            " is in Debre Tabor."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -104813,6 +105242,7 @@
   ],
   "stages": [
     "c98b418a71f953f4140fa363c7231ef279402d079b7228ce2f3a71f7135d445c",
-    "31363c9ef1c7fc289fe9289cfdf7cd88a7705bdb9ee82bf6c1057b82baacf692"
+    "31363c9ef1c7fc289fe9289cfdf7cd88a7705bdb9ee82bf6c1057b82baacf692",
+    "028315846b0514677cdb6ca3619a85d74e867a83a90e6e43c966887640e3dde1"
   ]
 }
