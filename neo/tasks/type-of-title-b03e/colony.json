@@ -2,41 +2,42 @@
   "task": "type-of-title-b03e",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T19:41:19.035Z",
+  "at": "2026-11-17T14:10:35.698Z",
   "stats": {
-    "generated": 160447,
-    "distinct": 146631,
-    "kept": 475,
-    "know": 249,
+    "generated": 200056,
+    "distinct": 95651,
+    "kept": 476,
+    "know": 250,
     "byFamily": {
       "memory": 198,
-      "transform": 118,
+      "transform": 119,
       "aggregate": 119,
       "sense": 28,
       "iterate": 12
     },
     "bySource": {
-      "parent": 447,
-      "enum": 28
+      "parent": 413,
+      "enum": 60,
+      "template": 3
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 88009,
-    "cellsPerSecond": 1823,
+    "ms": 168899,
+    "cellsPerSecond": 1184,
     "capped": null,
     "packs": [
       "fr-tidytuesday-netflix-titles-dd14f1"
     ],
     "cursor": {
       "v": 1,
-      "basis": "13a57e1753bb2e9d4a1c37effb6589d552b3df2b59e9ced59a86bcc5c223c499",
-      "round": 1,
-      "at": 179127,
+      "basis": "8d958e7d7dfb5cfc8cfed8a991a7361dcd7ce7b6a905d2ddbf0abd53040f2f1b",
+      "round": 0,
+      "at": 97400,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.atLeast",
+      "prim": "compute.power",
       "tpl": 2790
     }
   },
@@ -20116,6 +20117,74 @@
       }
     },
     {
+      "id": "n-90d151a5",
+      "task": "type-of-title-b03e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "title"
+          ]
+        ],
+        [
+          "has",
+          "type"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+            },
+            {
+              "lit": "title"
+            },
+            {
+              "lit": "type"
+            }
+          ],
+          [
+            "sense.roman"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a8be0ac7",
       "task": "type-of-title-b03e",
       "gen": 10,
@@ -20292,86 +20361,6 @@
               "slot": 0
             },
             " of True: Rainbow Rescue is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-netflix-titles-dd14f1"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "type"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-04842b8a",
-      "task": "type-of-title-b03e",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "chief",
-            "item number",
-            "nth",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ],
-        [
-          "has",
-          "tell"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Chief of Staff is ",
             {
               "slot": 1
             },
@@ -20840,6 +20829,86 @@
               "slot": 0
             },
             " of Hell and Back is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "type"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1d69f0ea",
+      "task": "type-of-title-b03e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "friends",
+            "item number",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "type"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of True: Magical Friends is ",
             {
               "slot": 1
             },
@@ -24541,86 +24610,6 @@
       }
     },
     {
-      "id": "n-a76dffe7",
-      "task": "type-of-title-b03e",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "friends",
-            "item number",
-            "nth",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ],
-        [
-          "has",
-          "tell"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of True: Magical Friends is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-netflix-titles-dd14f1"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "type"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-a858ca06",
       "task": "type-of-title-b03e",
       "gen": 10,
@@ -25659,6 +25648,86 @@
               "slot": 0
             },
             " of Willy Wonka & the Chocolate Factory is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "type"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d749b103",
+      "task": "type-of-title-b03e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chief",
+            "item number",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "type"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Chief of Staff is ",
             {
               "slot": 1
             },
@@ -27661,7 +27730,7 @@
       }
     },
     {
-      "id": "n-c02fff0c",
+      "id": "n-cb7f5004",
       "task": "type-of-title-b03e",
       "gen": 10,
       "parents": [],
@@ -27676,7 +27745,7 @@
         ],
         [
           "has",
-          "tell"
+          "type"
         ]
       ],
       "pyramid": [
@@ -36088,10 +36157,251 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-04842b8a",
+      "task": "type-of-title-b03e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chief",
+            "item number",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Chief of Staff is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "type"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a76dffe7",
+      "task": "type-of-title-b03e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "friends",
+            "item number",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of True: Magical Friends is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "type"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c02fff0c",
+      "task": "type-of-title-b03e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "freeman",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of The Story of God with Morgan Freeman is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "type"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
     "d49f8b4c3ea11658561b58a56e50e79023b3f7812f4ff7dcd14546ff5489a8ba",
-    "692368dd791f6834a92135c8078477a6d5875f7c32ef4c7b21290c98d238c004"
+    "692368dd791f6834a92135c8078477a6d5875f7c32ef4c7b21290c98d238c004",
+    "1d8ce45484c407213196253d16ede29ca785e3be34e21f1e7582ba0b1b44c35b"
   ]
 }

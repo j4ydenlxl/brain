@@ -2,27 +2,29 @@
   "task": "openflights-airlines-airline-to-country",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-13T10:20:01.242Z",
+  "at": "2026-11-17T14:25:10.684Z",
   "stats": {
-    "generated": 161205,
-    "distinct": 150369,
-    "kept": 997,
-    "know": 239,
+    "generated": 200159,
+    "distinct": 85790,
+    "kept": 1078,
+    "know": 275,
     "byFamily": {
       "memory": 84,
-      "transform": 681,
-      "iterate": 39,
+      "transform": 752,
+      "iterate": 48,
       "aggregate": 151,
-      "sense": 42
+      "sense": 43
     },
     "bySource": {
-      "parent": 997
+      "parent": 856,
+      "enum": 221,
+      "template": 1
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 126079,
-    "cellsPerSecond": 1279,
+    "ms": 131383,
+    "cellsPerSecond": 1523,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -31,13 +33,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "0b51e988610581ff0aa30ae4a6a5fafee6b14f244dc20bcf7b341f531d49e5a9",
-      "round": 3,
-      "at": 479801,
+      "basis": "9b7df43ccc86366b34e64342f0611268f1f5915f951b04a995ef8db6c4b02b49",
+      "round": 0,
+      "at": 105978,
       "maxCost": 7,
       "done": false,
-      "cost": 7,
-      "prim": "compute.increase",
+      "cost": 6,
+      "prim": "transform.nthStr",
       "tpl": 1139
     }
   },
@@ -324,6 +326,196 @@
       "fit": {
         "ok": 14,
         "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0645c23e",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "bulgaria",
+            "egypt",
+            "egyptair",
+            "finland",
+            "france",
+            "item number",
+            "kiribati",
+            "miat",
+            "nth",
+            "position",
+            "russia",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2000f53b",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "bulgaria",
+            "egypt",
+            "egyptair",
+            "finland",
+            "france",
+            "item number",
+            "kiribati",
+            "miat",
+            "nth",
+            "position",
+            "russia",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
         "rows": 40
       }
     },
@@ -676,6 +868,197 @@
         "render.lines",
         [
           "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f37a328b",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "bulgaria",
+            "egypt",
+            "egyptair",
+            "finland",
+            "france",
+            "item number",
+            "kiribati",
+            "miat",
+            "nth",
+            "position",
+            "russia",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f584fef5",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "bulgaria",
+            "delete",
+            "egypt",
+            "egyptair",
+            "finland",
+            "france",
+            "item number",
+            "kiribati",
+            "miat",
+            "nth",
+            "position",
+            "remove",
+            "russia",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
           [
             "sense.after",
             {
@@ -1488,6 +1871,98 @@
       "fit": {
         "ok": 9,
         "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-abdf8cdb",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "bulgaria",
+            "count",
+            "egypt",
+            "egyptair",
+            "finland",
+            "france",
+            "how many",
+            "how many items",
+            "kiribati",
+            "normalise",
+            "normalize",
+            "number of items",
+            "russia",
+            "simplify the text"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
         "rows": 40
       }
     },
@@ -3674,6 +4149,85 @@
       }
     },
     {
+      "id": "n-139deaf3",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count",
+            "egypt",
+            "egyptair",
+            "finland",
+            "france",
+            "how many",
+            "how many items",
+            "number of items",
+            "russia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-537f10e7",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -3717,6 +4271,164 @@
             "has",
             "code"
           ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-97e2d2f5",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count",
+            "egypt",
+            "egyptair",
+            "finland",
+            "france",
+            "how many",
+            "how many items",
+            "number of items",
+            "russia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9b22b790",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count",
+            "egypt",
+            "egyptair",
+            "finland",
+            "france",
+            "how many",
+            "how many items",
+            "number of items",
+            "russia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
         ]
       ],
       "pyramid": [
@@ -5217,6 +5929,69 @@
       }
     },
     {
+      "id": "n-0ea7585f",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "allegiant",
+            "aloha",
+            "crown",
+            "how many items",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text",
+            "southern"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "United States"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0d399636",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -5336,6 +6111,82 @@
       }
     },
     {
+      "id": "n-25275d11",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bulgaria",
+            "character count",
+            "egyptair",
+            "finland",
+            "france",
+            "how many characters",
+            "item number",
+            "nth",
+            "number of characters"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-359f7d72",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -5412,6 +6263,92 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-57ccda70",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "egypt",
+            "finland",
+            "france",
+            "how many consonants",
+            "item number",
+            "kiribati",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of consonants",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 4,
@@ -5905,6 +6842,91 @@
       }
     },
     {
+      "id": "n-b260a2cf",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "finland",
+            "france",
+            "item number",
+            "kiribati",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-c21fade3",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -6046,6 +7068,260 @@
           ],
           {
             "lit": 4
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e52b67b6",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "egyptair",
+            "finland",
+            "france",
+            "how many characters",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of characters"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-efdfc302",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "egypt",
+            "finland",
+            "france",
+            "how many consonants",
+            "item number",
+            "kiribati",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of consonants",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f3fa2f30",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "finland",
+            "france",
+            "item number",
+            "kiribati",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 5
           },
           [
             "transform.nthStr",
@@ -8095,6 +9371,78 @@
       }
     },
     {
+      "id": "n-05c42210",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "finland",
+            "france",
+            "kiribati"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The country ",
+            {
+              "slot": 0
+            },
+            " is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "sense.after",
+          {
+            "lit": "country"
+          }
+        ],
+        [
+          "sense.lastWord"
+        ]
+      ],
+      "mem": null,
+      "height": 2,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0dbbda8c",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -8155,6 +9503,63 @@
           {
             "lit": 1
           }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0fc1e5ae",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "egypt",
+            "finland",
+            "france",
+            "kiribati",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ]
         ]
       ],
       "mem": null,
@@ -9591,6 +10996,80 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-de539b00",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "bulgaria",
+            "each word",
+            "egyptair",
+            "longest",
+            "longest one",
+            "longest word",
+            "miat",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canada"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 4,
@@ -11191,6 +12670,72 @@
       }
     },
     {
+      "id": "n-4bfdca81",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "finland",
+            "france",
+            "how many items",
+            "number of items"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-672ced93",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -11288,6 +12833,72 @@
           {
             "lit": "United States"
           },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8d3e46ee",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "finland",
+            "france",
+            "how many items",
+            "number of items"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
           [
             "aggregate.countStrs",
             [
@@ -11622,6 +13233,140 @@
       }
     },
     {
+      "id": "n-f8870498",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "copies",
+            "egypt",
+            "finland",
+            "france",
+            "how many items",
+            "number of items",
+            "say it times"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ff8b311c",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "finland",
+            "france",
+            "how many items",
+            "number of items"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2c00c733",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -11679,6 +13424,89 @@
           ],
           [
             "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-85e0626e",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "bulgaria",
+            "egyptair",
+            "how many",
+            "how many items",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canada"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
           ]
         ]
       ],
@@ -11755,6 +13583,70 @@
       "mem": null,
       "height": 4,
       "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0292163a",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "finland",
+            "france",
+            "how many characters",
+            "item number",
+            "kiribati",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "air"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 3,
         "fired": 3,
@@ -13084,6 +14976,92 @@
       }
     },
     {
+      "id": "n-6e9c53ca",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "egypt",
+            "finland",
+            "france",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-80372f48",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -13234,6 +15212,92 @@
           {
             "lit": "United States"
           }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e54e6d62",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "egypt",
+            "finland",
+            "france",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ]
         ]
       ],
       "mem": null,
@@ -13592,6 +15656,62 @@
       }
     },
     {
+      "id": "n-a9bf49fb",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egyptair",
+            "finland",
+            "france",
+            "how many",
+            "how many items",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0344fc57",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -13638,6 +15758,77 @@
           [
             "has",
             "code"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-166df344",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bulgaria",
+            "finland",
+            "item number",
+            "miat",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canada"
           ]
         ]
       ],
@@ -13874,6 +16065,70 @@
             "has",
             "code"
           ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "France"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a7308f79",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "egypt",
+            "finland",
+            "kiribati",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "words<=",
+          7
         ],
         [
           "has",
@@ -14165,6 +16420,264 @@
       }
     },
     {
+      "id": "n-2b372aec",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "characters from",
+            "egyptair",
+            "letters from to",
+            "miat",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.text"
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2b87f7f0",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "egyptair",
+            "from position",
+            "items from to",
+            "miat"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          },
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-32fdbcec",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "egyptair",
+            "from position",
+            "items from to",
+            "miat"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37520ae3",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "egyptair",
+            "from position",
+            "items from to",
+            "miat"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          },
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4ed54d6c",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -14195,6 +16708,70 @@
           "transform.sliceStrs",
           [
             "sense.words"
+          ],
+          {
+            "lit": 2
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-510822a5",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "egyptair",
+            "from position",
+            "items from to",
+            "miat"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
           ],
           {
             "lit": 2
@@ -14379,6 +16956,70 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6617ad76",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "airlines",
+            "finland",
+            "france",
+            "how many vowels",
+            "normalise",
+            "normalize",
+            "number of vowels",
+            "simplify the text",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 3,
@@ -14642,6 +17283,122 @@
       }
     },
     {
+      "id": "n-90d40987",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bulgaria",
+            "egyptair",
+            "item number",
+            "miat",
+            "nth",
+            "one less",
+            "predecessor",
+            "previous"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          [
+            "transform.prev",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-92bf9d92",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "egyptair",
+            "from position",
+            "items from to",
+            "miat"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          },
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-999d2516",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -14744,6 +17501,58 @@
           {
             "lit": 2
           }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a3356386",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "egyptair",
+            "how many vowels",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of vowels",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "sense.lastWord"
+            ]
+          ]
         ]
       ],
       "mem": null,
@@ -14978,6 +17787,70 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bad2cd71",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "egyptair",
+            "from position",
+            "items from to",
+            "miat"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          },
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
       "size": 5,
       "fit": {
         "ok": 3,
@@ -15427,6 +18300,71 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fd6f28bb",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "egypt",
+            "finland",
+            "france",
+            "how many divisors",
+            "how many factors",
+            "normalise",
+            "normalize",
+            "number of divisors",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "compute.divisorCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 3,
@@ -16957,6 +19895,243 @@
       }
     },
     {
+      "id": "n-cb2187e9",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egyptair",
+            "finland",
+            "how many",
+            "how many items",
+            "number of items"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canada"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ec19409a",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egyptair",
+            "finland",
+            "how many",
+            "how many items",
+            "number of items"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canada"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fa91a07a",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egyptair",
+            "finland",
+            "how many",
+            "how many items",
+            "number of items"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canada"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-40c9a231",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -17067,6 +20242,69 @@
       "mem": null,
       "height": 4,
       "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-05536df5",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "finland",
+            "france",
+            "how many characters",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "air"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -19668,6 +22906,61 @@
       }
     },
     {
+      "id": "n-2a16b905",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "corsemediterranee",
+            "france",
+            "how many",
+            "how many items",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "location"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "France"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-58c11bd3",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -19768,6 +23061,277 @@
       }
     },
     {
+      "id": "n-0f012056",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "egypt",
+            "france",
+            "lower camel case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-217c5702",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "egypt",
+            "france",
+            "pascal case",
+            "pascalcase",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-61453d51",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capital letters",
+            "capitals",
+            "egypt",
+            "france",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-77b57d2b",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "egypt",
+            "france",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-83207598",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "invert case",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2f5230e7",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -19815,6 +23379,183 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3d01eb8e",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "egypt",
+            "france",
+            "invert case",
+            "lower camel case",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-67191ed0",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "egypt",
+            "france",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "air"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-73e412c3",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "egypt",
+            "france",
+            "invert case",
+            "pascal case",
+            "pascalcase",
+            "swap case",
+            "toggle case",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 4,
       "fit": {
         "ok": 2,
@@ -20040,6 +23781,123 @@
       }
     },
     {
+      "id": "n-df2ab4eb",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f7afbb7b",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "egypt",
+            "france",
+            "invert case",
+            "pascal case",
+            "pascalcase",
+            "swap case",
+            "toggle case",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-002ee12c",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -20074,6 +23932,67 @@
           [
             "sense.lastWord"
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0f0f1c31",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "egypt",
+            "france",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 10
+          }
         ]
       ],
       "mem": null,
@@ -20250,6 +24169,57 @@
       }
     },
     {
+      "id": "n-35de81cf",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "airlines",
+            "bulgaria",
+            "character count",
+            "how many characters",
+            "item number",
+            "nth",
+            "number of characters"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3a503c8d",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -20281,6 +24251,381 @@
           [
             "sense.wordCount"
           ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3d520cc4",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4649ea02",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "egypt",
+            "france",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-54ca0392",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-56a93304",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bulgaria",
+            "from position",
+            "items from to",
+            "miat"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canada"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
+          },
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-626f8610",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-63a5d8d8",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "leading zeros",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 4
+          },
           [
             "sense.text"
           ]
@@ -20692,6 +25037,67 @@
       }
     },
     {
+      "id": "n-a3a650da",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "egyptair",
+            "how many factors",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of divisors"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "compute.divisorCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-be5cdc7d",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -20769,6 +25175,65 @@
           },
           [
             "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c7bac91f",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "egypt",
+            "france",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
           ]
         ]
       ],
@@ -20868,6 +25333,67 @@
       }
     },
     {
+      "id": "n-cd88b1ca",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "leading zeros",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d05a68cc",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -20900,6 +25426,79 @@
               "lit": "is"
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d85be15a",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bulgaria",
+            "from position",
+            "items from to",
+            "miat"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canada"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
+          },
+          {
+            "lit": 4
+          }
         ]
       ],
       "mem": null,
@@ -20993,6 +25592,126 @@
           },
           [
             "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eafe614e",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "leading zeros",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eb1383c5",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "france",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
           ]
         ]
       ],
@@ -26164,6 +30883,58 @@
       }
     },
     {
+      "id": "n-5d158c59",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "airlines",
+            "how many items",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "aloha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "United States"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-adf863a9",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -26188,6 +30959,58 @@
         "render.str",
         [
           "transform.repeat",
+          {
+            "lit": "United Kingdom"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f9d79a7e",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "british",
+            "how many items",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "international"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
           {
             "lit": "United Kingdom"
           },
@@ -27066,6 +31889,130 @@
       }
     },
     {
+      "id": "n-228b056a",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2364a038",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-29bb59e5",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -27167,6 +32114,64 @@
               ],
               {
                 "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-45e12e79",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bulgaria",
+            "character count",
+            "how many characters",
+            "item number",
+            "nth",
+            "number of characters"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
               }
             ]
           ]
@@ -27296,6 +32301,64 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-50650de1",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brazilian",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -28432,6 +33495,64 @@
       }
     },
     {
+      "id": "n-a0535422",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "miat",
+            "nth",
+            "number of consonants"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a316ec4a",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -28734,6 +33855,67 @@
       }
     },
     {
+      "id": "n-acd946e8",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "kiribati",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of consonants",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-affd1f96",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -28956,6 +34138,67 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-be928405",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "item number",
+            "kiribati",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -34124,6 +39367,135 @@
       }
     },
     {
+      "id": "n-0414724d",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egyptair",
+            "how many",
+            "how many items",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Egypt"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0d0221b6",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many",
+            "how many items",
+            "inavia",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Argentina"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2f8845b4",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many",
+            "how many items",
+            "normalise",
+            "normalize",
+            "number of items",
+            "oceanair",
+            "simplify the text"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Brazil"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2b5a3337",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -34308,54 +39680,6 @@
           {
             "lit": 5
           }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-f640d26e",
-      "task": "openflights-airlines-airline-to-country",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "from position",
-            "how many items",
-            "items from to",
-            "kiribati",
-            "number of items"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.and",
-        [
-          "transform.sliceStrs",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 4
-          },
-          [
-            "aggregate.countStrs",
-            [
-              "sense.content"
-            ]
-          ]
         ]
       ],
       "mem": null,
@@ -36181,6 +41505,46 @@
       }
     },
     {
+      "id": "n-3e73821a",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "egypt",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "midwest"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-461bda74",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -36457,6 +41821,46 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-531b1226",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "kiribati",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
       "size": 4,
       "fit": {
         "ok": 1,
@@ -36819,46 +42223,6 @@
           [
             "sense.content"
           ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 4,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-9975f763",
-      "task": "openflights-airlines-airline-to-country",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "kiribati",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 4
-          }
         ]
       ],
       "mem": null,
@@ -37827,49 +43191,6 @@
       }
     },
     {
-      "id": "n-1b6b6758",
-      "task": "openflights-airlines-airline-to-country",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "from position",
-            "items from to",
-            "kiribati"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.and",
-        [
-          "transform.sliceStrs",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 4
-          },
-          [
-            "sense.wordCount"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-23e79f5c",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -38097,6 +43418,52 @@
       }
     },
     {
+      "id": "n-31ef2dca",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of consonants"
+          ]
+        ],
+        [
+          "has",
+          "air"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-33cc8e7b",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -38140,7 +43507,7 @@
       }
     },
     {
-      "id": "n-3c35f259",
+      "id": "n-3694788c",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
       "parents": [],
@@ -38148,30 +43515,31 @@
         [
           "hasAny",
           [
-            "each word",
+            "bulgaria",
+            "half",
+            "half of",
+            "halve",
             "item number",
-            "kiribati",
-            "nth",
-            "split into words"
+            "nth"
           ]
         ],
         [
           "has",
-          "name"
+          "air"
         ]
       ],
       "pyramid": [
-        "render.list",
+        "render.str",
         [
-          "transform.words",
+          "transform.nthStr",
           [
-            "transform.nthStr",
+            "sense.content"
+          ],
+          [
+            "transform.half",
             [
-              "sense.content"
-            ],
-            {
-              "lit": 4
-            }
+              "sense.wordCount"
+            ]
           ]
         ]
       ],
@@ -38367,7 +43735,7 @@
       }
     },
     {
-      "id": "n-53b2d093",
+      "id": "n-4d1bcb7d",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
       "parents": [],
@@ -38375,32 +43743,31 @@
         [
           "hasAny",
           [
-            "class name",
+            "character count",
+            "finland",
+            "how many characters",
             "item number",
-            "kiribati",
             "nth",
-            "pascal case",
-            "pascalcase",
-            "upper camel case"
+            "number of characters"
           ]
         ],
         [
           "has",
-          "name"
+          "air"
         ]
       ],
       "pyramid": [
         "render.str",
         [
-          "transform.pascal",
+          "transform.nthStr",
           [
-            "transform.nthStr",
+            "sense.words"
+          ],
+          [
+            "aggregate.chars",
             [
-              "sense.content"
-            ],
-            {
-              "lit": 4
-            }
+              "sense.lastWord"
+            ]
           ]
         ]
       ],
@@ -39014,6 +44381,49 @@
       }
     },
     {
+      "id": "n-793bb6aa",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "from position",
+            "items from to",
+            "kiribati"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7a8af934",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -39507,6 +44917,53 @@
       }
     },
     {
+      "id": "n-b897bfa1",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "half",
+            "half of",
+            "halve",
+            "kiribati",
+            "normalise",
+            "normalize",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.half",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ba03ba7d",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -39908,52 +45365,6 @@
       ],
       "mem": null,
       "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d35a7be1",
-      "task": "openflights-airlines-airline-to-country",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "invert case",
-            "item number",
-            "kiribati",
-            "nth",
-            "swap case",
-            "toggle case"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.swapCase",
-          [
-            "transform.nthStr",
-            [
-              "sense.content"
-            ],
-            {
-              "lit": 4
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -41676,54 +47087,6 @@
       ],
       "mem": null,
       "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-667abc5c",
-      "task": "openflights-airlines-airline-to-country",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "from position",
-            "items from to",
-            "kiribati",
-            "longest one",
-            "longest word"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "aggregate.longest",
-          [
-            "transform.sliceStrs",
-            [
-              "sense.content"
-            ],
-            {
-              "lit": 4
-            },
-            [
-              "sense.wordCount"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -59149,6 +64512,323 @@
       }
     },
     {
+      "id": "n-f640d26e",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "from position",
+            "how many items",
+            "items from to",
+            "kiribati",
+            "number of items"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9975f763",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "kiribati",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1b6b6758",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "from position",
+            "items from to",
+            "kiribati"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3c35f259",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "item number",
+            "kiribati",
+            "nth",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-53b2d093",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "item number",
+            "kiribati",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d35a7be1",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "kiribati",
+            "nth",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-667abc5c",
+      "task": "openflights-airlines-airline-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "from position",
+            "items from to",
+            "kiribati",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2c396802",
       "task": "openflights-airlines-airline-to-country",
       "gen": 10,
@@ -73163,6 +78843,7 @@
     "4d1342a4f0a885dab821f7d4a56659bd70c7ec7b29643946e0f898d892a1240e",
     "e91aa1520148cb319a88a43f5a2cfdf5128b6a2f45a2da158bab66b19071015a",
     "ca5d4709feb5d8963985550e75f8d5e2b6c8f19d4bb05a26b3eec13e2ae17759",
-    "2fedbb9329f0ead9dbe44182efe0de182c4e35f9b3011f7a1051cb1a8a75a7d4"
+    "2fedbb9329f0ead9dbe44182efe0de182c4e35f9b3011f7a1051cb1a8a75a7d4",
+    "e3ec2a18f5a08ba22cf25a55cc52dc6288b04aba0b63a97457cf036bb96cc293"
   ]
 }
