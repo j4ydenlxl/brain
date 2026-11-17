@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "7c66b7327f794e82cc0763315fc46720c346c86c6e801b14d01c6d600e8bd253";
+const VERSION = "10e9872a69c52036a2ec1050edd8dfd4be8a5797edb38c4135fe9fd572405803";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"e11dbf6ab87ad0ededa3b9c11244805ba1d4b6d4163f3ee04c59263ecbc373e7"},
+  {"url":"/organism/cells.json","sha256":"d548b1d47b9225bd234ca9cc6b63bb5a609b2c2ff56ee1d240a9167feeae84e8"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -492,10 +492,11 @@ const PRECACHE = [
   {"url":"/organism/cells/fr-tidytuesday-cia-factbook-11524a-35ac3e-neo-g10.mjs","sha256":"5a16f1502c2a155a88b5660247228d00f201bf3d5007b297ca4c11ece72a80a3"},
   {"url":"/organism/cells/fr-tidytuesday-cia-factbook-11524a-7dea58-neo-g10.mjs","sha256":"67435457cbc7851634bb7f86f0a70b1e1b16c3759ade1536b99522ffaecb3f19"},
   {"url":"/organism/cells/fr-tidytuesday-cia-factbook-11524a-20763d-neo-g10.mjs","sha256":"eb706a3c5f5071080a40a940f73fe3bcc1221d6d46146fdaddb600cabf72b0ca"},
+  {"url":"/organism/cells/fr-tidytuesday-cia-factbook-11524a-ffe557-neo-g10.mjs","sha256":"d68e788cd547c0d1d99899f825c4645ea1efab0bbd2d06bbf81ce9296df9aa75"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"b0fc79ec8dd6ef8a367cdfe3ae666d75edbed6c7a4b1aacff467aac289661dd8"}
+  {"url":"/organism/era/tasks.json","sha256":"a90c718b70393b346482f1e10a612d9453a760a655b12c10f008f37c37688d53"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
