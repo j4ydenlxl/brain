@@ -2,42 +2,44 @@
   "task": "iso-of-country-f19e-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T14:52:49.426Z",
+  "at": "2026-11-18T16:31:49.794Z",
   "stats": {
-    "generated": 1037,
-    "distinct": 51197,
-    "kept": 994,
-    "know": 543,
+    "generated": 201045,
+    "distinct": 67832,
+    "kept": 1111,
+    "know": 641,
     "byFamily": {
       "memory": 203,
-      "transform": 595,
-      "aggregate": 45,
-      "route": 138,
+      "transform": 699,
+      "aggregate": 57,
+      "route": 139,
       "iterate": 11,
       "sense": 2
     },
     "bySource": {
-      "parent": 994
+      "parent": 548,
+      "enum": 562,
+      "template": 1
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 129752,
-    "cellsPerSecond": 8,
-    "capped": "ms",
+    "ms": 235923,
+    "cellsPerSecond": 852,
+    "capped": null,
     "packs": [
       "fr-country-json-country-by-iso-numeric-66c8d4"
     ],
     "cursor": {
       "v": 1,
-      "basis": "b23e2ab3c8952fbd70cb0b5ee2d6912537481afac09e8e4e2350fcf5f271c7bb",
-      "round": 2,
-      "at": 200554,
+      "basis": "90dd8a6018b8887872ff8e9017e87ed60940ad3ba9a78c5ea357e65295158770",
+      "round": 0,
+      "at": 116249,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.permutations",
-      "tpl": 1578
+      "prim": "compute.choose",
+      "tpl": 1370
     }
   },
   "cells": [
@@ -4413,6 +4415,103 @@
       }
     },
     {
+      "id": "n-5781b829",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "denmark",
+            "ecuador",
+            "element",
+            "estonia",
+            "greenland",
+            "item number",
+            "kenya",
+            "kuwait",
+            "lithuania",
+            "montserrat",
+            "nth",
+            "palestine",
+            "poland",
+            "position",
+            "remove",
+            "romania",
+            "strip out",
+            "switzerland",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "andorra"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "words<=",
+          12
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "has"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-f0de0b8a",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -5650,6 +5749,88 @@
       }
     },
     {
+      "id": "n-09d6e583",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "cameroon",
+            "cayman",
+            "cook",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-161038bb",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -5705,6 +5886,170 @@
       ],
       "pyramid": [
         "render.and",
+        [
+          "transform.words",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2cccc8e7",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "cameroon",
+            "cayman",
+            "cook",
+            "dashes",
+            "hyphens",
+            "kebab case",
+            "kebabcase",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "slug"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.kebab",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2f5e9fd1",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "cameroon",
+            "cayman",
+            "cook",
+            "each word",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
         [
           "transform.words",
           [
@@ -5812,6 +6157,87 @@
       }
     },
     {
+      "id": "n-48df7ab2",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "cameroon",
+            "cayman",
+            "cook",
+            "each word",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-4935a39b",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -5870,6 +6296,168 @@
         "render.str",
         [
           "transform.pascal",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7921c9e1",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "camel case",
+            "camelcase",
+            "cameroon",
+            "cayman",
+            "cook",
+            "lower camel case",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8de9fc3f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "cameroon",
+            "cayman",
+            "cook",
+            "each word",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
           [
             "aggregate.shortest",
             [
@@ -6220,6 +6808,169 @@
       }
     },
     {
+      "id": "n-d9a6a800",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "cameroon",
+            "cayman",
+            "class name",
+            "cook",
+            "pascal case",
+            "pascalcase",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d9e83011",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "cameroon",
+            "cayman",
+            "cook",
+            "portugal",
+            "reverse the words",
+            "reverse word order",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverseWords",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e00d9330",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -6295,6 +7046,104 @@
       "mem": null,
       "height": 4,
       "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3d996594",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "eritrea",
+            "estonia",
+            "france",
+            "gabon",
+            "iran",
+            "item number",
+            "kuwait",
+            "nth",
+            "palestine",
+            "position",
+            "remove",
+            "romania",
+            "strip out",
+            "switzerland",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "coast"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.subject"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
       "fit": {
         "ok": 12,
         "fired": 12,
@@ -6467,6 +7316,103 @@
         "render.str",
         [
           "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.subject"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fb0e4020",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "eritrea",
+            "estonia",
+            "france",
+            "gabon",
+            "iran",
+            "item number",
+            "kuwait",
+            "nth",
+            "palestine",
+            "position",
+            "romania",
+            "separate by",
+            "split",
+            "split by",
+            "switzerland"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "coast"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
           [
             "transform.nthStr",
             [
@@ -6684,6 +7630,98 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f0f2ced1",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarctica",
+            "bahamas",
+            "belarus",
+            "cameroon",
+            "change to",
+            "chile",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "somalia",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.subject"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 12,
@@ -7403,6 +8441,161 @@
       }
     },
     {
+      "id": "n-d6093dd8",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "cayman",
+            "cook",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "know.find",
+            {
+              "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+            },
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0632f7fe",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "backwards",
+            "belarus",
+            "cameroon",
+            "cayman",
+            "cook",
+            "reverse",
+            "reverse order",
+            "reversed",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "southern"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.reverseStrs",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-14ed8328",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -7568,6 +8761,168 @@
       }
     },
     {
+      "id": "n-9c2b84be",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "cayman",
+            "cook",
+            "invert case",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a5b2ac2c",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "cameroon",
+            "capital letters",
+            "capitals",
+            "cayman",
+            "cook",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-aaefbc41",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -7706,6 +9061,86 @@
         "render.str",
         [
           "transform.upper",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b5ce30d7",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "cayman",
+            "cook",
+            "lower case",
+            "lowercase",
+            "portugal",
+            "serbia",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
           [
             "aggregate.shortest",
             [
@@ -25002,6 +26437,86 @@
       }
     },
     {
+      "id": "n-f61d8c50",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "cameroon",
+            "cayman",
+            "cook",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "sort",
+            "southern"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.sortStrs",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-2676e22a",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -31260,6 +32775,242 @@
       }
     },
     {
+      "id": "n-084ce032",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "canada",
+            "element",
+            "exceeds",
+            "greater than",
+            "heard",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "portugal",
+            "position",
+            "syria"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the larger iso (",
+            {
+              "slot": 1
+            },
+            " against ",
+            {
+              "slot": 2
+            },
+            ")."
+          ]
+        },
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "iso"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "iso"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+          },
+          {
+            "lit": "country"
+          },
+          {
+            "lit": "iso"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+          },
+          {
+            "lit": "country"
+          },
+          {
+            "lit": "iso"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 52,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-167e2f61",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -31511,6 +33262,114 @@
       "mem": null,
       "height": 4,
       "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-494b8c7b",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caledonia",
+            "change to",
+            "element",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "replace",
+            "romania",
+            "substitute",
+            "swap",
+            "switzerland"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.subject"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
       "fit": {
         "ok": 7,
         "fired": 7,
@@ -33347,6 +35206,5286 @@
       }
     },
     {
+      "id": "n-19df64b3",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "ecuador",
+            "element",
+            "estonia",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "kuwait",
+            "nth",
+            "position",
+            "slug"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.kebab",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3fa1104f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5436e5b6",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b6af31d8",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower camel case",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bc37542a",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cbc65394",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverseWords",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dd152bc7",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fa9ea625",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-00eafd25",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-01409b6f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "ecuador",
+            "element",
+            "estonia",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "slug",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.kebab",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-07342c85",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "backwards",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse",
+            "reverse order",
+            "reversed",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.reverseStrs",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-14bbd93f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "swap case",
+            "toggle case",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-156b1c08",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1889ea34",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower camel case",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-24224741",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3e39848c",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "lower camel case",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4302300d",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "title case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-44cce226",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-47def69a",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower camel case",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-48d09470",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "snake case",
+            "snakecase",
+            "title case",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.snake",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4b64422c",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "split into words",
+            "words",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4c90f05f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "upper case",
+            "uppercase",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverseWords",
+          [
+            "transform.upper",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4e2596e5",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "sort",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sortStrs",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-53ffe864",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-54e73ec9",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "sort",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sortStrs",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-55ddd25c",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "title case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5b1f7f69",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "split into words",
+            "words",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5e31f696",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "backwards",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse",
+            "reverse order",
+            "reversed",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.reverseStrs",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-61c1b0f3",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-63b1067a",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "kuwait",
+            "nth",
+            "position",
+            "slug",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-66decd64",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "small letters",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6bde1b05",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "swap case",
+            "toggle case",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverseWords",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-712d5a02",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "upper case",
+            "uppercase",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-75e4b5f4",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "ecuador",
+            "element",
+            "estonia",
+            "hyphens",
+            "invert case",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "kuwait",
+            "nth",
+            "position",
+            "slug",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7937385d",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-819ded25",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dashes",
+            "ecuador",
+            "element",
+            "estonia",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "kuwait",
+            "nth",
+            "position",
+            "slug",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-85b7f3bd",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower camel case",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-87ecfd3e",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "backwards",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse",
+            "reverse order",
+            "reversed",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.reverseStrs",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-89f6d736",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "lower camel case",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8a0f02ae",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower camel case",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-984f7d5f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower case",
+            "lowercase",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "small letters",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-98596a6b",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "swap case",
+            "toggle case",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ad901271",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "upper case",
+            "uppercase",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bc84b061",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-befc010a",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "title case",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverseWords",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c2e350cd",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c716d57e",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "ecuador",
+            "element",
+            "estonia",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "kuwait",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "slug",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.kebab",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d0914002",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "upper camel case",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d83eb2a0",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "split into words",
+            "words",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dc3a52a4",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dd0e6c88",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "sort",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.sortStrs",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dda845ef",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "title case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e5319896",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "kuwait",
+            "nth",
+            "position",
+            "slug",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e8f43e11",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "camel case",
+            "camelcase",
+            "capital letters",
+            "capitals",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "lower camel case",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-edda24b3",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "kuwait",
+            "nth",
+            "position",
+            "slug",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f1b1042f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ecuador",
+            "element",
+            "estonia",
+            "invert case",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "snake case",
+            "snakecase",
+            "swap case",
+            "toggle case",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.snake",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f81b08ab",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "each word",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "split into words",
+            "upper case",
+            "uppercase",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bd02c042",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "ecuador",
+            "element",
+            "estonia",
+            "item number",
+            "kuwait",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-c42aeede",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -33382,6 +40521,91 @@
             "has",
             "compare"
           ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "andorra"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.subject"
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d6170b10",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "estonia",
+            "item number",
+            "nth",
+            "palestine",
+            "position",
+            "replace",
+            "romania",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
         ],
         [
           "not",
@@ -34282,6 +41506,156 @@
             ],
             {
               "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d8666a7a",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first n",
+            "longest one",
+            "longest word",
+            "martinique",
+            "portugal",
+            "somalia"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "british"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e27a4602",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first n",
+            "longest one",
+            "longest word",
+            "martinique",
+            "portugal",
+            "somalia"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "british"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 8
             }
           ]
         ]
@@ -41597,6 +48971,81 @@
       }
     },
     {
+      "id": "n-6badab3e",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "syria"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-6fbb9a09",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -41828,6 +49277,170 @@
       }
     },
     {
+      "id": "n-14e04473",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "swap case",
+            "syria",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-39641e1b",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "syria",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-4754bf78",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -41875,6 +49488,87 @@
           [
             "has",
             "albania"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7a166ecf",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "portugal",
+            "position",
+            "small letters",
+            "syria"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
           ]
         ]
       ],
@@ -42040,6 +49734,88 @@
           [
             "has",
             "albania"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f4f9745e",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "syria",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
           ]
         ]
       ],
@@ -42240,6 +50016,91 @@
       }
     },
     {
+      "id": "n-098bbc18",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Ghana"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-0e8ca237",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -42325,6 +50186,94 @@
       }
     },
     {
+      "id": "n-10409cc8",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "swap case",
+            "syria",
+            "title case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-1771c85d",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -42397,6 +50346,176 @@
           ],
           {
             "lit": "Ghana"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1cd87ce4",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Latvia"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1eda0967",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "East Timor"
           }
         ]
       ],
@@ -42580,6 +50699,91 @@
       }
     },
     {
+      "id": "n-5140ab46",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Madagascar"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-5a7ea6da",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -42652,6 +50856,91 @@
           ],
           {
             "lit": "Egypt"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-61bf1ee3",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Guinea-Bissau"
           }
         ]
       ],
@@ -42821,6 +51110,175 @@
           ],
           {
             "lit": "Latvia"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9893786d",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Egypt"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9c3023a1",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "portugal",
+            "position",
+            "simplify the text",
+            "syria"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 1
           }
         ]
       ],
@@ -43092,6 +51550,91 @@
       }
     },
     {
+      "id": "n-af0c6e5f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Eritrea"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b106e133",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -43164,6 +51707,261 @@
           ],
           {
             "lit": "Mali"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c5374bed",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Gabon"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cfb7a367",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Mali"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ec7b9c3a",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "portugal",
+            "position",
+            "remove",
+            "strip out",
+            "syria",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Indonesia"
           }
         ]
       ],
@@ -43772,6 +52570,86 @@
       }
     },
     {
+      "id": "n-c93de53b",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "iran",
+            "item number",
+            "kuwait",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austria"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 1
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-cd04732c",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -43940,6 +52818,112 @@
       "mem": null,
       "height": 4,
       "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2d2042cb",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "kuwait",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap",
+            "switzerland"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "botswana"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-iso-numeric-66c8d4"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
       "fit": {
         "ok": 4,
         "fired": 4,
@@ -44454,6 +53438,146 @@
       }
     },
     {
+      "id": "n-efd61aa3",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest one",
+            "longest word",
+            "martinique",
+            "somalia"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "british"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-11414ad1",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "longest one",
+            "longest word",
+            "martinique",
+            "somalia",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "british"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "aggregate.longest",
+            [
+              "sense.words"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-1e813601",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -44513,6 +53637,78 @@
             "aggregate.longest",
             [
               "sense.words"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3221aa1f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "longest one",
+            "longest word",
+            "martinique",
+            "somalia",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "british"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.text"
             ]
           ]
         ]
@@ -44651,6 +53847,80 @@
             "transform.words",
             [
               "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c43628b8",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "longest one",
+            "longest word",
+            "martinique",
+            "pascal case",
+            "pascalcase",
+            "somalia",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "british"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "aggregate.longest",
+            [
+              "sense.words"
             ]
           ]
         ]
@@ -45167,6 +54437,80 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f37103b4",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first n",
+            "longest one",
+            "longest word",
+            "martinique",
+            "somalia"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "british"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 4,
@@ -50045,6 +59389,149 @@
       "mem": null,
       "height": 7,
       "size": 57,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2f9b8909",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest one",
+            "longest word",
+            "reverse order",
+            "reversed",
+            "somalia"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "algeria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.reverseStrs",
+            [
+              "sense.words"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b3be310e",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "longest one",
+            "longest word",
+            "somalia"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "australia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahrain"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sortStrs",
+            [
+              "sense.words"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -80021,6 +89508,44 @@
       }
     },
     {
+      "id": "n-1246533a",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "guam"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "sense.subject"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-142a7fae",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -84276,6 +93801,49 @@
       }
     },
     {
+      "id": "n-08ad9977",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "guam",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-09367e5e",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -84962,6 +94530,49 @@
       }
     },
     {
+      "id": "n-454d45f7",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "guam",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-477016ce",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -85255,6 +94866,51 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-630da2c4",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "guam",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.snake",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 4,
       "fit": {
         "ok": 1,
@@ -85650,6 +95306,51 @@
       }
     },
     {
+      "id": "n-829e051c",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dashes",
+            "guam",
+            "hyphens",
+            "kebab case",
+            "kebabcase"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.kebab",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-8b66b65c",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -85676,6 +95377,49 @@
           "transform.reverseStrs",
           [
             "transform.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-949a7a7e",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "guam",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.title",
             [
               "sense.subject"
             ]
@@ -86465,6 +96209,50 @@
       }
     },
     {
+      "id": "n-d0655e4e",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "guam",
+            "lower camel case"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.camel",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-d39e5cc4",
       "task": "iso-of-country-f19e-larger",
       "gen": 10,
@@ -86620,6 +96408,94 @@
           "transform.sortStrs",
           [
             "transform.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ec34b36f",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "guam",
+            "invert case",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-eec3f676",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "guam",
+            "reverse the words",
+            "reverse word order",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverseWords",
+          [
+            "transform.title",
             [
               "sense.subject"
             ]
@@ -86891,6 +96767,49 @@
       "mem": null,
       "height": 4,
       "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-02802980",
+      "task": "iso-of-country-f19e-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "guam",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "madagascar"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.subject"
+          ],
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.subject"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -92622,6 +102541,7 @@
   "stages": [
     "a3dc078d2627081804528a483b130151bcfeac89c91458bc08a43466befe65af",
     "20cc3a148e49d8074ad4521063b98bdc3b359a7bccf408943b0a4a43255a06d2",
-    "13b32424967474e461f671c1d2bf4503510a870e2369d8dbb7c0790aab9734ee"
+    "13b32424967474e461f671c1d2bf4503510a870e2369d8dbb7c0790aab9734ee",
+    "165c9b8da19f015e5fce4f32a358ea8f186c7af2078478cbc8d6501f67524aa7"
   ]
 }

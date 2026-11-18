@@ -2,45 +2,43 @@
   "task": "total-of-year-bab8-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-17T09:53:11.235Z",
+  "at": "2026-11-18T16:49:28.540Z",
   "stats": {
-    "generated": 200716,
-    "distinct": 76378,
-    "kept": 192,
-    "know": 80,
+    "generated": 153758,
+    "distinct": 43151,
+    "kept": 195,
+    "know": 82,
     "byFamily": {
       "route": 2,
-      "transform": 80,
+      "transform": 81,
       "compare": 5,
       "memory": 102,
       "aggregate": 2,
-      "iterate": 1
+      "iterate": 3
     },
     "bySource": {
-      "open": 4,
-      "enum": 58,
-      "yesno": 2,
-      "parent": 128
+      "parent": 190,
+      "enum": 5
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 161661,
-    "cellsPerSecond": 1242,
-    "capped": null,
+    "ms": 171845,
+    "cellsPerSecond": 895,
+    "capped": "ms",
     "packs": [
       "fr-co2-fossil-global-global-6f35f5"
     ],
     "cursor": {
       "v": 1,
       "basis": "eb647e68ce669f4e96095885df961ecf5d128d004e4e824a3f2b6c1217669d5f",
-      "round": 0,
-      "at": 113376,
+      "round": 1,
+      "at": 261207,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.between",
-      "tpl": 3000
+      "prim": "iterate.rangeFrom",
+      "tpl": 3255
     }
   },
   "cells": [
@@ -5153,6 +5151,60 @@
       }
     },
     {
+      "id": "n-23f8fa23",
+      "task": "total-of-year-bab8-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "is",
+            "least common multiple",
+            "lowest common multiple"
+          ]
+        ],
+        [
+          "has",
+          "total"
+        ],
+        [
+          "has",
+          "smaller"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.rangeFrom",
+          [
+            "sense.first"
+          ],
+          [
+            "compute.lcm",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 11
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-0ab8189b",
       "task": "total-of-year-bab8-smaller",
       "gen": 10,
@@ -7513,6 +7565,142 @@
       "mem": null,
       "height": 5,
       "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5ededac1",
+      "task": "total-of-year-bab8-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "element",
+            "from base",
+            "from binary",
+            "from hex",
+            "in decimal",
+            "item number",
+            "nth",
+            "position",
+            "to decimal"
+          ]
+        ],
+        [
+          "has",
+          "total"
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.rangeFrom",
+          [
+            "sense.second"
+          ],
+          [
+            "compute.fromBase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "total"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-362adaf4",
+      "task": "total-of-year-bab8-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as text",
+            "as words",
+            "between",
+            "element",
+            "from base",
+            "from binary",
+            "from hex",
+            "in decimal",
+            "item number",
+            "nth",
+            "position",
+            "to decimal",
+            "written out"
+          ]
+        ],
+        [
+          "has",
+          "total"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.asText",
+          [
+            "iterate.rangeFrom",
+            [
+              "sense.second"
+            ],
+            [
+              "compute.fromBase",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-co2-fossil-global-global-6f35f5"
+                  },
+                  {
+                    "lit": "total"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": 10
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 11,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -19996,6 +20184,7 @@
     "9683f5c4b98d45fee8bea550e3fa7498b25722b0e070c2ce96726d35c18e0d13",
     "4b0d876e2f7b2dddcb94f079471e88e8feab69bf98ebc64bc34dfeba73f14cb1",
     "68e7ffd0e64e63fd5ea7baff53f1eea1b34e2d5be06778e5d093e7bafcdec576",
-    "246756ee13a8eac5fd9bc74e71b0efbadf6aedea524fcd096c9887597fed31f1"
+    "246756ee13a8eac5fd9bc74e71b0efbadf6aedea524fcd096c9887597fed31f1",
+    "8997fdf2ccff3a34fa495800c746bb1382003d28c203ff5948ea12216b8ad0db"
   ]
 }

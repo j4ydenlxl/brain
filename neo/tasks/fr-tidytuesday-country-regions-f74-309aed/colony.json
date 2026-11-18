@@ -2,29 +2,28 @@
   "task": "fr-tidytuesday-country-regions-f74-309aed",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T10:47:33.107Z",
+  "at": "2026-11-18T16:46:23.871Z",
   "stats": {
-    "generated": 200159,
-    "distinct": 74347,
-    "kept": 314,
-    "know": 160,
+    "generated": 160314,
+    "distinct": 56784,
+    "kept": 353,
+    "know": 199,
     "byFamily": {
       "know": 1,
-      "transform": 226,
+      "transform": 265,
       "sense": 9,
       "aggregate": 2,
       "memory": 76
     },
     "bySource": {
-      "enum": 66,
-      "template": 172,
-      "memory": 76
+      "parent": 314,
+      "enum": 39
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 198652,
-    "cellsPerSecond": 1008,
+    "ms": 145871,
+    "cellsPerSecond": 1099,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -34,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "35b091ed02e9315d9ebd7a5625daac87008c5f8d19a29bdcacc6d3544c4b502a",
-      "round": 0,
-      "at": 111814,
+      "round": 1,
+      "at": 256265,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.sliceStrs",
+      "cost": 7,
+      "prim": "compare.isAnagram",
       "tpl": 1089
     }
   },
@@ -693,6 +692,121 @@
       }
     },
     {
+      "id": "n-a28204b9",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ag",
+            "au",
+            "aw",
+            "bh",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cc",
+            "cn",
+            "es",
+            "gm",
+            "gs",
+            "invert case",
+            "item number",
+            "lb",
+            "lk",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "sb",
+            "so",
+            "swap case",
+            "tj",
+            "tk",
+            "toggle case",
+            "tt",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b24c7264",
       "task": "fr-tidytuesday-country-regions-f74-309aed",
       "gen": 10,
@@ -1067,6 +1181,333 @@
       "fit": {
         "ok": 26,
         "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3d7bb12b",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ag",
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cc",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "lk",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "sb",
+            "separate by",
+            "so",
+            "split by",
+            "tk",
+            "tt",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-71ce1dac",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ag",
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cc",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "lk",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "sb",
+            "separate by",
+            "so",
+            "split by",
+            "tk",
+            "tt",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7ffab245",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ag",
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cc",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "lk",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "sb",
+            "separate by",
+            "so",
+            "split by",
+            "tk",
+            "tt",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
         "rows": 40
       }
     },
@@ -1654,6 +2095,222 @@
       "fit": {
         "ok": 23,
         "fired": 23,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-66240743",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "characters from",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "letters from to",
+            "lk",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "slice of the text",
+            "so",
+            "substring",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 22,
+        "fired": 22,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-71f7a8b8",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "characters from",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "letters from to",
+            "lk",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "slice of the text",
+            "so",
+            "substring",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 22,
+        "fired": 22,
         "rows": 40
       }
     },
@@ -2564,6 +3221,324 @@
       }
     },
     {
+      "id": "n-01b48786",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "snake case",
+            "snakecase",
+            "so",
+            "tj",
+            "tk",
+            "underscores",
+            "uz",
+            "variable name",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.snake",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-071e6d39",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.sortStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-088df27a",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "dashes",
+            "each word",
+            "es",
+            "gm",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0d27fb89",
       "task": "fr-tidytuesday-country-regions-f74-309aed",
       "gen": 10,
@@ -2777,6 +3752,217 @@
       }
     },
     {
+      "id": "n-0e937ab0",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "camel case",
+            "camelcase",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "lower camel case",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0ed14e9c",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "dashes",
+            "each word",
+            "es",
+            "gm",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-12074663",
       "task": "fr-tidytuesday-country-regions-f74-309aed",
       "gen": 10,
@@ -2884,6 +4070,111 @@
       }
     },
     {
+      "id": "n-1591ca2d",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "invert case",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "swap case",
+            "tj",
+            "tk",
+            "toggle case",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1c0e6f9b",
       "task": "fr-tidytuesday-country-regions-f74-309aed",
       "gen": 10,
@@ -2950,6 +4241,220 @@
           "transform.camel",
           [
             "transform.reverseWords",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1d2ee482",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cn",
+            "dashes",
+            "es",
+            "gm",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1e7124d5",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "es",
+            "gm",
+            "invert case",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "snake case",
+            "snakecase",
+            "so",
+            "swap case",
+            "tj",
+            "tk",
+            "toggle case",
+            "underscores",
+            "uz",
+            "variable name",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.snake",
             [
               "know.lookup",
               [
@@ -3411,6 +4916,323 @@
       }
     },
     {
+      "id": "n-33ebc038",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "distinct",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "remove duplicates",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "without repeats",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.uniqueStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3f9a081b",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "camel case",
+            "camelcase",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "lower camel case",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-415d1e2b",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "capital letters",
+            "capitals",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "upper case",
+            "uppercase",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4ff712ed",
       "task": "fr-tidytuesday-country-regions-f74-309aed",
       "gen": 10,
@@ -3725,6 +5547,219 @@
       }
     },
     {
+      "id": "n-54b6db89",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "class name",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pascal case",
+            "pascalcase",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "upper camel case",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-583cdc4e",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "dashes",
+            "es",
+            "gm",
+            "hyphens",
+            "invert case",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "swap case",
+            "tj",
+            "tk",
+            "toggle case",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5ec4fea5",
       "task": "fr-tidytuesday-country-regions-f74-309aed",
       "gen": 10,
@@ -3790,6 +5825,639 @@
           "transform.reverseStrs",
           [
             "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6b018ddb",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6e83300f",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "capital letters",
+            "capitals",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "upper case",
+            "uppercase",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6fbd5a2c",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "camel case",
+            "camelcase",
+            "cn",
+            "es",
+            "gm",
+            "invert case",
+            "item number",
+            "lb",
+            "lower camel case",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "swap case",
+            "tj",
+            "tk",
+            "toggle case",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-70ee708d",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "dashes",
+            "each word",
+            "es",
+            "gm",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-77555b7d",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "distinct",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "remove duplicates",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "without repeats",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.uniqueStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8ad397a2",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "invert case",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "swap case",
+            "tj",
+            "tk",
+            "toggle case",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
             [
               "know.lookup",
               [
@@ -3896,6 +6564,429 @@
           "transform.lower",
           [
             "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b4a10e7f",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sortStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bb98c29e",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bc066a2a",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "class name",
+            "cn",
+            "es",
+            "gm",
+            "invert case",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pascal case",
+            "pascalcase",
+            "pl",
+            "rs",
+            "so",
+            "swap case",
+            "tj",
+            "tk",
+            "toggle case",
+            "upper camel case",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bc14ec11",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "capital letters",
+            "capitals",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "upper case",
+            "uppercase",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.upper",
             [
               "know.lookup",
               [
@@ -4149,6 +7240,640 @@
       }
     },
     {
+      "id": "n-dd6a8aee",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sortStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e18c8395",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e40f987c",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "each word",
+            "es",
+            "gm",
+            "invert case",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "split into words",
+            "swap case",
+            "tj",
+            "tk",
+            "toggle case",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f198a9ef",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "reverse the words",
+            "reverse word order",
+            "rs",
+            "snake case",
+            "snakecase",
+            "so",
+            "tj",
+            "tk",
+            "underscores",
+            "uz",
+            "variable name",
+            "words backwards",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "transform.reverseWords",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f67d4aeb",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "cn",
+            "distinct",
+            "each word",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "remove duplicates",
+            "rs",
+            "so",
+            "split into words",
+            "tj",
+            "tk",
+            "uz",
+            "without repeats",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.uniqueStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f8e58a5f",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "au",
+            "aw",
+            "bh",
+            "by",
+            "camel case",
+            "camelcase",
+            "capital letters",
+            "capitals",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "lower camel case",
+            "ly",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "so",
+            "tj",
+            "tk",
+            "upper case",
+            "uppercase",
+            "uz",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-cb8b0a59",
       "task": "fr-tidytuesday-country-regions-f74-309aed",
       "gen": 10,
@@ -4208,6 +7933,109 @@
         "render.str",
         [
           "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.before",
+            {
+              "lit": "name"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e3d835d0",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ag",
+            "al",
+            "aw",
+            "bh",
+            "cc",
+            "cl",
+            "cn",
+            "element",
+            "es",
+            "item number",
+            "lb",
+            "lk",
+            "mn",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "pl",
+            "position",
+            "sb",
+            "separate by",
+            "so",
+            "split",
+            "split by",
+            "tj",
+            "tt",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
           [
             "know.lookup",
             [
@@ -6312,6 +10140,108 @@
             [
               "sense.content"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-381ca472",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "aw",
+            "bh",
+            "by",
+            "characters from",
+            "cn",
+            "es",
+            "gm",
+            "item number",
+            "lb",
+            "letters from to",
+            "ly",
+            "mt",
+            "no",
+            "np",
+            "nth",
+            "om",
+            "pl",
+            "rs",
+            "slice of the text",
+            "so",
+            "substring",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          [
+            "sense.wordCount"
           ]
         ]
       ],
@@ -9520,6 +13450,100 @@
       }
     },
     {
+      "id": "n-5f58158e",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "aw",
+            "characters from",
+            "cn",
+            "es",
+            "item number",
+            "letters from to",
+            "ly",
+            "mt",
+            "np",
+            "nth",
+            "om",
+            "slice of the text",
+            "substring",
+            "ws"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6625161b",
       "task": "fr-tidytuesday-country-regions-f74-309aed",
       "gen": 10,
@@ -11847,6 +15871,85 @@
           [
             "sense.roman"
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a1dd54ef",
+      "task": "fr-tidytuesday-country-regions-f74-309aed",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "item number",
+            "letters from to",
+            "nth",
+            "om",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+            },
+            {
+              "lit": "abbreviation"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 4
+          }
         ]
       ],
       "mem": null,
@@ -24365,6 +28468,7 @@
     }
   ],
   "stages": [
-    "718b0162c31901d4962edaf82c243a6a79955cf20e397868c81d9e4514e9f426"
+    "718b0162c31901d4962edaf82c243a6a79955cf20e397868c81d9e4514e9f426",
+    "657c695e7a3ee82aab46d98b89573f3ad37a7384b1b5a868324a0f59aebad2b7"
   ]
 }
