@@ -2,29 +2,26 @@
   "task": "sp500-company-2-to-sector",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-17T16:34:27.917Z",
+  "at": "2026-11-18T12:37:18.802Z",
   "stats": {
-    "generated": 200160,
-    "distinct": 65896,
-    "kept": 445,
-    "know": 314,
+    "generated": 160447,
+    "distinct": 106178,
+    "kept": 454,
+    "know": 322,
     "byFamily": {
-      "transform": 283,
+      "transform": 292,
       "aggregate": 81,
       "memory": 81
     },
     "bySource": {
-      "open": 1,
-      "enum": 43,
-      "parent": 184,
-      "template": 136,
-      "memory": 81
+      "parent": 272,
+      "enum": 182
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 207255,
-    "cellsPerSecond": 966,
+    "ms": 235669,
+    "cellsPerSecond": 681,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -34,159 +31,16 @@
     "cursor": {
       "v": 1,
       "basis": "b68b8f7fe6e07d806b9f33b6175cd422db7d3c633cd5ac0d0e7508c7199d5f27",
-      "round": 0,
-      "at": 119488,
+      "round": 1,
+      "at": 232782,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "iterate.multiples",
+      "cost": 7,
+      "prim": "aggregate.indexOf",
       "tpl": 1525
     }
   },
   "cells": [
-    {
-      "id": "n-b5ce04e5",
-      "task": "sp500-company-2-to-sector",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "affiliation",
-              "akamai",
-              "allegion",
-              "almagrogarcia",
-              "amcor",
-              "ameren",
-              "american",
-              "analog",
-              "analysis",
-              "atorus",
-              "att",
-              "basin",
-              "bestselling",
-              "boeing",
-              "case",
-              "centene",
-              "cf",
-              "code",
-              "coherent",
-              "description",
-              "domain",
-              "dominos",
-              "ecolab",
-              "energy",
-              "entergy",
-              "equifax",
-              "extension",
-              "fedex",
-              "fixedincome",
-              "flavors",
-              "gics",
-              "godaddy",
-              "group",
-              "honeywell",
-              "hours",
-              "httpsazuremicrosoftcomenusservicescognitiveservicestextanalytics",
-              "ibm",
-              "in",
-              "industry",
-              "insulet",
-              "jabil",
-              "kinder",
-              "kla",
-              "mayorunaamazon",
-              "mcdermott",
-              "merck",
-              "microsoft",
-              "netflixtitles",
-              "newmont",
-              "nordson",
-              "nvidia",
-              "otis",
-              "pepsico",
-              "petroleum",
-              "platforms",
-              "procter",
-              "purchaser",
-              "rosen",
-              "rpg",
-              "rtx",
-              "sherwinwilliams",
-              "solar",
-              "sponsoring",
-              "stock",
-              "stryker",
-              "survivor",
-              "symbol",
-              "tags",
-              "tapestry",
-              "tesla",
-              "ticker",
-              "title",
-              "tmobile",
-              "type",
-              "udr",
-              "ulta",
-              "uncertainty",
-              "universal",
-              "version",
-              "vistra",
-              "walt",
-              "x",
-              "year"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "sp500"
-                },
-                {
-                  "lit": "company"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "sp500"
-            },
-            {
-              "lit": "company"
-            },
-            {
-              "lit": "sector"
-            }
-          ],
-          {
-            "lit": "Financials"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 12,
-      "fit": {
-        "ok": 30,
-        "fired": 30,
-        "rows": 40
-      }
-    },
     {
       "id": "n-0bb7ff61",
       "task": "sp500-company-2-to-sector",
@@ -14285,6 +14139,110 @@
       }
     },
     {
+      "id": "n-00601396",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amazon",
+            "athletica",
+            "beverage",
+            "charter",
+            "chipotle",
+            "company",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "nxp",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "semiconductor",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "akamai"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "sector"
+            }
+          ],
+          {
+            "lit": 12
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5f912ea8",
       "task": "sp500-company-2-to-sector",
       "gen": 10,
@@ -15829,6 +15787,175 @@
       }
     },
     {
+      "id": "n-5ef1fc75",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cardinal",
+            "cencora",
+            "element",
+            "fisher",
+            "humana",
+            "iqvia",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          {
+            "lit": "Health Care"
+          },
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "ticker"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5f00bdf5",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cardinal",
+            "cencora",
+            "delete",
+            "element",
+            "fisher",
+            "humana",
+            "iqvia",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Health Care"
+          },
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "ticker"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-62165e67",
       "task": "sp500-company-2-to-sector",
       "gen": 10,
@@ -15953,6 +16080,174 @@
       ],
       "pyramid": [
         "render.list",
+        [
+          "transform.split",
+          {
+            "lit": "Health Care"
+          },
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "ticker"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8dc20348",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cardinal",
+            "cencora",
+            "element",
+            "fisher",
+            "humana",
+            "iqvia",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          {
+            "lit": "Health Care"
+          },
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "ticker"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b5d8a243",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cardinal",
+            "cencora",
+            "element",
+            "fisher",
+            "humana",
+            "iqvia",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
         [
           "transform.split",
           {
@@ -16575,6 +16870,81 @@
       "fit": {
         "ok": 5,
         "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-79c98ac4",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cencora",
+            "change to",
+            "element",
+            "fisher",
+            "humana",
+            "iqvia",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "Health Care"
+          },
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
         "rows": 40
       }
     },
@@ -18950,6 +19320,80 @@
       }
     },
     {
+      "id": "n-88ad55ae",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cencora",
+            "change to",
+            "element",
+            "humana",
+            "iqvia",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Health Care"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a031319c",
       "task": "sp500-company-2-to-sector",
       "gen": 10,
@@ -19004,6 +19448,80 @@
           ],
           {
             "lit": "Industrials"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a6e91157",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cencora",
+            "change to",
+            "element",
+            "humana",
+            "iqvia",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "Health Care"
           }
         ]
       ],
@@ -19358,6 +19876,94 @@
       "mem": null,
       "height": 4,
       "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8bff5a71",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "charter",
+            "company",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "nxp",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "sector"
+            }
+          ],
+          {
+            "lit": 12
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 3,
         "fired": 3,
@@ -32887,6 +33493,53 @@
       }
     },
     {
+      "id": "n-42a5592d",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "strip out",
+            "technologies"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Information Technology"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6a47e433",
       "task": "sp500-company-2-to-sector",
       "gen": 10,
@@ -35275,6 +35928,149 @@
       }
     },
     {
+      "id": "n-b5ce04e5",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "affiliation",
+              "akamai",
+              "allegion",
+              "almagrogarcia",
+              "amcor",
+              "ameren",
+              "american",
+              "analog",
+              "analysis",
+              "atorus",
+              "att",
+              "basin",
+              "bestselling",
+              "boeing",
+              "case",
+              "centene",
+              "cf",
+              "code",
+              "coherent",
+              "description",
+              "domain",
+              "dominos",
+              "ecolab",
+              "energy",
+              "entergy",
+              "equifax",
+              "extension",
+              "fedex",
+              "fixedincome",
+              "flavors",
+              "gics",
+              "godaddy",
+              "group",
+              "honeywell",
+              "hours",
+              "httpsazuremicrosoftcomenusservicescognitiveservicestextanalytics",
+              "ibm",
+              "in",
+              "industry",
+              "insulet",
+              "jabil",
+              "kinder",
+              "kla",
+              "mayorunaamazon",
+              "mcdermott",
+              "merck",
+              "microsoft",
+              "netflixtitles",
+              "newmont",
+              "nordson",
+              "nvidia",
+              "otis",
+              "pepsico",
+              "petroleum",
+              "platforms",
+              "procter",
+              "purchaser",
+              "rosen",
+              "rpg",
+              "rtx",
+              "sherwinwilliams",
+              "solar",
+              "sponsoring",
+              "stock",
+              "stryker",
+              "survivor",
+              "symbol",
+              "tags",
+              "tapestry",
+              "tesla",
+              "ticker",
+              "title",
+              "tmobile",
+              "type",
+              "udr",
+              "ulta",
+              "uncertainty",
+              "universal",
+              "version",
+              "vistra",
+              "walt",
+              "x",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "sector"
+            }
+          ],
+          {
+            "lit": "Financials"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 30,
+        "fired": 30,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a14756c8",
       "task": "sp500-company-2-to-sector",
       "gen": 10,
@@ -35468,6 +36264,7 @@
   "stages": [
     "36d4da9b867c2c133309919d1641af1d0fab6dc9293f6eb166d34116cd8ba341",
     "59dbedf86832a90b489418406e7832e3c8b64d82e747f55d365f56f29740c29e",
-    "1cd0cdeff4615e8394c73361bb5c5cf2b66e9221879591e4e38b00dc0dbc1fc7"
+    "1cd0cdeff4615e8394c73361bb5c5cf2b66e9221879591e4e38b00dc0dbc1fc7",
+    "fb59f93d9859d7d388e7462576aa73df49ff1c0e65e342ccbbd09f355aa57ead"
   ]
 }

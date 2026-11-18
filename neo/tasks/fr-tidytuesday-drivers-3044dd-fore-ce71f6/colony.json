@@ -2,30 +2,29 @@
   "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-17T14:12:21.378Z",
+  "at": "2026-11-18T12:43:17.568Z",
   "stats": {
-    "generated": 200049,
-    "distinct": 77947,
-    "kept": 429,
-    "know": 288,
+    "generated": 160467,
+    "distinct": 75458,
+    "kept": 436,
+    "know": 293,
     "byFamily": {
       "know": 2,
-      "transform": 248,
+      "transform": 255,
       "sense": 3,
       "memory": 83,
       "aggregate": 93
     },
     "bySource": {
-      "enum": 30,
+      "parent": 216,
       "open": 15,
-      "parent": 383,
-      "template": 1
+      "enum": 205
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 166954,
-    "cellsPerSecond": 1198,
+    "ms": 143941,
+    "cellsPerSecond": 1115,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +34,12 @@
     "cursor": {
       "v": 1,
       "basis": "92f542132d3b74663c1ed64fe0ea4915ebe16a02522b15cd3b21645d8e161d05",
-      "round": 0,
-      "at": 110724,
+      "round": 1,
+      "at": 245283,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.neg",
+      "cost": 7,
+      "prim": "compare.contains",
       "tpl": 1217
     }
   },
@@ -138,7 +137,7 @@
       }
     },
     {
-      "id": "n-864054db",
+      "id": "n-c1935207",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -152,7 +151,6 @@
             [
               "220cv01923rgkas",
               "act",
-              "affiliation",
               "airline",
               "album",
               "alias",
@@ -215,6 +213,7 @@
               "last",
               "latitude",
               "location",
+              "longitude",
               "m",
               "macintyre",
               "madison",
@@ -227,6 +226,7 @@
               "no",
               "north",
               "occupation",
+              "ori",
               "original",
               "person",
               "place",
@@ -251,6 +251,7 @@
               "shorty",
               "slug",
               "song",
+              "speaker",
               "species",
               "spicy",
               "sponsorship",
@@ -329,7 +330,107 @@
       }
     },
     {
-      "id": "n-2a3ff3a6",
+      "id": "n-5c146403",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "element",
+            "item number",
+            "nationality",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "del"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "dennistaylor"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "kekerosberg"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "vicwilson"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-60891398",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -343,7 +444,6 @@
             [
               "220cv01923rgkas",
               "act",
-              "affiliation",
               "airline",
               "album",
               "alias",
@@ -406,6 +506,7 @@
               "last",
               "latitude",
               "location",
+              "longitude",
               "m",
               "macintyre",
               "madison",
@@ -418,6 +519,7 @@
               "no",
               "north",
               "occupation",
+              "ori",
               "original",
               "person",
               "place",
@@ -442,6 +544,7 @@
               "shorty",
               "slug",
               "song",
+              "speaker",
               "species",
               "spicy",
               "sponsorship",
@@ -523,67 +626,163 @@
       }
     },
     {
-      "id": "n-5c146403",
+      "id": "n-c0f1e6ce",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-d02e0279"
+      ],
       "guard": [
         [
-          "hasAny",
-          [
-            "all caps",
-            "capital letters",
-            "capitals",
-            "element",
-            "item number",
-            "nationality",
-            "nth",
-            "position",
-            "upper case",
-            "uppercase"
-          ]
-        ],
-        [
-          "words<=",
-          6
-        ],
-        [
-          "has",
-          "of"
-        ],
-        [
           "not",
           [
-            "has",
-            "del"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "dennistaylor"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "kekerosberg"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "vicwilson"
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "longitude",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "ori",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "speaker",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
           ]
         ]
       ],
       "pyramid": [
         "render.str",
         [
-          "transform.upper",
+          "transform.lower",
           [
             "know.lookup",
             [
@@ -819,7 +1018,7 @@
       }
     },
     {
-      "id": "n-d467fabe",
+      "id": "n-de6209c5",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -833,7 +1032,6 @@
             [
               "220cv01923rgkas",
               "act",
-              "affiliation",
               "airline",
               "album",
               "alias",
@@ -896,6 +1094,7 @@
               "last",
               "latitude",
               "location",
+              "longitude",
               "m",
               "macintyre",
               "madison",
@@ -908,6 +1107,7 @@
               "no",
               "north",
               "occupation",
+              "ori",
               "original",
               "person",
               "place",
@@ -932,6 +1132,7 @@
               "shorty",
               "slug",
               "song",
+              "speaker",
               "species",
               "spicy",
               "sponsorship",
@@ -974,200 +1175,6 @@
         "render.str",
         [
           "transform.swapCase",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-drivers-3044dd"
-                },
-                {
-                  "lit": "forename"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-drivers-3044dd"
-            },
-            {
-              "lit": "forename"
-            },
-            {
-              "lit": "nationality"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 11,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-f215cea4",
-      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
-      "gen": 10,
-      "parents": [
-        "n-d02e0279"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "220cv01923rgkas",
-              "act",
-              "affiliation",
-              "airline",
-              "album",
-              "alias",
-              "alpha3",
-              "apocryphon",
-              "art",
-              "artist",
-              "aston",
-              "author",
-              "azurecomcognitiveservicesluisprogrammatic",
-              "birth",
-              "birthday",
-              "bull",
-              "captions",
-              "category",
-              "cd34",
-              "character",
-              "characters",
-              "city",
-              "code",
-              "combined",
-              "company",
-              "compare",
-              "contestant",
-              "country",
-              "cryptocurrency",
-              "cultivation",
-              "danny",
-              "darkness",
-              "date",
-              "death",
-              "del",
-              "dennistaylor",
-              "description",
-              "directed",
-              "director",
-              "dob",
-              "domain",
-              "e",
-              "eclipse",
-              "emoji",
-              "english",
-              "featuring",
-              "first",
-              "gender",
-              "havana",
-              "hectorreyes1",
-              "height",
-              "hex",
-              "hometown",
-              "iata",
-              "id",
-              "imdb",
-              "islands",
-              "iso3",
-              "jr",
-              "judge1",
-              "kekerosberg",
-              "language",
-              "last",
-              "latitude",
-              "location",
-              "m",
-              "macintyre",
-              "madison",
-              "men",
-              "millichap",
-              "n",
-              "n3",
-              "nickname",
-              "nightcrawler",
-              "no",
-              "north",
-              "occupation",
-              "original",
-              "person",
-              "place",
-              "population",
-              "problema",
-              "publication",
-              "r",
-              "rating",
-              "raw",
-              "reach",
-              "ref",
-              "region",
-              "saint",
-              "san",
-              "scene",
-              "scottimberman",
-              "series",
-              "session",
-              "setters",
-              "shortcode",
-              "shortname",
-              "shorty",
-              "slug",
-              "song",
-              "species",
-              "spicy",
-              "sponsorship",
-              "state",
-              "stephenredding",
-              "subcategory",
-              "sul",
-              "suname",
-              "super",
-              "supp",
-              "survive",
-              "symbol",
-              "taxonomic",
-              "team",
-              "test",
-              "ticker",
-              "time",
-              "title",
-              "top",
-              "track",
-              "type",
-              "user",
-              "v",
-              "vicwilson",
-              "w",
-              "weight",
-              "wilson",
-              "women",
-              "writers",
-              "x",
-              "y",
-              "year",
-              "years",
-              "zone"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.lower",
           [
             "know.lookup",
             [
@@ -1548,7 +1555,119 @@
       }
     },
     {
-      "id": "n-38eb2113",
+      "id": "n-5f06cf07",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ben",
+            "brausch",
+            "chet",
+            "damon",
+            "daniel",
+            "dieter",
+            "duane",
+            "element",
+            "gerino",
+            "hansjoachim",
+            "heikki",
+            "huub",
+            "item number",
+            "ivan",
+            "jac",
+            "jarno",
+            "kamui",
+            "kenny",
+            "leading zeros",
+            "leo",
+            "marcus",
+            "massimiliano",
+            "michel",
+            "mikko",
+            "myron",
+            "nanni",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "paolo",
+            "perry",
+            "pierluigi",
+            "piers",
+            "position",
+            "ralf",
+            "ralph",
+            "reine",
+            "roelof",
+            "rupert",
+            "siegfried",
+            "syd",
+            "tiago",
+            "timo",
+            "torsten",
+            "vincenzo",
+            "wayne",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "nationality"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b47dbaa3",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -1562,7 +1681,6 @@
             [
               "220cv01923rgkas",
               "act",
-              "affiliation",
               "airline",
               "album",
               "alias",
@@ -1625,6 +1743,7 @@
               "last",
               "latitude",
               "location",
+              "longitude",
               "m",
               "macintyre",
               "madison",
@@ -1637,6 +1756,7 @@
               "no",
               "north",
               "occupation",
+              "ori",
               "original",
               "person",
               "place",
@@ -1662,6 +1782,7 @@
               "shorty",
               "slug",
               "song",
+              "speaker",
               "species",
               "spicy",
               "sponsorship",
@@ -1698,118 +1819,6 @@
               "zone"
             ]
           ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.padStart",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-drivers-3044dd"
-                },
-                {
-                  "lit": "forename"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-drivers-3044dd"
-            },
-            {
-              "lit": "forename"
-            },
-            {
-              "lit": "nationality"
-            }
-          ],
-          {
-            "lit": 5
-          },
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 13,
-      "fit": {
-        "ok": 39,
-        "fired": 39,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-5f06cf07",
-      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "ben",
-            "brausch",
-            "chet",
-            "damon",
-            "daniel",
-            "dieter",
-            "duane",
-            "element",
-            "gerino",
-            "hansjoachim",
-            "heikki",
-            "huub",
-            "item number",
-            "ivan",
-            "jac",
-            "jarno",
-            "kamui",
-            "kenny",
-            "leading zeros",
-            "leo",
-            "marcus",
-            "massimiliano",
-            "michel",
-            "mikko",
-            "myron",
-            "nanni",
-            "nth",
-            "pad",
-            "pad with",
-            "padded to",
-            "paolo",
-            "perry",
-            "pierluigi",
-            "piers",
-            "position",
-            "ralf",
-            "ralph",
-            "reine",
-            "roelof",
-            "rupert",
-            "siegfried",
-            "syd",
-            "tiago",
-            "timo",
-            "torsten",
-            "vincenzo",
-            "wayne",
-            "zero pad"
-          ]
-        ],
-        [
-          "has",
-          "nationality"
         ]
       ],
       "pyramid": [
@@ -3705,7 +3714,7 @@
       }
     },
     {
-      "id": "n-103f0434",
+      "id": "n-226860a5",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -3719,7 +3728,6 @@
             [
               "220cv01923rgkas",
               "act",
-              "affiliation",
               "airline",
               "album",
               "alias",
@@ -3783,6 +3791,7 @@
               "last",
               "latitude",
               "location",
+              "longitude",
               "m",
               "macintyre",
               "madison",
@@ -3795,6 +3804,7 @@
               "no",
               "north",
               "occupation",
+              "ori",
               "original",
               "person",
               "place",
@@ -3819,6 +3829,7 @@
               "shorty",
               "slug",
               "song",
+              "speaker",
               "species",
               "spicy",
               "sponsorship",
@@ -3918,7 +3929,7 @@
       }
     },
     {
-      "id": "n-7e63f25e",
+      "id": "n-487d3814",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -3932,7 +3943,6 @@
             [
               "220cv01923rgkas",
               "act",
-              "affiliation",
               "airline",
               "album",
               "alias",
@@ -3996,6 +4006,7 @@
               "last",
               "latitude",
               "location",
+              "longitude",
               "m",
               "macintyre",
               "madison",
@@ -4008,6 +4019,7 @@
               "no",
               "north",
               "occupation",
+              "ori",
               "original",
               "person",
               "place",
@@ -4032,6 +4044,7 @@
               "shorty",
               "slug",
               "song",
+              "speaker",
               "species",
               "spicy",
               "sponsorship",
@@ -4117,6 +4130,419 @@
             },
             {
               "lit": "nationality"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-725a1045",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-81c580eb"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "100m",
+              "220cv01923rgkas",
+              "abbots",
+              "acres",
+              "advancement",
+              "agostinelli",
+              "aguri",
+              "airline",
+              "airport",
+              "album",
+              "alert",
+              "alias",
+              "alpha3",
+              "amasa",
+              "americariobranco",
+              "anson",
+              "anton",
+              "apocryphon",
+              "archive",
+              "art",
+              "artist",
+              "atkins",
+              "attendants",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "barfield",
+              "barlow",
+              "bauccio",
+              "bavariamunich",
+              "believe",
+              "benitez",
+              "bermudez",
+              "birth",
+              "birthday",
+              "blake",
+              "blonde",
+              "braginsky",
+              "bremond",
+              "bros",
+              "bud",
+              "burkett",
+              "burned",
+              "c",
+              "calfireincidents",
+              "callr",
+              "captions",
+              "cariou",
+              "carls",
+              "carroll",
+              "carusoe",
+              "case",
+              "category",
+              "cgac",
+              "character",
+              "characters",
+              "chellie",
+              "chesney",
+              "circuit",
+              "clawson",
+              "clean",
+              "cleveland",
+              "coalfleet",
+              "cole",
+              "college",
+              "color",
+              "columbia",
+              "columbiana",
+              "combined",
+              "comments",
+              "company",
+              "compare",
+              "consecutive",
+              "convention",
+              "cornell",
+              "cornilly",
+              "count",
+              "country",
+              "crouch",
+              "cultivation",
+              "currington",
+              "dales",
+              "dallacqua",
+              "danker",
+              "danny",
+              "darkness",
+              "date",
+              "dayton",
+              "death",
+              "dennistaylor",
+              "description",
+              "dialogue",
+              "diminutive",
+              "directed",
+              "director",
+              "disney",
+              "dob",
+              "domain",
+              "dr",
+              "drainage",
+              "duckett",
+              "duke",
+              "duplin",
+              "durbin",
+              "e",
+              "ebach",
+              "elizabeth",
+              "ellis",
+              "emaasit",
+              "engelhardt",
+              "english",
+              "erika",
+              "establishment",
+              "eugene",
+              "featuring",
+              "feces",
+              "first",
+              "florida",
+              "forename",
+              "frohman",
+              "fuerza",
+              "g",
+              "ganz",
+              "gauvrit",
+              "gender",
+              "girard",
+              "goblet",
+              "goldenberg",
+              "goodrich",
+              "gordon",
+              "greater",
+              "gruber",
+              "guarini",
+              "guidotti",
+              "gwen",
+              "h",
+              "harvard",
+              "has",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hieber",
+              "highbaugh",
+              "hochreiter",
+              "hometown",
+              "huard",
+              "iana",
+              "iata",
+              "id",
+              "imdb",
+              "infected",
+              "ingram",
+              "isla",
+              "islands",
+              "iso",
+              "iso2",
+              "iso3",
+              "jamilia",
+              "jason",
+              "jeanbaptiste",
+              "jeremiah",
+              "jose",
+              "josejson",
+              "josh",
+              "jr",
+              "judge1",
+              "jungmin",
+              "kasell",
+              "kekerosberg",
+              "kellett",
+              "koller",
+              "korman",
+              "kynclova",
+              "l",
+              "lafreniere",
+              "langone",
+              "language",
+              "lantern",
+              "lappé",
+              "larger",
+              "last",
+              "latitude",
+              "lauren",
+              "leeper",
+              "leroybeaulieu",
+              "lesser",
+              "lessler",
+              "leuchtenberg",
+              "location",
+              "lockheed",
+              "longitude",
+              "lotze",
+              "luigis",
+              "macintyre",
+              "macqueen",
+              "maddie",
+              "makes",
+              "manasoiu",
+              "manufacturer",
+              "manuscript",
+              "marte",
+              "martin",
+              "matt",
+              "mcknight",
+              "medicine",
+              "mellor",
+              "men",
+              "millichap",
+              "miquelon",
+              "miserables",
+              "moakler",
+              "morris",
+              "munafo",
+              "muscatine",
+              "muskingum",
+              "myrick",
+              "myself",
+              "n",
+              "n3",
+              "neteler",
+              "nickname",
+              "nielsen",
+              "nima",
+              "no",
+              "nolte",
+              "noriega",
+              "north",
+              "obispo",
+              "overall",
+              "palomar",
+              "pashley",
+              "patient",
+              "penala",
+              "pittenger",
+              "place",
+              "playhouse",
+              "praying",
+              "prince",
+              "princeton",
+              "problema",
+              "province",
+              "publication",
+              "puzrin",
+              "r",
+              "radical",
+              "ramet",
+              "rancho",
+              "rating",
+              "rauch",
+              "raw",
+              "records",
+              "red",
+              "ref",
+              "region",
+              "release",
+              "riding",
+              "rimmler",
+              "robins",
+              "robson",
+              "romano",
+              "rowe",
+              "roy",
+              "s",
+              "sagalaev",
+              "saintpierre",
+              "sarah",
+              "savol",
+              "scene",
+              "school",
+              "scottimberman",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "shumaker",
+              "simons",
+              "singleton",
+              "slug",
+              "smaller",
+              "smallredtriangle",
+              "socal",
+              "sophia",
+              "sort",
+              "speaker",
+              "speakers",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "steffen",
+              "stephenredding",
+              "subcategory",
+              "sucode",
+              "sul",
+              "suname",
+              "t",
+              "tags",
+              "taxonomic",
+              "tenpenny",
+              "that39s",
+              "ticker",
+              "title",
+              "tracey",
+              "track",
+              "trucker",
+              "tumenov",
+              "tustin",
+              "unit",
+              "university",
+              "used",
+              "user",
+              "vecchietti",
+              "vergottini",
+              "vicwilson",
+              "vienne",
+              "volcanic",
+              "wallin",
+              "watkinson",
+              "weaver",
+              "week",
+              "weight",
+              "wells",
+              "wendell",
+              "westerman",
+              "weyl",
+              "whw",
+              "willowisp",
+              "wilm",
+              "wilson",
+              "winner",
+              "wonka",
+              "wraith",
+              "writers",
+              "x",
+              "years",
+              "yokel"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
             }
           ]
         ]
@@ -4503,627 +4929,7 @@
       }
     },
     {
-      "id": "n-b4c1c8a4",
-      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
-      "gen": 10,
-      "parents": [
-        "n-81c580eb"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "100m",
-              "220cv01923rgkas",
-              "abbots",
-              "acres",
-              "advancement",
-              "affiliation",
-              "agostinelli",
-              "aguri",
-              "airline",
-              "airport",
-              "album",
-              "alert",
-              "alias",
-              "alpha3",
-              "amasa",
-              "americariobranco",
-              "anson",
-              "anton",
-              "apocryphon",
-              "archive",
-              "art",
-              "artist",
-              "atkins",
-              "attendants",
-              "author",
-              "azurecomcognitiveservicesluisprogrammatic",
-              "barfield",
-              "barlow",
-              "bauccio",
-              "bavariamunich",
-              "believe",
-              "benitez",
-              "bermudez",
-              "birth",
-              "birthday",
-              "blake",
-              "blonde",
-              "braginsky",
-              "bremond",
-              "bros",
-              "bud",
-              "burkett",
-              "burned",
-              "c",
-              "calfireincidents",
-              "callr",
-              "captions",
-              "cariou",
-              "carls",
-              "carroll",
-              "carusoe",
-              "case",
-              "category",
-              "cgac",
-              "character",
-              "characters",
-              "chellie",
-              "chesney",
-              "circuit",
-              "clawson",
-              "clean",
-              "cleveland",
-              "coalfleet",
-              "cole",
-              "college",
-              "color",
-              "columbia",
-              "combined",
-              "comments",
-              "company",
-              "compare",
-              "consecutive",
-              "convention",
-              "cornell",
-              "cornilly",
-              "count",
-              "country",
-              "crouch",
-              "cultivation",
-              "currington",
-              "dales",
-              "dallacqua",
-              "danker",
-              "danny",
-              "darkness",
-              "date",
-              "dayton",
-              "death",
-              "dennistaylor",
-              "description",
-              "dialogue",
-              "diminutive",
-              "directed",
-              "director",
-              "disney",
-              "dob",
-              "domain",
-              "dr",
-              "drainage",
-              "duckett",
-              "duke",
-              "durbin",
-              "e",
-              "ebach",
-              "elizabeth",
-              "ellis",
-              "emaasit",
-              "engelhardt",
-              "english",
-              "erika",
-              "establishment",
-              "eugene",
-              "featuring",
-              "feces",
-              "first",
-              "florida",
-              "forename",
-              "frohman",
-              "fuerza",
-              "g",
-              "ganz",
-              "gauvrit",
-              "gender",
-              "girard",
-              "goblet",
-              "goldenberg",
-              "goodrich",
-              "gordon",
-              "greater",
-              "gruber",
-              "guarini",
-              "guidotti",
-              "gwen",
-              "h",
-              "harvard",
-              "has",
-              "havana",
-              "hectorreyes1",
-              "height",
-              "hieber",
-              "highbaugh",
-              "hochreiter",
-              "hometown",
-              "huard",
-              "iana",
-              "iata",
-              "id",
-              "imdb",
-              "infected",
-              "ingram",
-              "isla",
-              "islands",
-              "iso",
-              "iso2",
-              "iso3",
-              "jamilia",
-              "jason",
-              "jeanbaptiste",
-              "jeremiah",
-              "jose",
-              "josejson",
-              "josh",
-              "jr",
-              "judge1",
-              "jungmin",
-              "kasell",
-              "kekerosberg",
-              "kellett",
-              "koller",
-              "korman",
-              "kynclova",
-              "l",
-              "lafreniere",
-              "langone",
-              "language",
-              "lantern",
-              "lappé",
-              "larger",
-              "last",
-              "latitude",
-              "lauren",
-              "leeper",
-              "leroybeaulieu",
-              "lesser",
-              "lessler",
-              "leuchtenberg",
-              "location",
-              "lockheed",
-              "lotze",
-              "luigis",
-              "macintyre",
-              "macqueen",
-              "maddie",
-              "makes",
-              "manasoiu",
-              "manufacturer",
-              "manuscript",
-              "marte",
-              "martin",
-              "matt",
-              "mcknight",
-              "medicine",
-              "mellor",
-              "men",
-              "millichap",
-              "miquelon",
-              "miserables",
-              "moakler",
-              "morris",
-              "munafo",
-              "myrick",
-              "myself",
-              "n",
-              "n3",
-              "neteler",
-              "nickname",
-              "nielsen",
-              "nima",
-              "no",
-              "nolte",
-              "noriega",
-              "north",
-              "obispo",
-              "overall",
-              "palomar",
-              "pashley",
-              "patient",
-              "penala",
-              "pittenger",
-              "place",
-              "playhouse",
-              "praying",
-              "prince",
-              "princeton",
-              "problema",
-              "province",
-              "publication",
-              "puzrin",
-              "r",
-              "radical",
-              "ramet",
-              "rancho",
-              "rating",
-              "rauch",
-              "raw",
-              "records",
-              "red",
-              "ref",
-              "region",
-              "release",
-              "riding",
-              "rimmler",
-              "robins",
-              "robson",
-              "romano",
-              "rowe",
-              "roy",
-              "s",
-              "sagalaev",
-              "saintpierre",
-              "sarah",
-              "savol",
-              "scene",
-              "school",
-              "scottimberman",
-              "setters",
-              "shortcode",
-              "shortname",
-              "shorty",
-              "shumaker",
-              "simons",
-              "singleton",
-              "slug",
-              "smaller",
-              "smallredtriangle",
-              "socal",
-              "sophia",
-              "sort",
-              "speakers",
-              "species",
-              "spicy",
-              "sponsorship",
-              "state",
-              "steffen",
-              "stephenredding",
-              "subcategory",
-              "sucode",
-              "sul",
-              "suname",
-              "t",
-              "tags",
-              "taxonomic",
-              "tenpenny",
-              "that39s",
-              "ticker",
-              "title",
-              "tracey",
-              "track",
-              "trucker",
-              "tumenov",
-              "tustin",
-              "unit",
-              "university",
-              "used",
-              "user",
-              "vecchietti",
-              "vergottini",
-              "vicwilson",
-              "vienne",
-              "volcanic",
-              "wallin",
-              "watkinson",
-              "weaver",
-              "week",
-              "weight",
-              "wells",
-              "wendell",
-              "westerman",
-              "weyl",
-              "whw",
-              "willowisp",
-              "wilm",
-              "wilson",
-              "winner",
-              "wonka",
-              "wraith",
-              "writers",
-              "x",
-              "years",
-              "yokel"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.padStart",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-drivers-3044dd"
-                },
-                {
-                  "lit": "forename"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-drivers-3044dd"
-            },
-            {
-              "lit": "forename"
-            },
-            {
-              "lit": "nationality"
-            }
-          ],
-          {
-            "lit": 5
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 17,
-      "fit": {
-        "ok": 39,
-        "fired": 39,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-df289447",
-      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
-      "gen": 10,
-      "parents": [
-        "n-b18cd606"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "220cv01923rgkas",
-              "act",
-              "affiliation",
-              "airline",
-              "album",
-              "alias",
-              "alpha3",
-              "apocryphon",
-              "art",
-              "artist",
-              "aston",
-              "author",
-              "azurecomcognitiveservicesluisprogrammatic",
-              "birth",
-              "birthday",
-              "bull",
-              "captions",
-              "category",
-              "cd34",
-              "character",
-              "characters",
-              "city",
-              "code",
-              "combined",
-              "company",
-              "compare",
-              "contestant",
-              "country",
-              "cryptocurrency",
-              "cultivation",
-              "danny",
-              "darkness",
-              "date",
-              "death",
-              "del",
-              "dennistaylor",
-              "description",
-              "directed",
-              "director",
-              "dob",
-              "domain",
-              "e",
-              "eclipse",
-              "emoji",
-              "english",
-              "featuring",
-              "first",
-              "gender",
-              "havana",
-              "hectorreyes1",
-              "height",
-              "hex",
-              "hometown",
-              "iata",
-              "id",
-              "imdb",
-              "islands",
-              "iso3",
-              "jr",
-              "judge1",
-              "kekerosberg",
-              "language",
-              "last",
-              "latitude",
-              "location",
-              "m",
-              "macintyre",
-              "madison",
-              "men",
-              "millichap",
-              "n",
-              "n3",
-              "nickname",
-              "nightcrawler",
-              "no",
-              "north",
-              "occupation",
-              "original",
-              "person",
-              "place",
-              "population",
-              "prince",
-              "problema",
-              "publication",
-              "r",
-              "rating",
-              "raw",
-              "reach",
-              "ref",
-              "region",
-              "saint",
-              "san",
-              "scene",
-              "scottimberman",
-              "series",
-              "session",
-              "setters",
-              "shortcode",
-              "shortname",
-              "shorty",
-              "slug",
-              "song",
-              "species",
-              "spicy",
-              "sponsorship",
-              "state",
-              "stephenredding",
-              "subcategory",
-              "sul",
-              "suname",
-              "super",
-              "supp",
-              "survive",
-              "symbol",
-              "taxonomic",
-              "team",
-              "test",
-              "ticker",
-              "time",
-              "title",
-              "top",
-              "track",
-              "type",
-              "user",
-              "v",
-              "vicwilson",
-              "w",
-              "weight",
-              "wilson",
-              "women",
-              "writers",
-              "x",
-              "y",
-              "year",
-              "years",
-              "zone"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.padStart",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-drivers-3044dd"
-                },
-                {
-                  "lit": "forename"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-drivers-3044dd"
-            },
-            {
-              "lit": "forename"
-            },
-            {
-              "lit": "nationality"
-            }
-          ],
-          {
-            "lit": 5
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-drivers-3044dd"
-              },
-              {
-                "lit": "forename"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 17,
-      "fit": {
-        "ok": 39,
-        "fired": 39,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-e5f0e515",
+      "id": "n-fc640134",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -5138,7 +4944,6 @@
               "act",
               "add",
               "advancement",
-              "affiliation",
               "airline",
               "album",
               "alert",
@@ -5283,6 +5088,7 @@
               "location",
               "lockheed",
               "longanisa",
+              "longitude",
               "m",
               "macintyre",
               "maddie",
@@ -5302,6 +5108,7 @@
               "occupation",
               "official",
               "olympics",
+              "ori",
               "origin",
               "original",
               "overall",
@@ -5341,6 +5148,7 @@
               "slug",
               "smaller",
               "smallredtriangle",
+              "speaker",
               "speakers",
               "speaking",
               "species",
@@ -5442,6 +5250,221 @@
               },
               {
                 "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fe68bb2e",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-b18cd606"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "longitude",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "ori",
+              "original",
+              "person",
+              "place",
+              "population",
+              "prince",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "speaker",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-drivers-3044dd"
+              },
+              {
+                "lit": "forename"
               }
             ],
             {
@@ -5579,7 +5602,7 @@
       }
     },
     {
-      "id": "n-99479e3b",
+      "id": "n-6334b8db",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -5595,7 +5618,6 @@
               "act",
               "add",
               "advancement",
-              "affiliation",
               "air",
               "airline",
               "album",
@@ -5687,7 +5709,6 @@
               "height",
               "hex",
               "highbaugh",
-              "holdens",
               "hometown",
               "iata",
               "id",
@@ -5713,12 +5734,14 @@
               "language",
               "larger",
               "last",
+              "latitude",
               "lentil",
               "lessler",
               "lewisclark",
               "lies",
               "location",
               "longanisa",
+              "longitude",
               "m",
               "macintyre",
               "makes",
@@ -5737,6 +5760,7 @@
               "occupation",
               "official",
               "olympics",
+              "ori",
               "origin",
               "original",
               "overall",
@@ -5774,6 +5798,7 @@
               "slug",
               "smaller",
               "smallredtriangle",
+              "speaker",
               "speakers",
               "speaking",
               "species",
@@ -7039,6 +7064,204 @@
       ],
       "mem": null,
       "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0e375540",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-02b248ed"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "longitude",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "ori",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "speaker",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": "South African"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 12,
       "fit": {
         "ok": 38,
@@ -9790,202 +10013,6 @@
       }
     },
     {
-      "id": "n-b8f81c1e",
-      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
-      "gen": 10,
-      "parents": [
-        "n-02b248ed"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "220cv01923rgkas",
-              "act",
-              "affiliation",
-              "airline",
-              "album",
-              "alias",
-              "alpha3",
-              "apocryphon",
-              "art",
-              "artist",
-              "aston",
-              "author",
-              "azurecomcognitiveservicesluisprogrammatic",
-              "birth",
-              "birthday",
-              "bull",
-              "captions",
-              "category",
-              "cd34",
-              "character",
-              "characters",
-              "city",
-              "code",
-              "combined",
-              "company",
-              "compare",
-              "contestant",
-              "country",
-              "cryptocurrency",
-              "danny",
-              "darkness",
-              "date",
-              "death",
-              "del",
-              "dennistaylor",
-              "description",
-              "directed",
-              "director",
-              "dob",
-              "domain",
-              "e",
-              "eclipse",
-              "emoji",
-              "english",
-              "featuring",
-              "first",
-              "gender",
-              "havana",
-              "hectorreyes1",
-              "height",
-              "hex",
-              "hometown",
-              "iata",
-              "id",
-              "imdb",
-              "islands",
-              "iso3",
-              "jr",
-              "judge1",
-              "kekerosberg",
-              "language",
-              "last",
-              "latitude",
-              "location",
-              "m",
-              "macintyre",
-              "madison",
-              "men",
-              "millichap",
-              "n",
-              "n3",
-              "nickname",
-              "nightcrawler",
-              "no",
-              "north",
-              "occupation",
-              "original",
-              "person",
-              "place",
-              "population",
-              "problema",
-              "publication",
-              "r",
-              "rating",
-              "raw",
-              "reach",
-              "ref",
-              "region",
-              "saint",
-              "san",
-              "scene",
-              "scottimberman",
-              "series",
-              "session",
-              "setters",
-              "shortcode",
-              "shortname",
-              "shorty",
-              "slug",
-              "song",
-              "species",
-              "spicy",
-              "sponsorship",
-              "state",
-              "stephenredding",
-              "subcategory",
-              "sul",
-              "suname",
-              "super",
-              "supp",
-              "survive",
-              "symbol",
-              "taxonomic",
-              "team",
-              "test",
-              "ticker",
-              "time",
-              "title",
-              "top",
-              "track",
-              "type",
-              "user",
-              "v",
-              "vicwilson",
-              "w",
-              "weight",
-              "wilson",
-              "women",
-              "writers",
-              "x",
-              "y",
-              "year",
-              "years",
-              "zone"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-drivers-3044dd"
-                },
-                {
-                  "lit": "forename"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-drivers-3044dd"
-            },
-            {
-              "lit": "forename"
-            },
-            {
-              "lit": "nationality"
-            }
-          ],
-          {
-            "lit": "South African"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 12,
-      "fit": {
-        "ok": 38,
-        "fired": 38,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-dbd8a59d",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
@@ -10975,6 +11002,204 @@
       }
     },
     {
+      "id": "n-0b9323e7",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-43babbdd"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "longitude",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "ori",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "speaker",
+              "speaking",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": "German"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-36de93a8",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
@@ -11064,6 +11289,204 @@
           ],
           {
             "lit": "Swedish"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3bb412d4",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-f1a001e7"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "longitude",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "miquelon",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "ori",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "speaker",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": "Finnish"
           }
         ]
       ],
@@ -11179,7 +11602,7 @@
       }
     },
     {
-      "id": "n-5dee62e8",
+      "id": "n-c44bebbb",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
       "parents": [
@@ -11193,7 +11616,6 @@
             [
               "220cv01923rgkas",
               "act",
-              "affiliation",
               "airline",
               "album",
               "alias",
@@ -11257,6 +11679,7 @@
               "last",
               "latitude",
               "location",
+              "longitude",
               "m",
               "macintyre",
               "madison",
@@ -11269,6 +11692,7 @@
               "no",
               "north",
               "occupation",
+              "ori",
               "original",
               "person",
               "place",
@@ -11294,6 +11718,7 @@
               "slug",
               "song",
               "sort",
+              "speaker",
               "species",
               "spicy",
               "sponsorship",
@@ -11363,398 +11788,6 @@
           ],
           {
             "lit": "Dutch"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 12,
-      "fit": {
-        "ok": 37,
-        "fired": 37,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-5fcab256",
-      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
-      "gen": 10,
-      "parents": [
-        "n-43babbdd"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "220cv01923rgkas",
-              "act",
-              "affiliation",
-              "airline",
-              "album",
-              "alias",
-              "alpha3",
-              "apocryphon",
-              "art",
-              "artist",
-              "aston",
-              "author",
-              "azurecomcognitiveservicesluisprogrammatic",
-              "birth",
-              "birthday",
-              "bull",
-              "captions",
-              "category",
-              "cd34",
-              "character",
-              "city",
-              "code",
-              "combined",
-              "company",
-              "compare",
-              "country",
-              "cryptocurrency",
-              "cultivation",
-              "danny",
-              "darkness",
-              "date",
-              "death",
-              "del",
-              "dennistaylor",
-              "description",
-              "directed",
-              "director",
-              "dob",
-              "domain",
-              "e",
-              "eclipse",
-              "emoji",
-              "english",
-              "featuring",
-              "first",
-              "gender",
-              "havana",
-              "hectorreyes1",
-              "height",
-              "hex",
-              "hometown",
-              "iata",
-              "id",
-              "imdb",
-              "islands",
-              "iso3",
-              "jr",
-              "judge1",
-              "kekerosberg",
-              "language",
-              "last",
-              "latitude",
-              "location",
-              "m",
-              "macintyre",
-              "madison",
-              "men",
-              "millichap",
-              "n",
-              "n3",
-              "nickname",
-              "nightcrawler",
-              "no",
-              "north",
-              "occupation",
-              "original",
-              "person",
-              "place",
-              "population",
-              "problema",
-              "publication",
-              "r",
-              "rating",
-              "raw",
-              "reach",
-              "ref",
-              "region",
-              "saint",
-              "san",
-              "scene",
-              "scottimberman",
-              "series",
-              "session",
-              "setters",
-              "shortcode",
-              "shortname",
-              "shorty",
-              "slug",
-              "song",
-              "speaking",
-              "species",
-              "spicy",
-              "sponsorship",
-              "state",
-              "stephenredding",
-              "subcategory",
-              "sul",
-              "suname",
-              "super",
-              "supp",
-              "survive",
-              "symbol",
-              "taxonomic",
-              "team",
-              "test",
-              "ticker",
-              "time",
-              "title",
-              "top",
-              "track",
-              "type",
-              "user",
-              "v",
-              "vicwilson",
-              "w",
-              "weight",
-              "wilson",
-              "women",
-              "writers",
-              "x",
-              "y",
-              "year",
-              "years",
-              "zone"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-drivers-3044dd"
-                },
-                {
-                  "lit": "forename"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-drivers-3044dd"
-            },
-            {
-              "lit": "forename"
-            },
-            {
-              "lit": "nationality"
-            }
-          ],
-          {
-            "lit": "German"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 12,
-      "fit": {
-        "ok": 37,
-        "fired": 37,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-6d747853",
-      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
-      "gen": 10,
-      "parents": [
-        "n-f1a001e7"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "220cv01923rgkas",
-              "act",
-              "affiliation",
-              "airline",
-              "album",
-              "alias",
-              "alpha3",
-              "apocryphon",
-              "art",
-              "artist",
-              "aston",
-              "author",
-              "azurecomcognitiveservicesluisprogrammatic",
-              "birth",
-              "birthday",
-              "bull",
-              "captions",
-              "category",
-              "cd34",
-              "character",
-              "characters",
-              "city",
-              "code",
-              "combined",
-              "company",
-              "compare",
-              "contestant",
-              "country",
-              "cryptocurrency",
-              "cultivation",
-              "danny",
-              "darkness",
-              "date",
-              "death",
-              "del",
-              "dennistaylor",
-              "description",
-              "directed",
-              "director",
-              "dob",
-              "domain",
-              "e",
-              "eclipse",
-              "emoji",
-              "english",
-              "featuring",
-              "first",
-              "gender",
-              "havana",
-              "hectorreyes1",
-              "height",
-              "hex",
-              "hometown",
-              "iata",
-              "id",
-              "imdb",
-              "islands",
-              "iso3",
-              "jr",
-              "judge1",
-              "language",
-              "last",
-              "latitude",
-              "location",
-              "m",
-              "macintyre",
-              "madison",
-              "men",
-              "millichap",
-              "miquelon",
-              "n",
-              "n3",
-              "nickname",
-              "nightcrawler",
-              "no",
-              "north",
-              "occupation",
-              "original",
-              "person",
-              "place",
-              "population",
-              "problema",
-              "publication",
-              "r",
-              "rating",
-              "raw",
-              "reach",
-              "ref",
-              "region",
-              "san",
-              "scene",
-              "scottimberman",
-              "series",
-              "session",
-              "setters",
-              "shortcode",
-              "shortname",
-              "shorty",
-              "slug",
-              "song",
-              "species",
-              "spicy",
-              "sponsorship",
-              "state",
-              "stephenredding",
-              "subcategory",
-              "sul",
-              "suname",
-              "super",
-              "supp",
-              "survive",
-              "symbol",
-              "taxonomic",
-              "team",
-              "test",
-              "ticker",
-              "time",
-              "title",
-              "top",
-              "track",
-              "type",
-              "user",
-              "v",
-              "vicwilson",
-              "w",
-              "weight",
-              "wilson",
-              "women",
-              "writers",
-              "x",
-              "y",
-              "year",
-              "years",
-              "zone"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-drivers-3044dd"
-                },
-                {
-                  "lit": "forename"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-drivers-3044dd"
-            },
-            {
-              "lit": "forename"
-            },
-            {
-              "lit": "nationality"
-            }
-          ],
-          {
-            "lit": "Finnish"
           }
         ]
       ],
@@ -19505,6 +19538,74 @@
       }
     },
     {
+      "id": "n-266ec152",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "hansjoachim",
+            "item number",
+            "nth",
+            "ralf",
+            "strip out",
+            "timo"
+          ]
+        ],
+        [
+          "has",
+          "nationality"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "German"
+          },
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "world-cities"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "region"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-367b7270",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
@@ -20410,6 +20511,77 @@
       }
     },
     {
+      "id": "n-b8004b43",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "hansjoachim",
+            "item number",
+            "nth",
+            "ralf",
+            "replace",
+            "timo"
+          ]
+        ],
+        [
+          "has",
+          "nationality"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "German"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-de4308a5",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
@@ -20468,6 +20640,77 @@
           ],
           {
             "lit": "dutch"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-df85543a",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "hansjoachim",
+            "item number",
+            "nth",
+            "ralf",
+            "replace",
+            "timo"
+          ]
+        ],
+        [
+          "has",
+          "nationality"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "German"
           }
         ]
       ],
@@ -20945,6 +21188,98 @@
       }
     },
     {
+      "id": "n-66cae73c",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "hansjoachim",
+            "ralf",
+            "strip out",
+            "timo"
+          ]
+        ],
+        [
+          "has",
+          "nationality"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "German"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a822adf1",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "hansjoachim",
+            "letters from to",
+            "ralf",
+            "slice of the text",
+            "substring",
+            "timo"
+          ]
+        ],
+        [
+          "has",
+          "nationality"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          {
+            "lit": "German"
+          },
+          {
+            "lit": 1
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ccbb8391",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
@@ -21396,6 +21731,67 @@
       }
     },
     {
+      "id": "n-001f1e13",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "position",
+            "ralf",
+            "replace",
+            "substitute",
+            "swap",
+            "timo"
+          ]
+        ],
+        [
+          "has",
+          "nationality"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-drivers-3044dd"
+              },
+              {
+                "lit": "forename"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "German"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-311ee66c",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
@@ -21737,6 +22133,67 @@
               "lit": 1
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-adce6646",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "position",
+            "ralf",
+            "replace",
+            "substitute",
+            "swap",
+            "timo"
+          ]
+        ],
+        [
+          "has",
+          "nationality"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-drivers-3044dd"
+              },
+              {
+                "lit": "forename"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "German"
+          }
         ]
       ],
       "mem": null,
@@ -33337,6 +33794,3467 @@
       }
     },
     {
+      "id": "n-864054db",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-0aa58735"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-drivers-3044dd"
+              },
+              {
+                "lit": "forename"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-drivers-3044dd"
+          },
+          {
+            "lit": "forename"
+          },
+          {
+            "lit": "nationality"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2a3ff3a6",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-5c146403"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d467fabe",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-cbf529c7"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f215cea4",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-d02e0279"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-38eb2113",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-5f06cf07"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "prince",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-103f0434",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-5b281107"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "hansjoachim",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-drivers-3044dd"
+              },
+              {
+                "lit": "forename"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7e63f25e",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-d90ecdd8"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "hansjoachim",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-drivers-3044dd"
+              },
+              {
+                "lit": "forename"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b4c1c8a4",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-81c580eb"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "100m",
+              "220cv01923rgkas",
+              "abbots",
+              "acres",
+              "advancement",
+              "affiliation",
+              "agostinelli",
+              "aguri",
+              "airline",
+              "airport",
+              "album",
+              "alert",
+              "alias",
+              "alpha3",
+              "amasa",
+              "americariobranco",
+              "anson",
+              "anton",
+              "apocryphon",
+              "archive",
+              "art",
+              "artist",
+              "atkins",
+              "attendants",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "barfield",
+              "barlow",
+              "bauccio",
+              "bavariamunich",
+              "believe",
+              "benitez",
+              "bermudez",
+              "birth",
+              "birthday",
+              "blake",
+              "blonde",
+              "braginsky",
+              "bremond",
+              "bros",
+              "bud",
+              "burkett",
+              "burned",
+              "c",
+              "calfireincidents",
+              "callr",
+              "captions",
+              "cariou",
+              "carls",
+              "carroll",
+              "carusoe",
+              "case",
+              "category",
+              "cgac",
+              "character",
+              "characters",
+              "chellie",
+              "chesney",
+              "circuit",
+              "clawson",
+              "clean",
+              "cleveland",
+              "coalfleet",
+              "cole",
+              "college",
+              "color",
+              "columbia",
+              "combined",
+              "comments",
+              "company",
+              "compare",
+              "consecutive",
+              "convention",
+              "cornell",
+              "cornilly",
+              "count",
+              "country",
+              "crouch",
+              "cultivation",
+              "currington",
+              "dales",
+              "dallacqua",
+              "danker",
+              "danny",
+              "darkness",
+              "date",
+              "dayton",
+              "death",
+              "dennistaylor",
+              "description",
+              "dialogue",
+              "diminutive",
+              "directed",
+              "director",
+              "disney",
+              "dob",
+              "domain",
+              "dr",
+              "drainage",
+              "duckett",
+              "duke",
+              "durbin",
+              "e",
+              "ebach",
+              "elizabeth",
+              "ellis",
+              "emaasit",
+              "engelhardt",
+              "english",
+              "erika",
+              "establishment",
+              "eugene",
+              "featuring",
+              "feces",
+              "first",
+              "florida",
+              "forename",
+              "frohman",
+              "fuerza",
+              "g",
+              "ganz",
+              "gauvrit",
+              "gender",
+              "girard",
+              "goblet",
+              "goldenberg",
+              "goodrich",
+              "gordon",
+              "greater",
+              "gruber",
+              "guarini",
+              "guidotti",
+              "gwen",
+              "h",
+              "harvard",
+              "has",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hieber",
+              "highbaugh",
+              "hochreiter",
+              "hometown",
+              "huard",
+              "iana",
+              "iata",
+              "id",
+              "imdb",
+              "infected",
+              "ingram",
+              "isla",
+              "islands",
+              "iso",
+              "iso2",
+              "iso3",
+              "jamilia",
+              "jason",
+              "jeanbaptiste",
+              "jeremiah",
+              "jose",
+              "josejson",
+              "josh",
+              "jr",
+              "judge1",
+              "jungmin",
+              "kasell",
+              "kekerosberg",
+              "kellett",
+              "koller",
+              "korman",
+              "kynclova",
+              "l",
+              "lafreniere",
+              "langone",
+              "language",
+              "lantern",
+              "lappé",
+              "larger",
+              "last",
+              "latitude",
+              "lauren",
+              "leeper",
+              "leroybeaulieu",
+              "lesser",
+              "lessler",
+              "leuchtenberg",
+              "location",
+              "lockheed",
+              "lotze",
+              "luigis",
+              "macintyre",
+              "macqueen",
+              "maddie",
+              "makes",
+              "manasoiu",
+              "manufacturer",
+              "manuscript",
+              "marte",
+              "martin",
+              "matt",
+              "mcknight",
+              "medicine",
+              "mellor",
+              "men",
+              "millichap",
+              "miquelon",
+              "miserables",
+              "moakler",
+              "morris",
+              "munafo",
+              "myrick",
+              "myself",
+              "n",
+              "n3",
+              "neteler",
+              "nickname",
+              "nielsen",
+              "nima",
+              "no",
+              "nolte",
+              "noriega",
+              "north",
+              "obispo",
+              "overall",
+              "palomar",
+              "pashley",
+              "patient",
+              "penala",
+              "pittenger",
+              "place",
+              "playhouse",
+              "praying",
+              "prince",
+              "princeton",
+              "problema",
+              "province",
+              "publication",
+              "puzrin",
+              "r",
+              "radical",
+              "ramet",
+              "rancho",
+              "rating",
+              "rauch",
+              "raw",
+              "records",
+              "red",
+              "ref",
+              "region",
+              "release",
+              "riding",
+              "rimmler",
+              "robins",
+              "robson",
+              "romano",
+              "rowe",
+              "roy",
+              "s",
+              "sagalaev",
+              "saintpierre",
+              "sarah",
+              "savol",
+              "scene",
+              "school",
+              "scottimberman",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "shumaker",
+              "simons",
+              "singleton",
+              "slug",
+              "smaller",
+              "smallredtriangle",
+              "socal",
+              "sophia",
+              "sort",
+              "speakers",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "steffen",
+              "stephenredding",
+              "subcategory",
+              "sucode",
+              "sul",
+              "suname",
+              "t",
+              "tags",
+              "taxonomic",
+              "tenpenny",
+              "that39s",
+              "ticker",
+              "title",
+              "tracey",
+              "track",
+              "trucker",
+              "tumenov",
+              "tustin",
+              "unit",
+              "university",
+              "used",
+              "user",
+              "vecchietti",
+              "vergottini",
+              "vicwilson",
+              "vienne",
+              "volcanic",
+              "wallin",
+              "watkinson",
+              "weaver",
+              "week",
+              "weight",
+              "wells",
+              "wendell",
+              "westerman",
+              "weyl",
+              "whw",
+              "willowisp",
+              "wilm",
+              "wilson",
+              "winner",
+              "wonka",
+              "wraith",
+              "writers",
+              "x",
+              "years",
+              "yokel"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-df289447",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-b18cd606"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "prince",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-drivers-3044dd"
+              },
+              {
+                "lit": "forename"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e5f0e515",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-7f1055de"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "act",
+              "add",
+              "advancement",
+              "affiliation",
+              "airline",
+              "album",
+              "alert",
+              "alias",
+              "almagrogarcia",
+              "alpha3",
+              "americariobranco",
+              "anton",
+              "apocryphon",
+              "appelbaum",
+              "applied",
+              "art",
+              "artist",
+              "arts",
+              "aston",
+              "atkins",
+              "author",
+              "autódromo",
+              "ave",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "beans",
+              "bermudez",
+              "between",
+              "bicentenaire",
+              "birth",
+              "birthday",
+              "braden",
+              "breed",
+              "bull",
+              "call",
+              "captions",
+              "carusoe",
+              "case",
+              "category",
+              "cd34",
+              "character",
+              "charlon",
+              "cheese",
+              "chesney",
+              "circuit",
+              "city",
+              "claibourn",
+              "clawson",
+              "coastline",
+              "code",
+              "combined",
+              "comcchesney",
+              "compare",
+              "consecutive",
+              "conservatory",
+              "contestant",
+              "continent",
+              "cornilly",
+              "count",
+              "country",
+              "court",
+              "crank",
+              "crouch",
+              "cryptocurrency",
+              "cultivation",
+              "currency",
+              "currington",
+              "d",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "delarosa",
+              "dennistaylor",
+              "density",
+              "deploy",
+              "description",
+              "design",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "donatbouillud",
+              "double",
+              "durbin",
+              "dusseldorf",
+              "ebach",
+              "eclipse",
+              "emaasit",
+              "english",
+              "escobar",
+              "expectancy",
+              "featuring",
+              "feyman",
+              "first",
+              "flay",
+              "fly",
+              "form",
+              "friends",
+              "fuerza",
+              "g",
+              "ganz",
+              "gender",
+              "gigi",
+              "goldbergmeehan",
+              "goldenberg",
+              "graduation",
+              "gruber",
+              "gwen",
+              "hansen",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "highbaugh",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "ingram",
+              "iso",
+              "iso2",
+              "iso3",
+              "j",
+              "jeanbaptiste",
+              "josh",
+              "jr",
+              "judge1",
+              "jungmin",
+              "kandali",
+              "kekerosberg",
+              "kenneth",
+              "khrushchev",
+              "krylov",
+              "l",
+              "lafreniere",
+              "landis",
+              "language",
+              "larger",
+              "laringa",
+              "last",
+              "latitude",
+              "lentil",
+              "lessler",
+              "lewisclark",
+              "lies",
+              "livesey",
+              "location",
+              "lockheed",
+              "longanisa",
+              "m",
+              "macintyre",
+              "maddie",
+              "makes",
+              "manufacturer",
+              "marshall",
+              "matt",
+              "men",
+              "miquelon",
+              "moakler",
+              "myrick",
+              "n3",
+              "nanton",
+              "neteler",
+              "nickname",
+              "nightcrawler",
+              "occupation",
+              "official",
+              "olympics",
+              "origin",
+              "original",
+              "overall",
+              "pat",
+              "pedro",
+              "penala",
+              "person",
+              "pittenger",
+              "population",
+              "prince",
+              "private",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "release",
+              "religion",
+              "rouenlesessarts",
+              "roy",
+              "roys",
+              "rundel",
+              "sartori",
+              "scene",
+              "scottimberman",
+              "session",
+              "setters",
+              "sex",
+              "shi",
+              "shortcode",
+              "shorty",
+              "shumaker",
+              "simons",
+              "singleton",
+              "slug",
+              "smaller",
+              "smallredtriangle",
+              "speakers",
+              "speaking",
+              "species",
+              "spicy",
+              "sponsorship",
+              "start",
+              "state",
+              "stephenredding",
+              "stock",
+              "story",
+              "strcity",
+              "strstate",
+              "subcategory",
+              "subregion",
+              "sucode",
+              "sum",
+              "suname",
+              "super",
+              "surface",
+              "survive",
+              "tags",
+              "taxonomic",
+              "team",
+              "temperature",
+              "tenpenny",
+              "test",
+              "ticker",
+              "title",
+              "top",
+              "track",
+              "type",
+              "unit",
+              "user",
+              "vecchietti",
+              "vekar",
+              "vergottini",
+              "vicwilson",
+              "vietnam",
+              "volcano",
+              "w",
+              "wallin",
+              "weaver",
+              "week",
+              "weight",
+              "wilson",
+              "women",
+              "worldpop",
+              "wreck",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-99479e3b",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-005277ae"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "add",
+              "advancement",
+              "affiliation",
+              "air",
+              "airline",
+              "album",
+              "alert",
+              "alias",
+              "almagrogarcia",
+              "alpha3",
+              "americariobranco",
+              "anton",
+              "apocryphon",
+              "appelbaum",
+              "applied",
+              "art",
+              "artist",
+              "arts",
+              "aston",
+              "atkins",
+              "author",
+              "autódromo",
+              "ave",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "beans",
+              "bermudez",
+              "between",
+              "bicentenaire",
+              "birth",
+              "birthday",
+              "braden",
+              "breed",
+              "bull",
+              "captions",
+              "cariou",
+              "carusoe",
+              "cashew",
+              "category",
+              "cd34",
+              "character",
+              "charlon",
+              "chesney",
+              "circuit",
+              "city",
+              "code",
+              "combined",
+              "comcchesney",
+              "compare",
+              "consecutive",
+              "conservatory",
+              "contestant",
+              "continent",
+              "cornilly",
+              "count",
+              "country",
+              "crouch",
+              "cryptocurrency",
+              "cultivation",
+              "currency",
+              "d",
+              "danny",
+              "darkness",
+              "death",
+              "description",
+              "design",
+              "directed",
+              "director",
+              "dob",
+              "donatbouillud",
+              "double",
+              "durbin",
+              "dusseldorf",
+              "ebach",
+              "eclipse",
+              "emaasit",
+              "english",
+              "escobar",
+              "expectancy",
+              "featuring",
+              "first",
+              "form",
+              "g",
+              "ganz",
+              "gender",
+              "gigi",
+              "goldenberg",
+              "graduation",
+              "gruber",
+              "gwen",
+              "hansen",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "highbaugh",
+              "holdens",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "inc",
+              "ingram",
+              "iso",
+              "iso2",
+              "iso3",
+              "j",
+              "jeanbaptiste",
+              "josh",
+              "jr",
+              "judge1",
+              "jungmin",
+              "kandali",
+              "kekerosberg",
+              "kenneth",
+              "krylov",
+              "l",
+              "lafreniere",
+              "landis",
+              "language",
+              "larger",
+              "last",
+              "lentil",
+              "lessler",
+              "lewisclark",
+              "lies",
+              "location",
+              "longanisa",
+              "m",
+              "macintyre",
+              "makes",
+              "manufacturer",
+              "marshall",
+              "matt",
+              "men",
+              "moakler",
+              "myrick",
+              "n3",
+              "nanton",
+              "neteler",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "occupation",
+              "official",
+              "olympics",
+              "origin",
+              "original",
+              "overall",
+              "pat",
+              "pedro",
+              "penala",
+              "person",
+              "pittenger",
+              "population",
+              "private",
+              "problema",
+              "prods",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "reichteleplay",
+              "rouenlesessarts",
+              "roy",
+              "roys",
+              "rundel",
+              "sartori",
+              "scene",
+              "scottimberman",
+              "session",
+              "setters",
+              "shi",
+              "shortcode",
+              "shorty",
+              "shumaker",
+              "simons",
+              "singleton",
+              "slug",
+              "smaller",
+              "smallredtriangle",
+              "speakers",
+              "speaking",
+              "species",
+              "spicy",
+              "sponsorship",
+              "start",
+              "state",
+              "stephenredding",
+              "strstate",
+              "subcategory",
+              "subregion",
+              "sucode",
+              "sum",
+              "suname",
+              "super",
+              "supp",
+              "surface",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "temperature",
+              "tenpenny",
+              "test",
+              "ticker",
+              "title",
+              "top",
+              "toplevel",
+              "track",
+              "type",
+              "unit",
+              "user",
+              "vecchietti",
+              "vergottini",
+              "vicwilson",
+              "vietnam",
+              "w",
+              "wallin",
+              "weaver",
+              "week",
+              "weight",
+              "wilson",
+              "women",
+              "worldpop",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "world-cities"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "region"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b8f81c1e",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-02b248ed"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": "South African"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5dee62e8",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-d7587ab7"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "clean",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "sort",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "super",
+              "supp",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": "Dutch"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5fcab256",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-43babbdd"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "kekerosberg",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "saint",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "speaking",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": "German"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6d747853",
+      "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
+      "gen": 10,
+      "parents": [
+        "n-f1a001e7"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "220cv01923rgkas",
+              "act",
+              "affiliation",
+              "airline",
+              "album",
+              "alias",
+              "alpha3",
+              "apocryphon",
+              "art",
+              "artist",
+              "aston",
+              "author",
+              "azurecomcognitiveservicesluisprogrammatic",
+              "birth",
+              "birthday",
+              "bull",
+              "captions",
+              "category",
+              "cd34",
+              "character",
+              "characters",
+              "city",
+              "code",
+              "combined",
+              "company",
+              "compare",
+              "contestant",
+              "country",
+              "cryptocurrency",
+              "cultivation",
+              "danny",
+              "darkness",
+              "date",
+              "death",
+              "del",
+              "dennistaylor",
+              "description",
+              "directed",
+              "director",
+              "dob",
+              "domain",
+              "e",
+              "eclipse",
+              "emoji",
+              "english",
+              "featuring",
+              "first",
+              "gender",
+              "havana",
+              "hectorreyes1",
+              "height",
+              "hex",
+              "hometown",
+              "iata",
+              "id",
+              "imdb",
+              "islands",
+              "iso3",
+              "jr",
+              "judge1",
+              "language",
+              "last",
+              "latitude",
+              "location",
+              "m",
+              "macintyre",
+              "madison",
+              "men",
+              "millichap",
+              "miquelon",
+              "n",
+              "n3",
+              "nickname",
+              "nightcrawler",
+              "no",
+              "north",
+              "occupation",
+              "original",
+              "person",
+              "place",
+              "population",
+              "problema",
+              "publication",
+              "r",
+              "rating",
+              "raw",
+              "reach",
+              "ref",
+              "region",
+              "san",
+              "scene",
+              "scottimberman",
+              "series",
+              "session",
+              "setters",
+              "shortcode",
+              "shortname",
+              "shorty",
+              "slug",
+              "song",
+              "species",
+              "spicy",
+              "sponsorship",
+              "state",
+              "stephenredding",
+              "subcategory",
+              "sul",
+              "suname",
+              "super",
+              "supp",
+              "survive",
+              "symbol",
+              "taxonomic",
+              "team",
+              "test",
+              "ticker",
+              "time",
+              "title",
+              "top",
+              "track",
+              "type",
+              "user",
+              "v",
+              "vicwilson",
+              "w",
+              "weight",
+              "wilson",
+              "women",
+              "writers",
+              "x",
+              "y",
+              "year",
+              "years",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-drivers-3044dd"
+                },
+                {
+                  "lit": "forename"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-drivers-3044dd"
+            },
+            {
+              "lit": "forename"
+            },
+            {
+              "lit": "nationality"
+            }
+          ],
+          {
+            "lit": "Finnish"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d2fb57fc",
       "task": "fr-tidytuesday-drivers-3044dd-fore-ce71f6",
       "gen": 10,
@@ -39853,6 +43771,7 @@
   "stages": [
     "e1c96038a2ad92a12cce50cbeb2e3f82011235bf99e07bec907c7f1d23300fe2",
     "2f1850a7db1ff3d6f4e184e22c37f353583bf90a6e8adb565f63e06713c842af",
-    "d470c197eb52ef7dac320fa09a9252f9a39ff20481019e22007b6bcdb6fc337b"
+    "d470c197eb52ef7dac320fa09a9252f9a39ff20481019e22007b6bcdb6fc337b",
+    "9481b60d2879736969068690f49b469c9096403f7c6076fad2c162822d09f203"
   ]
 }

@@ -2,45 +2,47 @@
   "task": "mean-cumulative-mass-5faa-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T11:16:13.461Z",
+  "at": "2026-11-18T13:13:40.855Z",
   "stats": {
-    "generated": 200278,
-    "distinct": 77190,
-    "kept": 171,
-    "know": 37,
+    "generated": 155124,
+    "distinct": 34325,
+    "kept": 186,
+    "know": 48,
     "byFamily": {
       "route": 7,
-      "transform": 40,
+      "transform": 51,
       "compare": 3,
       "memory": 102,
       "series": 1,
       "aggregate": 17,
+      "iterate": 4,
       "compute": 1
     },
     "bySource": {
-      "enum": 32,
-      "parent": 138,
-      "yesno": 1
+      "parent": 171,
+      "open": 3,
+      "enum": 4,
+      "template": 8
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 132259,
-    "cellsPerSecond": 1514,
-    "capped": null,
+    "ms": 160927,
+    "cellsPerSecond": 964,
+    "capped": "ms",
     "packs": [
       "fr-glacier-mass-balance-glaciers-86f5e7"
     ],
     "cursor": {
       "v": 1,
       "basis": "b37c45166b5eada8de753e11d35ed197e7a6ba2d556d09b869046407218a7b54",
-      "round": 0,
-      "at": 111456,
+      "round": 1,
+      "at": 264179,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.between",
-      "tpl": 3000
+      "prim": "iterate.rangeFrom",
+      "tpl": 3244
     }
   },
   "cells": [
@@ -4246,6 +4248,96 @@
       }
     },
     {
+      "id": "n-fc12b987",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [
+        "n-1cdf70cf",
+        "n-1d2a6adc"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "compare",
+              "discards",
+              "equally",
+              "feb",
+              "glob",
+              "greater",
+              "jan",
+              "larger",
+              "rate",
+              "recreational",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "mean cumulative mass balance"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-2401ecb3",
       "task": "mean-cumulative-mass-5faa-smaller",
       "gen": 10,
@@ -5062,6 +5154,225 @@
       "mem": null,
       "height": 4,
       "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-32a1c7cb",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "balance",
+            "least common multiple",
+            "lowest common multiple"
+          ]
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.rangeFrom",
+          [
+            "sense.first"
+          ],
+          [
+            "compute.lcm",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 2003
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4d454a77",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "balance",
+            "least common multiple",
+            "lowest common multiple"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.rangeFrom",
+          [
+            "sense.first"
+          ],
+          [
+            "compute.lcm",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 2012
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b1a792f6",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "balance",
+            "least common multiple",
+            "lowest common multiple"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.rangeFrom",
+          [
+            "sense.first"
+          ],
+          [
+            "compute.lcm",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 1981
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c1528ed8",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "balance",
+            "least common multiple",
+            "lowest common multiple"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.rangeFrom",
+          [
+            "sense.first"
+          ],
+          [
+            "compute.lcm",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 2008
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -7242,6 +7553,1660 @@
       "mem": null,
       "height": 5,
       "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5810b3e3",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "is",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "reverse the digits",
+            "round",
+            "rounded",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "mean"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "1996 has the smaller ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " mass balance (",
+            {
+              "slot": 2
+            },
+            ".489 against ",
+            {
+              "slot": 3
+            },
+            ")."
+          ]
+        },
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "series.prev",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "mean cumulative mass balance"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 31,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-af83c865",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "is",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "reverse the digits",
+            "round",
+            "rounded",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "mean"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "1996 has the smaller ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " mass balance (",
+            {
+              "slot": 2
+            },
+            ".489 against ",
+            {
+              "slot": 3
+            },
+            ")."
+          ]
+        },
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "series.prev",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "mean cumulative mass balance"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 31,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0bd68475",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "is",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "reverse the digits",
+            "round",
+            "rounded",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "mean"
+        ],
+        [
+          "has",
+          "whose"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "2001 has the smaller ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " mass balance (",
+            {
+              "slot": 2
+            },
+            ".181 against ",
+            {
+              "slot": 3
+            },
+            ")."
+          ]
+        },
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 32,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4af5b0ce",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "is",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "reverse the digits",
+            "round",
+            "rounded",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "mean"
+        ],
+        [
+          "has",
+          "whose"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "2001 has the smaller ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " mass balance (",
+            {
+              "slot": 2
+            },
+            ".181 against ",
+            {
+              "slot": 3
+            },
+            ")."
+          ]
+        },
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 32,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-367751b1",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "balance",
+            "class name",
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "first n",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "reverse the digits",
+            "round",
+            "rounded",
+            "take",
+            "top",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " mass balance (",
+            {
+              "slot": 3
+            },
+            ".489 against ",
+            {
+              "slot": 4
+            },
+            ")."
+          ]
+        },
+        [
+          "render.listNums",
+          [
+            "transform.takeNums",
+            [
+              "sense.listNums"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "series.prev",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "mean cumulative mass balance"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 35,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7ee7e49b",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "balance",
+            "class name",
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "first n",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "reverse the digits",
+            "round",
+            "rounded",
+            "take",
+            "top",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " mass balance (",
+            {
+              "slot": 3
+            },
+            ".489 against ",
+            {
+              "slot": 4
+            },
+            ")."
+          ]
+        },
+        [
+          "render.listNums",
+          [
+            "transform.takeNums",
+            [
+              "sense.listNums"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "series.prev",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "mean cumulative mass balance"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 35,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f38d4717",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [
+        "n-7ee7e49b"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "bound",
+              "feb",
+              "glob",
+              "gmsl",
+              "increase",
+              "larger",
+              "rate"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " mass balance (",
+            {
+              "slot": 3
+            },
+            ".489 against ",
+            {
+              "slot": 4
+            },
+            ")."
+          ]
+        },
+        [
+          "render.listNums",
+          [
+            "transform.takeNums",
+            [
+              "sense.listNums"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "series.prev",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "mean cumulative mass balance"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 35,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fbd51c0a",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [
+        "n-367751b1"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "bound",
+              "feb",
+              "glob",
+              "gmsl",
+              "increase",
+              "larger",
+              "rate"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " mass balance (",
+            {
+              "slot": 3
+            },
+            ".489 against ",
+            {
+              "slot": 4
+            },
+            ")."
+          ]
+        },
+        [
+          "render.listNums",
+          [
+            "transform.takeNums",
+            [
+              "sense.listNums"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "series.prev",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "mean cumulative mass balance"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 35,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7db68506",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "delete",
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "is",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "remove",
+            "reverse the digits",
+            "round",
+            "rounded",
+            "strip out",
+            "upper camel case",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "mean"
+        ],
+        [
+          "has",
+          "whose"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " mass balance (",
+            {
+              "slot": 3
+            },
+            ".181 against ",
+            {
+              "slot": 4
+            },
+            ")."
+          ]
+        },
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.subject"
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 39,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d40d9e46",
+      "task": "mean-cumulative-mass-5faa-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "delete",
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "is",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "remove",
+            "reverse the digits",
+            "round",
+            "rounded",
+            "strip out",
+            "upper camel case",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "mean"
+        ],
+        [
+          "has",
+          "whose"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " mass balance (",
+            {
+              "slot": 3
+            },
+            ".181 against ",
+            {
+              "slot": 4
+            },
+            ")."
+          ]
+        },
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.subject"
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.reverseDigits",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 39,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -11957,6 +13922,7 @@
     "15ffea16aafc399d20b5b0c2acb8d0b317ee3d1158dca7411aca111bcddf0e08",
     "f1ace1826679beee70debb8df32e754a6d49696b536bc780fd435815c51e9595",
     "a5f0b4b9de2bdfde1d06499bd7316b006fcf3e52cd79579bc71c71e45423b035",
-    "bd614062c4fecdf8e2ee335b7c05f41b9218be74dad3bf0847ef46df9651f557"
+    "bd614062c4fecdf8e2ee335b7c05f41b9218be74dad3bf0847ef46df9651f557",
+    "236932da98187b0ebc4a569b9f7a9067d2e8580c9013451602d25a82418e4636"
   ]
 }
