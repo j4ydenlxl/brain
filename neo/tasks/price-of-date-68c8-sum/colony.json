@@ -2,39 +2,41 @@
   "task": "price-of-date-68c8-sum",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T09:09:45.886Z",
+  "at": "2026-11-18T10:56:33.526Z",
   "stats": {
-    "generated": 200227,
-    "distinct": 91913,
-    "kept": 110,
-    "know": 6,
+    "generated": 163703,
+    "distinct": 125847,
+    "kept": 112,
+    "know": 8,
     "byFamily": {
       "memory": 104,
       "compute": 1,
-      "transform": 5
+      "transform": 7
     },
     "bySource": {
-      "parent": 110
+      "parent": 110,
+      "open": 1,
+      "template": 1
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 104577,
-    "cellsPerSecond": 1915,
-    "capped": "ms",
+    "ms": 69672,
+    "cellsPerSecond": 2350,
+    "capped": null,
     "packs": [
       "fr-oil-prices-brent-weekly-f6578a"
     ],
     "cursor": {
       "v": 1,
       "basis": "3dcc84a602e449f805bea37ca9e9e95aac5a62c21fbdbfc6a114cac5887da388",
-      "round": 0,
-      "at": 61792,
+      "round": 1,
+      "at": 152149,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "transform.add",
-      "tpl": 3000
+      "prim": "compare.contains",
+      "tpl": 3397
     }
   },
   "cells": [
@@ -1262,6 +1264,364 @@
           "render.number",
           [
             "transform.mod",
+            [
+              "sense.second"
+            ],
+            [
+              "sense.last"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 39,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6baba714",
+      "task": "price-of-date-68c8-sum",
+      "gen": 10,
+      "parents": [
+        "n-8a40f586"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "compare",
+              "greater",
+              "larger",
+              "lesser",
+              "makes",
+              "smaller",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            "-",
+            {
+              "slot": 2
+            },
+            "-31 (",
+            {
+              "slot": 3
+            },
+            ".28) plus that of ",
+            {
+              "slot": 4
+            },
+            " (",
+            {
+              "slot": 5
+            },
+            ".82) is 38.1."
+          ]
+        },
+        [
+          "transform.swapCase",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "transform.remove",
+          [
+            "sense.numeral"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "price"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.roundTo",
+            [
+              "sense.second"
+            ],
+            [
+              "sense.last"
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-weekly-f6578a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-weekly-f6578a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.numeral"
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.roundTo",
+            [
+              "sense.second"
+            ],
+            [
+              "sense.last"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 39,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8a40f586",
+      "task": "price-of-date-68c8-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add",
+            "decimal places",
+            "delete",
+            "element",
+            "invert case",
+            "item number",
+            "nearest whole number",
+            "nth",
+            "position",
+            "remove",
+            "round",
+            "round to",
+            "rounded",
+            "rounded to",
+            "strip out",
+            "swap case",
+            "toggle case",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            "-",
+            {
+              "slot": 2
+            },
+            "-31 (",
+            {
+              "slot": 3
+            },
+            ".28) plus that of ",
+            {
+              "slot": 4
+            },
+            " (",
+            {
+              "slot": 5
+            },
+            ".82) is 38.1."
+          ]
+        },
+        [
+          "transform.swapCase",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "transform.remove",
+          [
+            "sense.numeral"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "price"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.roundTo",
+            [
+              "sense.second"
+            ],
+            [
+              "sense.last"
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.round",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-weekly-f6578a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-weekly-f6578a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.numeral"
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.roundTo",
             [
               "sense.second"
             ],
@@ -5105,6 +5465,7 @@
     "a1ffc5481bfcda57b7041863ec168b0808f4ff06b3abd8ef400fd459e3661245",
     "0c9d5133c3c21cfe3064b80acc5c211535f2f12981a04e487a441ae5ed404b2f",
     "cc23a43a1178b13160608795a92202707ea669ba42bd30def9ad7420c8cd3ae4",
-    "2a93c8e6d1ecb6569853db3170e2e436bbdbd095f2fb4f8c57d1c69e4526556f"
+    "2a93c8e6d1ecb6569853db3170e2e436bbdbd095f2fb4f8c57d1c69e4526556f",
+    "f4a086bbeed527f1b75c5950bfac5a88f3dfa511dc5b4d4704da13b2228001d7"
   ]
 }
