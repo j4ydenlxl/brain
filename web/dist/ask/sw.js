@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "b81002d8dbfd467c05d011a72eba41c5173b4f45bc6db3e33127b1977152e860";
+const VERSION = "9fa250f031a5e605856814bf172460a648b1a5f5e8391d949c5685712431ec78";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"bb158f913e32737988268f9be4caefd59caa7223768ac7541367e882e3d402c8"},
+  {"url":"/organism/cells.json","sha256":"c6bc922edd88c458bda569491a743ff59c559e36bafcc7e0576288cf300e069e"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -495,10 +495,13 @@ const PRECACHE = [
   {"url":"/organism/cells/fr-tidytuesday-cia-factbook-11524a-ffe557-neo-g10.mjs","sha256":"d68e788cd547c0d1d99899f825c4645ea1efab0bbd2d06bbf81ce9296df9aa75"},
   {"url":"/organism/cells/fr-tidytuesday-college-admissions-4b56b4-neo-g10.mjs","sha256":"4f2bd54ef19140020b431feb8d0d020a32ece449fca303c20f8985fc0f7c0004"},
   {"url":"/organism/cells/iso-country-code-of-name-3e13-neo-g10-2.mjs","sha256":"ebf2dc31e3a245805e84b70956ed052ebfdf0774387edfc7e98f5a19347f05fd"},
+  {"url":"/organism/cells/fr-tidytuesday-countries-585efe-al-e7eaf2-neo-g10.mjs","sha256":"c20e673567835e8f9cde376d679c24e54cd9ae210d22e09193e2a763a8e240d7"},
+  {"url":"/organism/cells/fr-tidytuesday-countries-585efe-al-8fa333-neo-g10.mjs","sha256":"c401c670b1d9a8be7e50adedebf1477a457aac5888316ef835e30e792cd7e537"},
+  {"url":"/organism/cells/fr-tidytuesday-countries-585efe-al-02f923-neo-g10.mjs","sha256":"95e7f0ddea1bf57a4d37c527f93605286c63d5ba91ccad8721b2eeb5db89f587"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"e2e1af9cc4c85d3eec6f57c9905d733c9582a32d511029dfa0ad9a0e46162844"}
+  {"url":"/organism/era/tasks.json","sha256":"d828be7aa0418c5d8b8eebbc57220f45f91bdc45e6f54b174c092155db736261"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
