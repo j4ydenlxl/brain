@@ -2,41 +2,42 @@
   "task": "10-min-sampled-avg-of-352a-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-13T10:08:09.769Z",
+  "at": "2026-11-18T22:56:50.538Z",
   "stats": {
-    "generated": 51454,
-    "distinct": 75268,
-    "kept": 111,
-    "know": 9,
+    "generated": 200198,
+    "distinct": 96311,
+    "kept": 113,
+    "know": 11,
     "byFamily": {
-      "route": 3,
+      "route": 5,
       "transform": 4,
       "compare": 2,
       "memory": 102
     },
     "bySource": {
-      "parent": 109,
-      "enum": 2
+      "enum": 1,
+      "parent": 110,
+      "template": 2
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 139965,
-    "cellsPerSecond": 368,
-    "capped": "ms",
+    "ms": 165242,
+    "cellsPerSecond": 1212,
+    "capped": null,
     "packs": [
       "fr-datasets-time-series-with-error-bars-excel-54fe73"
     ],
     "cursor": {
       "v": 1,
-      "basis": "9f8cd067b5e7c808eb21babc8a34bc1ca6cb97c5d779ec2008bf140003e9562b",
-      "round": 2,
-      "at": 149524,
+      "basis": "d88a98cf6af653398ff136a189d2d045e2b1c94c8c25b37f8cdc0252ba8b6fa2",
+      "round": 0,
+      "at": 98982,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "aggregate.mean",
-      "tpl": 5442
+      "cost": 5,
+      "prim": "transform.idiv",
+      "tpl": 3000
     }
   },
   "cells": [
@@ -2247,6 +2248,485 @@
       "fit": {
         "ok": 3,
         "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e7ef2920",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "element",
+            "exceeds",
+            "factorise",
+            "factorize",
+            "greater than",
+            "is",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position",
+            "prime factorisation",
+            "prime factorization",
+            "prime factors"
+          ]
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " min sampled avg (",
+            {
+              "slot": 2
+            },
+            " against ",
+            {
+              "slot": 3
+            },
+            ")."
+          ]
+        },
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "sense.first"
+          ]
+        ],
+        [
+          "render.listNums",
+          [
+            "compute.primeFactors",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+          },
+          {
+            "lit": "time"
+          },
+          {
+            "lit": "10 min sampled avg"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 57,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1e8ed78d",
+      "task": "10-min-sampled-avg-of-352a-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "element",
+            "exceeds",
+            "factorise",
+            "factorize",
+            "greater than",
+            "is",
+            "item number",
+            "larger than",
+            "longest",
+            "longest one",
+            "longest word",
+            "more than",
+            "nth",
+            "position",
+            "prime factorisation",
+            "prime factorization",
+            "prime factors"
+          ]
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " has the smaller ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " ",
+            {
+              "slot": 3
+            },
+            " avg (",
+            {
+              "slot": 4
+            },
+            " against ",
+            {
+              "slot": 5
+            },
+            ")."
+          ]
+        },
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "sense.first"
+          ]
+        ],
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "render.listNums",
+          [
+            "compute.primeFactors",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "10 min sampled avg"
+                }
+              ]
+            ]
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+          },
+          {
+            "lit": "time"
+          },
+          {
+            "lit": "10 min sampled avg"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 61,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
         "rows": 100
       }
     },
@@ -6244,6 +6724,7 @@
     "28090ebf0226df64f26d89835a919ff3e4a31c337fb19ec1a96dcb86985ca0a9",
     "6dd81ad423c84497554f0c4e33adf2d4edca352dfd48e840522f81535592994d",
     "0ecd89360935d7e57f6828d36a58be8bccb9aa5a48c776c48b408fbe74334de9",
-    "23968d803f64f527d238364d9895100c4e5c48e714964c13586a2828316c6e4c"
+    "23968d803f64f527d238364d9895100c4e5c48e714964c13586a2828316c6e4c",
+    "8cf7982e8cd7dbd64bb86ae1dceb202251c67bf828476a54472788daf33dbf78"
   ]
 }
