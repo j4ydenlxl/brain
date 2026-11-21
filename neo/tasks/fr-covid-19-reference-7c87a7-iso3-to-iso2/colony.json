@@ -2,15 +2,15 @@
   "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-21T09:02:00.098Z",
+  "at": "2026-11-21T15:58:22.062Z",
   "stats": {
-    "generated": 200044,
-    "distinct": 76263,
-    "kept": 1282,
-    "know": 1043,
+    "generated": 161297,
+    "distinct": 63554,
+    "kept": 1293,
+    "know": 1053,
     "byFamily": {
       "know": 3,
-      "transform": 1068,
+      "transform": 1079,
       "sense": 6,
       "memory": 44,
       "aggregate": 101,
@@ -18,17 +18,15 @@
       "compute": 1
     },
     "bySource": {
-      "enum": 615,
-      "parent": 456,
-      "template": 162,
-      "open": 5,
-      "memory": 44
+      "parent": 825,
+      "enum": 467,
+      "open": 1
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 162944,
-    "cellsPerSecond": 1228,
+    "ms": 143828,
+    "cellsPerSecond": 1121,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -38,12 +36,12 @@
     "cursor": {
       "v": 1,
       "basis": "6cb184acbcfe0f487feb25505b9d857e1e1cb5440182460b44bffcc1d56be221",
-      "round": 0,
-      "at": 111484,
+      "round": 1,
+      "at": 252550,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.remove",
+      "cost": 7,
+      "prim": "compare.endsWith",
       "tpl": 1267
     }
   },
@@ -2205,7 +2203,7 @@
       }
     },
     {
-      "id": "n-10998bee",
+      "id": "n-2de69a0a",
       "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
       "gen": 10,
       "parents": [
@@ -2223,6 +2221,7 @@
               "act",
               "actor",
               "add",
+              "added",
               "agency",
               "ai",
               "airdate",
@@ -2403,6 +2402,7 @@
               "transaction",
               "type",
               "unit",
+              "updated",
               "version",
               "week",
               "women",
@@ -65106,6 +65106,59 @@
       }
     },
     {
+      "id": "n-ae00dacc",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "civ",
+            "join",
+            "joined with",
+            "letters in order",
+            "separated by",
+            "sort the letters"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.sortLetters",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bfd5f1f6",
       "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
       "gen": 10,
@@ -65625,6 +65678,67 @@
       }
     },
     {
+      "id": "n-109a7692",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "civ",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.camel",
+            [
+              "sense.roman"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-reference-7c87a7"
+              },
+              {
+                "lit": "iso2"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1cab1926",
       "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
       "gen": 10,
@@ -65747,6 +65861,67 @@
       }
     },
     {
+      "id": "n-2c4780be",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "civ",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.roman"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-456e6adb",
       "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
       "gen": 10,
@@ -65793,6 +65968,68 @@
                 "lit": 1
               }
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5166a82d",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "civ",
+            "class name",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "separate by",
+            "split by",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.pascal",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.roman"
           ]
         ]
       ],
@@ -65988,6 +66225,68 @@
       }
     },
     {
+      "id": "n-80c5a93f",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "civ",
+            "copies",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "repeat",
+            "say it times",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.repeat",
+          [
+            "sense.roman"
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bf38e91a",
       "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
       "gen": 10,
@@ -66043,6 +66342,132 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c15fff52",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "civ",
+            "class name",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "separate by",
+            "split by",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.pascal",
+            [
+              "sense.roman"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-reference-7c87a7"
+              },
+              {
+                "lit": "iso2"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cb2a2ba1",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "civ",
+            "delete",
+            "element",
+            "item number",
+            "no vowels",
+            "nth",
+            "position",
+            "remove",
+            "remove vowels",
+            "strip out",
+            "without",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-reference-7c87a7"
+              },
+              {
+                "lit": "iso3"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.noVowels",
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -84620,6 +85045,261 @@
       }
     },
     {
+      "id": "n-6acf626c",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "civ",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.roman"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-covid-19-reference-7c87a7"
+                },
+                {
+                  "lit": "iso3"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-covid-19-reference-7c87a7"
+            },
+            {
+              "lit": "iso3"
+            },
+            {
+              "lit": "iso2"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-99965371",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "civ",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.roman"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-covid-19-reference-7c87a7"
+                },
+                {
+                  "lit": "iso3"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-covid-19-reference-7c87a7"
+            },
+            {
+              "lit": "iso3"
+            },
+            {
+              "lit": "iso2"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aa0caffc",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "civ",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-covid-19-reference-7c87a7"
+                },
+                {
+                  "lit": "iso3"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-covid-19-reference-7c87a7"
+            },
+            {
+              "lit": "iso3"
+            },
+            {
+              "lit": "iso2"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-reference-7c87a7"
+              },
+              {
+                "lit": "iso2"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.roman"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1f355b0f",
       "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
       "gen": 10,
@@ -87906,6 +88586,54 @@
             {
               "lit": 2
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c156ec48",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a roman numeral",
+            "civ",
+            "delete",
+            "in roman numerals",
+            "remove",
+            "roman numeral",
+            "strip out",
+            "to roman"
+          ]
+        ],
+        [
+          "has",
+          "iso2"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.roman"
+          ],
+          [
+            "compute.toRoman",
+            [
+              "sense.wordCount"
+            ]
           ]
         ]
       ],
@@ -91423,6 +92151,271 @@
       }
     },
     {
+      "id": "n-10998bee",
+      "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
+      "gen": 10,
+      "parents": [
+        "n-7356dac6"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "31mar80",
+              "abbreviation",
+              "academic",
+              "act",
+              "actor",
+              "add",
+              "agency",
+              "ai",
+              "airdate",
+              "airline",
+              "airport",
+              "album",
+              "alcohol",
+              "alpha",
+              "alpha3",
+              "anxious",
+              "arbitration",
+              "area",
+              "artist",
+              "author",
+              "background",
+              "baja",
+              "baltiboy",
+              "bedroom",
+              "bfcom",
+              "cameraman",
+              "can",
+              "capita",
+              "carriages",
+              "category",
+              "catia",
+              "character",
+              "characters",
+              "city",
+              "clean",
+              "coach",
+              "coastline",
+              "code",
+              "colleges",
+              "column",
+              "combined",
+              "common",
+              "company",
+              "compare",
+              "composer",
+              "contact",
+              "contestant",
+              "continent",
+              "coonhounds",
+              "country",
+              "court",
+              "create",
+              "cubanamerican",
+              "currency",
+              "database",
+              "date",
+              "density",
+              "description",
+              "dialogue",
+              "director",
+              "dish",
+              "dog",
+              "domain",
+              "eating",
+              "electric",
+              "electrician",
+              "english",
+              "equipmentsharecom",
+              "essay",
+              "everyone",
+              "fans",
+              "featuring",
+              "filmmaker",
+              "flute",
+              "folder",
+              "form",
+              "format",
+              "french",
+              "frenchbased",
+              "frenchenglish",
+              "friulivenezia",
+              "fundão",
+              "gender",
+              "ghoul",
+              "gmsl",
+              "goodrich",
+              "greater",
+              "group",
+              "gutenberg",
+              "guvnor",
+              "homer",
+              "hometown",
+              "hours",
+              "httpfungeneratorscomapibarcode",
+              "httpsconfigcatcom",
+              "httpsdeveloperapplecomsiri",
+              "httpsdevelopervimeocomhelp",
+              "httpsgithubcomapicurioapicurioregistry",
+              "httpsgithubcombungienetapi",
+              "httpsgithubcommermademashery2openapi",
+              "httpskycapikompanycom",
+              "httpsstripecom",
+              "httpswwwappveyorcomabout",
+              "httpswwwauthentiqcom",
+              "httpswwwneutrinoapicom",
+              "httpswwwtruoracom",
+              "httpwwwaucklandmuseumcom",
+              "httpwwwtvmazecom",
+              "imdb",
+              "iso",
+              "iso3",
+              "joker",
+              "judge1",
+              "kenmiles",
+              "lafleur",
+              "language",
+              "larger",
+              "lesser",
+              "life",
+              "lipovsky",
+              "location",
+              "makes",
+              "manuscript",
+              "married",
+              "martyr",
+              "memberowners",
+              "mercantile",
+              "musician",
+              "n3",
+              "name",
+              "nationality",
+              "network",
+              "nickname",
+              "north",
+              "number",
+              "official",
+              "one",
+              "overlay",
+              "phan",
+              "poet",
+              "politician",
+              "population",
+              "proposed",
+              "published",
+              "r",
+              "rate",
+              "rating",
+              "region",
+              "religion",
+              "researcher",
+              "rogen",
+              "sandwich",
+              "scene",
+              "scoobydoo",
+              "sector",
+              "series",
+              "session",
+              "setters",
+              "short",
+              "shortcode",
+              "singersongwriter",
+              "slug",
+              "smaller",
+              "song",
+              "soprano",
+              "south",
+              "speaker",
+              "sponsorship",
+              "state",
+              "subregion",
+              "sucode",
+              "sucountry",
+              "sum",
+              "surgeon",
+              "sutype",
+              "svalbard",
+              "table",
+              "tags",
+              "temperature",
+              "test",
+              "time",
+              "title",
+              "track",
+              "transaction",
+              "type",
+              "unit",
+              "version",
+              "week",
+              "women",
+              "writers",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-covid-19-reference-7c87a7"
+                },
+                {
+                  "lit": "iso3"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-covid-19-reference-7c87a7"
+            },
+            {
+              "lit": "iso3"
+            },
+            {
+              "lit": "iso2"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-reference-7c87a7"
+              },
+              {
+                "lit": "iso2"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5ccfd91c",
       "task": "fr-covid-19-reference-7c87a7-iso3-to-iso2",
       "gen": 10,
@@ -92993,6 +93986,7 @@
   "stages": [
     "231cf47923d71a27b4c46dc48d71c61f1de2d1e2710b3fbbaac9de9846d7b597",
     "f666ad15dc98639f18e06ba9726b374f2ce6f178e5c4705b397ef500beb86ec3",
-    "b445b7a6569e9e3c7ac0325b8ca3e3bca777a383a3401901edac875b9f44e74a"
+    "b445b7a6569e9e3c7ac0325b8ca3e3bca777a383a3401901edac875b9f44e74a",
+    "dedf571806186b1f52fcea3748d635db1b6828c8bd4a2fb3e69171b791dfc03a"
   ]
 }

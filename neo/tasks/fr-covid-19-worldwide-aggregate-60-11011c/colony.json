@@ -2,28 +2,30 @@
   "task": "fr-covid-19-worldwide-aggregate-60-11011c",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T05:09:25.099Z",
+  "at": "2026-11-21T16:01:44.564Z",
   "stats": {
-    "generated": 37192,
-    "distinct": 57361,
-    "kept": 75,
-    "know": 32,
+    "generated": 200082,
+    "distinct": 77637,
+    "kept": 62,
+    "know": 19,
     "byFamily": {
-      "know": 2,
-      "sense": 3,
+      "know": 1,
+      "sense": 1,
       "memory": 43,
       "aggregate": 3,
-      "transform": 24
+      "transform": 14
     },
     "bySource": {
-      "parent": 75
+      "open": 5,
+      "parent": 56,
+      "enum": 1
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 82427,
-    "cellsPerSecond": 451,
-    "capped": "ms",
+    "ms": 73448,
+    "cellsPerSecond": 2724,
+    "capped": null,
     "packs": [
       "corpora-fruits",
       "crypto-tickers",
@@ -31,89 +33,34 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "908ae54cf201e3c298ce604a280ed4351650e0bd7b242484b37b9aca19ef98e3",
-      "round": 1,
-      "at": 130356,
+      "basis": "27a0e919f478ab4998ac8636d8a407d1dbcc91cd4677c8b6fc67b6e2b189dafa",
+      "round": 0,
+      "at": 108908,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "iterate.powers",
-      "tpl": 1707
+      "prim": "iterate.fibs",
+      "tpl": 1560
     }
   },
   "cells": [
     {
-      "id": "n-5ece4bc7",
+      "id": "n-b5bdeab3",
       "task": "fr-covid-19-worldwide-aggregate-60-11011c",
       "gen": 10,
       "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "date",
-            "element",
-            "item number",
-            "nth",
-            "position"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d58b7d7e",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [
-        "n-5ece4bc7"
-      ],
       "guard": [
         [
           "not",
           [
             "hasAny",
             [
+              "2120",
               "country",
               "expectancy",
-              "recovered"
+              "location",
+              "recovered",
+              "usd"
             ]
           ]
         ]
@@ -158,85 +105,16 @@
       }
     },
     {
-      "id": "n-1d7cfbc2",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [
-        "n-f6ada5c9"
-      ],
-      "guard": [],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The date ",
-            {
-              "slot": 0
-            },
-            " is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-f6ada5c9",
+      "id": "n-837ba280",
       "task": "fr-covid-19-worldwide-aggregate-60-11011c",
       "gen": 10,
       "parents": [],
       "guard": [
         [
-          "hasAny",
+          "not",
           [
-            "date",
-            "element",
-            "item number",
-            "nth",
-            "position"
+            "has",
+            "2120"
           ]
         ]
       ],
@@ -1054,91 +932,6 @@
       }
     },
     {
-      "id": "n-8f639cc5",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "sense.wordAt",
-          {
-            "lit": 3
-          }
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 15,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-4df0837e",
       "task": "fr-covid-19-worldwide-aggregate-60-11011c",
       "gen": 10,
@@ -1217,277 +1010,6 @@
       }
     },
     {
-      "id": "n-6de5644d",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "invert case",
-            "item number",
-            "name",
-            "nth",
-            "position",
-            "swap case",
-            "toggle case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.swapCase",
-          [
-            "sense.wordAt",
-            {
-              "lit": 3
-            }
-          ]
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-b8621dce",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "class name",
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "pascal case",
-            "pascalcase",
-            "position",
-            "upper camel case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.pascal",
-          [
-            "sense.wordAt",
-            {
-              "lit": 3
-            }
-          ]
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-cac28814",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-d1748a4b",
       "task": "fr-covid-19-worldwide-aggregate-60-11011c",
       "gen": 10,
@@ -1557,383 +1079,6 @@
       "mem": null,
       "height": 5,
       "size": 16,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-16468968",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "transform.title",
-          [
-            "sense.after",
-            {
-              "lit": "date"
-            }
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 17,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-1d0e1782",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "invert case",
-            "item number",
-            "name",
-            "nth",
-            "position",
-            "swap case",
-            "toggle case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "transform.swapCase",
-          [
-            "sense.after",
-            {
-              "lit": "date"
-            }
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 17,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-4855309b",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "each word",
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position",
-            "split into words",
-            "words"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "render.and",
-          [
-            "transform.words",
-            [
-              "sense.wordAt",
-              {
-                "lit": 3
-              }
-            ]
-          ]
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 17,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-66cd19a3",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "each word",
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position",
-            "split into words",
-            "words"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "render.list",
-          [
-            "transform.words",
-            [
-              "sense.wordAt",
-              {
-                "lit": 3
-              }
-            ]
-          ]
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 17,
       "fit": {
         "ok": 13,
         "fired": 13,
@@ -2595,18 +1740,17 @@
       }
     },
     {
-      "id": "n-1f827ec2",
+      "id": "n-e0aaa8bc",
       "task": "fr-covid-19-worldwide-aggregate-60-11011c",
       "gen": 10,
-      "parents": [
-        "n-4ed4d70b"
-      ],
+      "parents": [],
       "guard": [
         [
           "not",
           [
             "hasAny",
             [
+              "2120",
               "country",
               "expectancy",
               "recovered"
@@ -2660,88 +1804,16 @@
       }
     },
     {
-      "id": "n-4ed4d70b",
+      "id": "n-23f00ae5",
       "task": "fr-covid-19-worldwide-aggregate-60-11011c",
       "gen": 10,
       "parents": [],
       "guard": [
         [
-          "hasAny",
+          "not",
           [
-            "caesar cipher",
-            "date",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "rotate the letters",
-            "shift by",
-            "shift each letter"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.caesar",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-                },
-                {
-                  "lit": "confirmed"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-            },
-            {
-              "lit": "confirmed"
-            },
-            {
-              "lit": "date"
-            }
-          ],
-          [
-            "sense.first"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 12,
-      "fit": {
-        "ok": 8,
-        "fired": 8,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-772041ee",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "date",
-            "element",
-            "first n",
-            "item number",
-            "nth",
-            "position",
-            "take",
-            "top"
+            "has",
+            "2120"
           ]
         ]
       ],
@@ -2826,201 +1898,19 @@
       }
     },
     {
-      "id": "n-a59cf677",
+      "id": "n-b689dea4",
       "task": "fr-covid-19-worldwide-aggregate-60-11011c",
       "gen": 10,
       "parents": [],
       "guard": [
         [
-          "hasAny",
+          "not",
           [
-            "date",
-            "element",
-            "first n",
-            "item number",
-            "nth",
-            "position",
-            "take",
-            "top"
+            "has",
+            "2120"
           ]
         ]
       ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "render.and",
-          [
-            "transform.takeStrs",
-            [
-              "know.find",
-              {
-                "lit": "corpora-fruits"
-              },
-              {
-                "lit": "item"
-              }
-            ],
-            [
-              "sense.first"
-            ]
-          ]
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 19,
-      "fit": {
-        "ok": 8,
-        "fired": 8,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-bcd8ec17",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [
-        "n-772041ee"
-      ],
-      "guard": [],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "render.list",
-          [
-            "transform.takeStrs",
-            [
-              "know.find",
-              {
-                "lit": "corpora-fruits"
-              },
-              {
-                "lit": "item"
-              }
-            ],
-            [
-              "sense.first"
-            ]
-          ]
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "date"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-              },
-              {
-                "lit": "confirmed"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
-          },
-          {
-            "lit": "confirmed"
-          },
-          {
-            "lit": "date"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 19,
-      "fit": {
-        "ok": 8,
-        "fired": 8,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d5890c42",
-      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
-      "gen": 10,
-      "parents": [
-        "n-a59cf677"
-      ],
-      "guard": [],
       "pyramid": [
         "render.template",
         {
@@ -4459,10 +3349,1507 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-5ece4bc7",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "date",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d58b7d7e",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [
+        "n-5ece4bc7"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "country",
+              "expectancy",
+              "recovered"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1d7cfbc2",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [
+        "n-f6ada5c9"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The date ",
+            {
+              "slot": 0
+            },
+            " is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f6ada5c9",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "date",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The date ",
+            {
+              "slot": 0
+            },
+            " is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8f639cc5",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6de5644d",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.swapCase",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b8621dce",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cac28814",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-16468968",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "transform.title",
+          [
+            "sense.after",
+            {
+              "lit": "date"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1d0e1782",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "date"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4855309b",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-66cd19a3",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1f827ec2",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [
+        "n-4ed4d70b"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "country",
+              "expectancy",
+              "recovered"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+                },
+                {
+                  "lit": "confirmed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+            },
+            {
+              "lit": "confirmed"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.first"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4ed4d70b",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "date",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+                },
+                {
+                  "lit": "confirmed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+            },
+            {
+              "lit": "confirmed"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.first"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-772041ee",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "date",
+            "element",
+            "first n",
+            "item number",
+            "nth",
+            "position",
+            "take",
+            "top"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.takeStrs",
+            [
+              "know.find",
+              {
+                "lit": "corpora-fruits"
+              },
+              {
+                "lit": "item"
+              }
+            ],
+            [
+              "sense.first"
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a59cf677",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "date",
+            "element",
+            "first n",
+            "item number",
+            "nth",
+            "position",
+            "take",
+            "top"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.takeStrs",
+            [
+              "know.find",
+              {
+                "lit": "corpora-fruits"
+              },
+              {
+                "lit": "item"
+              }
+            ],
+            [
+              "sense.first"
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bcd8ec17",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [
+        "n-772041ee"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.takeStrs",
+            [
+              "know.find",
+              {
+                "lit": "corpora-fruits"
+              },
+              {
+                "lit": "item"
+              }
+            ],
+            [
+              "sense.first"
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d5890c42",
+      "task": "fr-covid-19-worldwide-aggregate-60-11011c",
+      "gen": 10,
+      "parents": [
+        "n-a59cf677"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.takeStrs",
+            [
+              "know.find",
+              {
+                "lit": "corpora-fruits"
+              },
+              {
+                "lit": "item"
+              }
+            ],
+            [
+              "sense.first"
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "date"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "confirmed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+          },
+          {
+            "lit": "confirmed"
+          },
+          {
+            "lit": "date"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
     }
   ],
   "stages": [
     "310fabe0bf2b3de52785927e749f122936c31a564218c9d225076e92aa4daa70",
-    "f6e48716a0c347c76e5e5f773feffb035e7034d7f224d11b82fb3d1c6222765c"
+    "f6e48716a0c347c76e5e5f773feffb035e7034d7f224d11b82fb3d1c6222765c",
+    "8ad4d5cbe94c6922efe5e5024b3b2fa8bb705501d4a4b15484af29b7d1aa0b08"
   ]
 }
