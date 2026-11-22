@@ -2,15 +2,15 @@
   "task": "fr-datasets-2014-usa-states-00336c-c6c601",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T12:20:36.492Z",
+  "at": "2026-11-22T08:34:33.947Z",
   "stats": {
-    "generated": 160855,
+    "generated": 161412,
     "distinct": 83354,
-    "kept": 1412,
-    "know": 747,
+    "kept": 1408,
+    "know": 745,
     "byFamily": {
-      "memory": 72,
-      "transform": 1049,
+      "memory": 71,
+      "transform": 1046,
       "aggregate": 186,
       "iterate": 62,
       "sense": 41,
@@ -18,14 +18,15 @@
       "compute": 1
     },
     "bySource": {
-      "parent": 855,
-      "enum": 557
+      "parent": 850,
+      "enum": 557,
+      "open": 1
     },
     "maxHeight": 6,
     "devOk": 34,
     "devN": 34,
-    "ms": 97460,
-    "cellsPerSecond": 1650,
+    "ms": 115901,
+    "cellsPerSecond": 1393,
     "capped": null,
     "packs": [
       "corpora-us-cities",
@@ -34,7 +35,7 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "eee7c160fa0d94e6bdb0cfc45d1d2885b01006ce7388f66456e5d2b844ad4046",
+      "basis": "e545cb928903d36c1efab6e5434a386a33d7e322247e31c9a006f330322c3f96",
       "round": 1,
       "at": 240233,
       "maxCost": 7,
@@ -43354,6 +43355,63 @@
       }
     },
     {
+      "id": "n-66bf38cb",
+      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
+      "gen": 10,
+      "parents": [
+        "n-1d2a3edd"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "birthday",
+              "bor",
+              "contestant",
+              "hometown",
+              "iso3",
+              "mountains",
+              "population"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.base64",
+          [
+            "transform.unbase64",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-cities"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-69b84a5d",
       "task": "fr-datasets-2014-usa-states-00336c-c6c601",
       "gen": 10,
@@ -44436,60 +44494,6 @@
       }
     },
     {
-      "id": "n-cf466679",
-      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
-      "gen": 10,
-      "parents": [
-        "n-1d2a3edd"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "bor",
-              "iso3",
-              "mountains",
-              "population"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.base64",
-          [
-            "transform.unbase64",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-cities"
-                },
-                {
-                  "lit": "state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 34
-      }
-    },
-    {
       "id": "n-d56a4015",
       "task": "fr-datasets-2014-usa-states-00336c-c6c601",
       "gen": 10,
@@ -45077,6 +45081,66 @@
       "mem": null,
       "height": 5,
       "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-022b16c5",
+      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "first n",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "words",
+            "wyoming"
+          ]
+        ],
+        [
+          "has",
+          "postal"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-cities"
+                },
+                {
+                  "lit": "US city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -53339,76 +53403,6 @@
       }
     },
     {
-      "id": "n-4fdd2707",
-      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "delaware",
-            "delete",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out",
-            "without"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "sense.lastWord"
-          ],
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-cities"
-                },
-                {
-                  "lit": "state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-cities"
-            },
-            {
-              "lit": "state"
-            },
-            {
-              "lit": "US city"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 12,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 34
-      }
-    },
-    {
       "id": "n-5ed0d9a3",
       "task": "fr-datasets-2014-usa-states-00336c-c6c601",
       "gen": 10,
@@ -54197,172 +54191,6 @@
       ],
       "mem": null,
       "height": 6,
-      "size": 12,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 34
-      }
-    },
-    {
-      "id": "n-cbb0f9e6",
-      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
-      "gen": 10,
-      "parents": [
-        "n-42443184"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "abbreviation",
-              "act",
-              "add",
-              "affiliation",
-              "airline",
-              "airport",
-              "americaanguilla",
-              "americamartinique",
-              "americamexicocity",
-              "americamontserrat",
-              "americasaopaulo",
-              "artist",
-              "atlanticbermuda",
-              "author",
-              "banco",
-              "barthélemy",
-              "breed",
-              "capita",
-              "capital",
-              "captions",
-              "category",
-              "character",
-              "chiquián",
-              "city",
-              "coastline",
-              "code",
-              "combined",
-              "common",
-              "company",
-              "compare",
-              "confessing",
-              "continent",
-              "country",
-              "currency",
-              "date",
-              "density",
-              "description",
-              "dish",
-              "domain",
-              "dutch",
-              "emoji",
-              "europebratislava",
-              "europegibraltar",
-              "expectancy",
-              "felipe",
-              "gc",
-              "gender",
-              "governed",
-              "government",
-              "greater",
-              "iata",
-              "inc",
-              "indianmayotte",
-              "international",
-              "iso",
-              "iso2",
-              "iso3",
-              "larger",
-              "lesser",
-              "location",
-              "makes",
-              "meiji",
-              "metaresearch",
-              "n3",
-              "name",
-              "network",
-              "nigerkordofanian",
-              "north",
-              "official",
-              "opendate",
-              "parent",
-              "pidgin",
-              "platforms",
-              "population",
-              "province",
-              "ref",
-              "region",
-              "religion",
-              "rodrigo",
-              "school",
-              "season",
-              "session",
-              "singers",
-              "slug",
-              "smaller",
-              "south",
-              "species",
-              "sponsorship",
-              "state",
-              "strstate",
-              "subregion",
-              "sucode",
-              "sucountry",
-              "sum",
-              "surface",
-              "sutype",
-              "temperature",
-              "time",
-              "title",
-              "tolling",
-              "university",
-              "year",
-              "yi",
-              "zone"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.norm",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-covid-19-reference-7c87a7"
-                },
-                {
-                  "lit": "province state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-covid-19-reference-7c87a7"
-            },
-            {
-              "lit": "province state"
-            },
-            {
-              "lit": "iso2"
-            }
-          ],
-          {
-            "lit": 2
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 5,
       "size": 12,
       "fit": {
         "ok": 1,
@@ -61338,81 +61166,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 34
-      }
-    },
-    {
-      "id": "n-218d7538",
-      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "delaware",
-            "element",
-            "item number",
-            "join",
-            "joined with",
-            "nth",
-            "position",
-            "separated by"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.join",
-          [
-            "know.find",
-            {
-              "lit": "corpora-us-cities"
-            },
-            {
-              "lit": "state"
-            }
-          ],
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-cities"
-                },
-                {
-                  "lit": "state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-cities"
-            },
-            {
-              "lit": "state"
-            },
-            {
-              "lit": "US city"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
       "size": 14,
       "fit": {
         "ok": 1,
@@ -70477,55 +70230,6 @@
               "lit": 3
             }
           ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 34
-      }
-    },
-    {
-      "id": "n-e75e6a5d",
-      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "delaware",
-            "item number",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Delaware is DE."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
         ]
       ],
       "mem": null,
@@ -88179,39 +87883,6 @@
       }
     },
     {
-      "id": "n-7bca48a3",
-      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "jersey"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "tell me the postal of New Jersey": "The postal of New Jersey is NJ."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 34
-      }
-    },
-    {
       "id": "n-7dcf3d19",
       "task": "fr-datasets-2014-usa-states-00336c-c6c601",
       "gen": 10,
@@ -88844,10 +88515,458 @@
         "fired": 1,
         "rows": 34
       }
+    },
+    {
+      "id": "n-cf466679",
+      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
+      "gen": 10,
+      "parents": [
+        "n-1d2a3edd"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "bor",
+              "iso3",
+              "mountains",
+              "population"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.base64",
+          [
+            "transform.unbase64",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-cities"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-4fdd2707",
+      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delaware",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-cities"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-cities"
+            },
+            {
+              "lit": "state"
+            },
+            {
+              "lit": "US city"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-cbb0f9e6",
+      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
+      "gen": 10,
+      "parents": [
+        "n-42443184"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "abbreviation",
+              "act",
+              "add",
+              "affiliation",
+              "airline",
+              "airport",
+              "americaanguilla",
+              "americamartinique",
+              "americamexicocity",
+              "americamontserrat",
+              "americasaopaulo",
+              "artist",
+              "atlanticbermuda",
+              "author",
+              "banco",
+              "barthélemy",
+              "breed",
+              "capita",
+              "capital",
+              "captions",
+              "category",
+              "character",
+              "chiquián",
+              "city",
+              "coastline",
+              "code",
+              "combined",
+              "common",
+              "company",
+              "compare",
+              "confessing",
+              "continent",
+              "country",
+              "currency",
+              "date",
+              "density",
+              "description",
+              "dish",
+              "domain",
+              "dutch",
+              "emoji",
+              "europebratislava",
+              "europegibraltar",
+              "expectancy",
+              "felipe",
+              "gc",
+              "gender",
+              "governed",
+              "government",
+              "greater",
+              "iata",
+              "inc",
+              "indianmayotte",
+              "international",
+              "iso",
+              "iso2",
+              "iso3",
+              "larger",
+              "lesser",
+              "location",
+              "makes",
+              "meiji",
+              "metaresearch",
+              "n3",
+              "name",
+              "network",
+              "nigerkordofanian",
+              "north",
+              "official",
+              "opendate",
+              "parent",
+              "pidgin",
+              "platforms",
+              "population",
+              "province",
+              "ref",
+              "region",
+              "religion",
+              "rodrigo",
+              "school",
+              "season",
+              "session",
+              "singers",
+              "slug",
+              "smaller",
+              "south",
+              "species",
+              "sponsorship",
+              "state",
+              "strstate",
+              "subregion",
+              "sucode",
+              "sucountry",
+              "sum",
+              "surface",
+              "sutype",
+              "temperature",
+              "time",
+              "title",
+              "tolling",
+              "university",
+              "year",
+              "yi",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-covid-19-reference-7c87a7"
+                },
+                {
+                  "lit": "province state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-covid-19-reference-7c87a7"
+            },
+            {
+              "lit": "province state"
+            },
+            {
+              "lit": "iso2"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-218d7538",
+      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delaware",
+            "element",
+            "item number",
+            "join",
+            "joined with",
+            "nth",
+            "position",
+            "separated by"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "corpora-us-cities"
+            },
+            {
+              "lit": "state"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-cities"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-cities"
+            },
+            {
+              "lit": "state"
+            },
+            {
+              "lit": "US city"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-e75e6a5d",
+      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delaware",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Delaware is DE."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-7bca48a3",
+      "task": "fr-datasets-2014-usa-states-00336c-c6c601",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "jersey"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the postal of New Jersey": "The postal of New Jersey is NJ."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
     }
   ],
   "stages": [
     "a2b09a5a851f05fdbab336b9f125afb4872d7e0a201b9dc081ded380fd6f61aa",
-    "820eeb6bf89b07c6d690cf3fee763fe526a254454546350cb4169791e268e669"
+    "820eeb6bf89b07c6d690cf3fee763fe526a254454546350cb4169791e268e669",
+    "d80b8ad28085663bc9621b87324d11a9d944df7a2a0128dfeec7cb1666386bf2"
   ]
 }
