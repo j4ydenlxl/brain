@@ -2,26 +2,28 @@
   "task": "fr-tidytuesday-transport-b28ac0-st-1edbc7",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-23T01:15:11.794Z",
+  "at": "2026-11-23T03:01:58.607Z",
   "stats": {
-    "generated": 200221,
-    "distinct": 81888,
-    "kept": 39,
+    "generated": 160039,
+    "distinct": 110393,
+    "kept": 44,
     "know": 0,
     "byFamily": {
       "memory": 35,
+      "aggregate": 4,
       "compute": 3,
-      "aggregate": 1
+      "transform": 1,
+      "matrix": 1
     },
     "bySource": {
-      "parent": 35,
-      "enum": 4
+      "parent": 39,
+      "enum": 5
     },
-    "maxHeight": 4,
+    "maxHeight": 5,
     "devOk": 30,
     "devN": 30,
-    "ms": 35779,
-    "cellsPerSecond": 5596,
+    "ms": 23156,
+    "cellsPerSecond": 6911,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -31,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "14e5d56aed341ef4f389db55da65ca41fe689178e8860b7d55a447175726e5cc",
-      "round": 0,
-      "at": 107442,
+      "round": 1,
+      "at": 220179,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.add",
+      "cost": 7,
+      "prim": "compare.atLeast",
       "tpl": 1599
     }
   },
@@ -1431,6 +1433,50 @@
       }
     },
     {
+      "id": "n-0f35a4af",
+      "task": "fr-tidytuesday-transport-b28ac0-st-1edbc7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "at which position",
+            "carriages",
+            "decode the codes",
+            "from ascii",
+            "from character codes",
+            "index of",
+            "position of",
+            "which characters"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.indexOf",
+          {
+            "lit": "563"
+          },
+          [
+            "transform.fromCodes",
+            [
+              "sense.numbers"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
       "id": "n-136dae4a",
       "task": "fr-tidytuesday-transport-b28ac0-st-1edbc7",
       "gen": 10,
@@ -1468,6 +1514,52 @@
             [
               "sense.first"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-26c5b913",
+      "task": "fr-tidytuesday-transport-b28ac0-st-1edbc7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "circumference",
+            "decimal places",
+            "name",
+            "perimeter of a circle",
+            "round to",
+            "rounded to"
+          ]
+        ],
+        [
+          "has",
+          "carriages"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.roundTo",
+          [
+            "compute.circumference",
+            [
+              "sense.wordCount"
+            ]
+          ],
+          [
+            "sense.first"
           ]
         ]
       ],
@@ -1519,6 +1611,57 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-6766248c",
+      "task": "fr-tidytuesday-transport-b28ac0-st-1edbc7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ascii",
+            "ascii codes",
+            "character codes",
+            "code points",
+            "difference between the largest and smallest",
+            "month name",
+            "name",
+            "name of month",
+            "spread",
+            "unicode values",
+            "which month"
+          ]
+        ],
+        [
+          "has",
+          "carriages"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.range",
+          [
+            "transform.charCodes",
+            [
+              "compute.monthName",
+              [
+                "sense.first"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -1622,10 +1765,106 @@
         "fired": 1,
         "rows": 30
       }
+    },
+    {
+      "id": "n-f00be3f9",
+      "task": "fr-tidytuesday-transport-b28ac0-st-1edbc7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "difference",
+            "is",
+            "less",
+            "minus",
+            "subtract",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "carriages"
+        ]
+      ],
+      "pyramid": [
+        "render.matrix",
+        [
+          "matrix.identity",
+          [
+            "transform.sub",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-81d94950",
+      "task": "fr-tidytuesday-transport-b28ac0-st-1edbc7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "at which position",
+            "carriages",
+            "convert to base",
+            "in base",
+            "in binary",
+            "in octal",
+            "index of",
+            "position of",
+            "to binary",
+            "to hex"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.indexOf",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "compute.toBase",
+            {
+              "lit": 12
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
     }
   ],
   "stages": [
     "68769cf3db4775a66c54987e09f93df4b083b816c198efb623b7b5333e171109",
-    "a5c666cb6c1a6f30c822cea794bfbe7cbb00805d78c316f79e31b191e94e6fb2"
+    "a5c666cb6c1a6f30c822cea794bfbe7cbb00805d78c316f79e31b191e94e6fb2",
+    "915fb764d549a337d2915c1d6dfc1f82d51f35bb930a457e4785cb825b0ede99"
   ]
 }
