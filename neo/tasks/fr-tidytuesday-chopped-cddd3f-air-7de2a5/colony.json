@@ -2,27 +2,27 @@
   "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-22T13:34:40.863Z",
+  "at": "2026-11-24T03:36:44.370Z",
   "stats": {
-    "generated": 200223,
-    "distinct": 78351,
-    "kept": 63,
-    "know": 15,
+    "generated": 160063,
+    "distinct": 108928,
+    "kept": 71,
+    "know": 22,
     "byFamily": {
       "memory": 45,
       "transform": 16,
+      "compute": 8,
       "aggregate": 2
     },
     "bySource": {
-      "memory": 45,
-      "enum": 11,
-      "template": 7
+      "parent": 63,
+      "enum": 8
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 29161,
-    "cellsPerSecond": 6866,
+    "ms": 40758,
+    "cellsPerSecond": 3927,
     "capped": null,
     "packs": [
       "co2-mauna-loa",
@@ -31,14 +31,14 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "6b42865149de8fa13d0f99b011969f25af4bf0d25cf630cb3c99c3d8b7ecc378",
-      "round": 0,
-      "at": 110169,
+      "basis": "ae3003a91e9e67ed9b2bbc46ddaad07051905d306b1e7ee779e7ad9d06f03fb1",
+      "round": 1,
+      "at": 228273,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.between",
-      "tpl": 3000
+      "prim": "compute.hypot",
+      "tpl": 2969
     }
   },
   "cells": [
@@ -453,6 +453,58 @@
       }
     },
     {
+      "id": "n-3c1269cb",
+      "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "june"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "rating"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "sense.first"
+          ],
+          [
+            "series.countAbove",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": "co2-mauna-loa"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "mean CO2 level at Mauna Loa"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5577457e",
       "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
       "gen": 10,
@@ -621,6 +673,64 @@
       "mem": null,
       "height": 4,
       "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-91e67f71",
+      "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "october"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ],
+        [
+          "has",
+          "episode"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "total"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -898,6 +1008,53 @@
       "mem": null,
       "height": 3,
       "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-112e97d7",
+      "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "how many vowels",
+            "number of vowels",
+            "reduced by",
+            "sale price",
+            "september",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "rating"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          {
+            "lit": 10
+          },
+          [
+            "aggregate.vowels",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -1184,6 +1341,359 @@
       "mem": null,
       "height": 4,
       "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-10bc6a5d",
+      "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "character count",
+            "discount",
+            "how many characters",
+            "is",
+            "item number",
+            "nth",
+            "number of characters",
+            "position",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "april"
+        ],
+        [
+          "has",
+          "rating"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eb90909e",
+      "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "character count",
+            "discount",
+            "how many characters",
+            "is",
+            "item number",
+            "nth",
+            "number of characters",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "april"
+        ],
+        [
+          "has",
+          "rating"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b5058c31",
+      "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "compound interest",
+            "compounded",
+            "element",
+            "february",
+            "grows to",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "rating"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.compound",
+          {
+            "lit": 4
+          },
+          {
+            "lit": 1
+          },
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-co2-fossil-global-global-6f35f5"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "solid fuel"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-efe4ffba",
+      "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "august",
+            "compound interest",
+            "compounded",
+            "grows to",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "rating"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.compound",
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "total"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-co2-fossil-global-global-6f35f5"
+            },
+            {
+              "lit": "total"
+            },
+            {
+              "lit": "solid fuel"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d3ed6ca5",
+      "task": "fr-tidytuesday-chopped-cddd3f-air-7de2a5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "august",
+            "compound interest",
+            "compounded",
+            "grows to",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "rating"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.compound",
+          {
+            "lit": 5
+          },
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-co2-fossil-global-global-6f35f5"
+                  },
+                  {
+                    "lit": "total"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-co2-fossil-global-global-6f35f5"
+              },
+              {
+                "lit": "total"
+              },
+              {
+                "lit": "solid fuel"
+              }
+            ]
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 14,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -3257,6 +3767,7 @@
     }
   ],
   "stages": [
-    "93fc96d45d3a4eb98c335b6d56dea8b880c1027cd0c7918b7709a37767324b2d"
+    "93fc96d45d3a4eb98c335b6d56dea8b880c1027cd0c7918b7709a37767324b2d",
+    "c0a8b51c79bac462d4f423d123a40b3ed6cc60fcb8f58526c71805a336b70e5a"
   ]
 }

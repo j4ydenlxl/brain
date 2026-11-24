@@ -2,29 +2,28 @@
   "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-22T06:16:10.970Z",
+  "at": "2026-11-24T03:32:19.858Z",
   "stats": {
-    "generated": 200009,
-    "distinct": 77517,
-    "kept": 171,
-    "know": 85,
+    "generated": 160171,
+    "distinct": 129734,
+    "kept": 276,
+    "know": 175,
     "byFamily": {
+      "transform": 194,
       "aggregate": 1,
-      "transform": 89,
       "memory": 80,
       "sense": 1
     },
     "bySource": {
-      "template": 76,
-      "enum": 13,
-      "open": 2,
-      "memory": 80
+      "enum": 103,
+      "parent": 171,
+      "open": 2
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 88773,
-    "cellsPerSecond": 2253,
+    "ms": 95528,
+    "cellsPerSecond": 1677,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -33,17 +32,630 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "0e658199a24b78076d118ea8b49ba34f8d460fc601d9b3f3ba75c9cecddd0760",
-      "round": 0,
-      "at": 112336,
+      "basis": "d95e1238cc159aeb3bca4de0185b48f5798ac49a4ca8b809d17a604d242b8568",
+      "round": 1,
+      "at": 212879,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "compute.sumTo",
+      "cost": 7,
+      "prim": "aggregate.countIn",
       "tpl": 1511
     }
   },
   "cells": [
+    {
+      "id": "n-90d6961b",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "bassets",
+            "bernards",
+            "bichons",
+            "bluetick",
+            "bulldogs",
+            "characters from",
+            "chihuahuas",
+            "collies",
+            "corgis",
+            "dogs",
+            "element",
+            "fox",
+            "greyhounds",
+            "item number",
+            "keeshonden",
+            "letters from to",
+            "lowchen",
+            "nth",
+            "old",
+            "position",
+            "pulik",
+            "rottweilers",
+            "shih",
+            "skye",
+            "slice of the text",
+            "sloughis",
+            "substring",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "border"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 23,
+        "fired": 23,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4f0cf008",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anatolian",
+            "basenjis",
+            "bernards",
+            "bichons",
+            "bulldogs",
+            "change to",
+            "chihuahuas",
+            "collies",
+            "dandie",
+            "element",
+            "fox",
+            "golden",
+            "greyhounds",
+            "item number",
+            "keeshonden",
+            "kooikerhondjes",
+            "lowchen",
+            "nth",
+            "old",
+            "position",
+            "replace",
+            "sharpei",
+            "skye",
+            "sloughis",
+            "substitute",
+            "swap",
+            "vendeens",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "border"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 22,
+        "fired": 22,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d1501d0a",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anatolian",
+            "basenjis",
+            "bernards",
+            "bichons",
+            "bulldogs",
+            "change to",
+            "chihuahuas",
+            "collies",
+            "dandie",
+            "element",
+            "fox",
+            "golden",
+            "greyhounds",
+            "item number",
+            "keeshonden",
+            "kooikerhondjes",
+            "lowchen",
+            "nth",
+            "old",
+            "position",
+            "replace",
+            "sharpei",
+            "skye",
+            "sloughis",
+            "substitute",
+            "swap",
+            "vendeens",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "border"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 22,
+        "fired": 22,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5b33d2d1",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "basset",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "chihuahuas",
+            "corgis",
+            "dandie",
+            "dogs",
+            "element",
+            "fox",
+            "golden",
+            "great",
+            "greyhounds",
+            "item number",
+            "kooikerhondjes",
+            "leading zeros",
+            "mastiffs",
+            "nth",
+            "otterhounds",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "rottweilers",
+            "scottish",
+            "sloughis",
+            "whippets",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8e22e922",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "basset",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "chihuahuas",
+            "corgis",
+            "dandie",
+            "dogs",
+            "element",
+            "fox",
+            "golden",
+            "great",
+            "greyhounds",
+            "item number",
+            "kooikerhondjes",
+            "leading zeros",
+            "mastiffs",
+            "nth",
+            "otterhounds",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "rottweilers",
+            "scottish",
+            "sloughis",
+            "whippets",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
     {
       "id": "n-eff129be",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
@@ -174,6 +786,375 @@
       "mem": null,
       "height": 4,
       "size": 15,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dd0b95d6",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "basset",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "chihuahuas",
+            "corgis",
+            "dandie",
+            "dogs",
+            "element",
+            "fox",
+            "golden",
+            "great",
+            "greyhounds",
+            "item number",
+            "kooikerhondjes",
+            "leading zeros",
+            "mastiffs",
+            "nth",
+            "otterhounds",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "rottweilers",
+            "scottish",
+            "sloughis",
+            "whippets",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-de128a96",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "basset",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "chihuahuas",
+            "corgis",
+            "dandie",
+            "dogs",
+            "element",
+            "fox",
+            "golden",
+            "great",
+            "greyhounds",
+            "item number",
+            "kooikerhondjes",
+            "leading zeros",
+            "mastiffs",
+            "nth",
+            "otterhounds",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "rottweilers",
+            "scottish",
+            "sloughis",
+            "whippets",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e795ed15",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "basset",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "chihuahuas",
+            "corgis",
+            "dandie",
+            "dogs",
+            "element",
+            "fox",
+            "golden",
+            "great",
+            "greyhounds",
+            "item number",
+            "kooikerhondjes",
+            "leading zeros",
+            "mastiffs",
+            "nth",
+            "otterhounds",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "rottweilers",
+            "scottish",
+            "sloughis",
+            "whippets",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 21,
         "fired": 21,
@@ -2078,6 +3059,114 @@
       }
     },
     {
+      "id": "n-77dd09b0",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "adaptability",
+              "among",
+              "angora",
+              "apsos",
+              "berger",
+              "border",
+              "bouviers",
+              "briards",
+              "cairn",
+              "captions",
+              "chinooks",
+              "crested",
+              "curs",
+              "dachshunds",
+              "english",
+              "foxhounds",
+              "griffons",
+              "kuvaszok",
+              "letter",
+              "malamutes",
+              "mastiffs",
+              "newfoundlands",
+              "norwich",
+              "pugs",
+              "pyrenean",
+              "rank",
+              "retrievers",
+              "samoyeds",
+              "schnauzers",
+              "sheepdogs",
+              "twoletter",
+              "vizslas",
+              "yorkshire"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-80637c03",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -2167,6 +3256,514 @@
       "mem": null,
       "height": 5,
       "size": 11,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4dda8865",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "basenjis",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "chihuahuas",
+            "corgis",
+            "dogs",
+            "element",
+            "fox",
+            "greyhounds",
+            "invert case",
+            "item number",
+            "letters in order",
+            "mastiffs",
+            "nth",
+            "position",
+            "rottweilers",
+            "sloughis",
+            "sort the letters",
+            "swap case",
+            "toggle case",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-breed-traits-085dc0"
+                  },
+                  {
+                    "lit": "breed"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-breed-traits-085dc0"
+              },
+              {
+                "lit": "breed"
+              },
+              {
+                "lit": "coat length"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-51ae1a24",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "alphabetize the letters",
+            "basenjis",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "capital letters",
+            "capitals",
+            "chihuahuas",
+            "corgis",
+            "dogs",
+            "element",
+            "fox",
+            "greyhounds",
+            "item number",
+            "letters in order",
+            "mastiffs",
+            "nth",
+            "position",
+            "rottweilers",
+            "sloughis",
+            "sort the letters",
+            "upper case",
+            "uppercase",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-breed-traits-085dc0"
+                  },
+                  {
+                    "lit": "breed"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-breed-traits-085dc0"
+              },
+              {
+                "lit": "breed"
+              },
+              {
+                "lit": "coat length"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-65c7894b",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "basenjis",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "chihuahuas",
+            "corgis",
+            "dogs",
+            "each word",
+            "element",
+            "fox",
+            "greyhounds",
+            "item number",
+            "letters in order",
+            "mastiffs",
+            "nth",
+            "position",
+            "rottweilers",
+            "sloughis",
+            "sort the letters",
+            "split into words",
+            "whippets",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-breed-traits-085dc0"
+                  },
+                  {
+                    "lit": "breed"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-breed-traits-085dc0"
+              },
+              {
+                "lit": "breed"
+              },
+              {
+                "lit": "coat length"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6c596a69",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "basenjis",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "camel case",
+            "camelcase",
+            "chihuahuas",
+            "corgis",
+            "dogs",
+            "element",
+            "fox",
+            "greyhounds",
+            "item number",
+            "letters in order",
+            "lower camel case",
+            "mastiffs",
+            "nth",
+            "position",
+            "rottweilers",
+            "sloughis",
+            "sort the letters",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "tibetan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-breed-traits-085dc0"
+                  },
+                  {
+                    "lit": "breed"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-breed-traits-085dc0"
+              },
+              {
+                "lit": "breed"
+              },
+              {
+                "lit": "coat length"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c4c867e4",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "adaptability",
+              "apsos",
+              "berger",
+              "border",
+              "breed",
+              "briards",
+              "bull",
+              "cairn",
+              "chinooks",
+              "chows",
+              "code",
+              "coonhounds",
+              "crested",
+              "curs",
+              "dachshunds",
+              "english",
+              "ferocious",
+              "foxhounds",
+              "griffons",
+              "kuvaszok",
+              "labrador",
+              "malamutes",
+              "mastiffs",
+              "newfoundlands",
+              "norwich",
+              "pugs",
+              "pyrenean",
+              "rank",
+              "samoyeds",
+              "schnauzers",
+              "scotia",
+              "sheepdogs",
+              "type",
+              "vizslas",
+              "yorkshire"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 14,
         "fired": 14,
@@ -3885,6 +5482,303 @@
       }
     },
     {
+      "id": "n-c6f24785",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bluetick",
+            "chinese",
+            "corgis",
+            "dogs",
+            "element",
+            "great",
+            "item number",
+            "kuvaszok",
+            "leading zeros",
+            "newfoundlands",
+            "nth",
+            "otterhounds",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "rottweilers",
+            "scottish",
+            "spaniels",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a5eea408",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "element",
+            "how many characters",
+            "item number",
+            "length",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2caea459",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "change to",
+            "chihuahuas",
+            "element",
+            "greyhounds",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "mastiffs",
+            "nth",
+            "otterhounds",
+            "position",
+            "pulik",
+            "replace",
+            "rottweilers",
+            "sloughis",
+            "substitute",
+            "swap",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f388cc3f",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -4004,6 +5898,109 @@
       }
     },
     {
+      "id": "n-feacdaa0",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "change to",
+            "chihuahuas",
+            "element",
+            "greyhounds",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "mastiffs",
+            "nth",
+            "otterhounds",
+            "position",
+            "pulik",
+            "replace",
+            "rottweilers",
+            "sloughis",
+            "substitute",
+            "swap",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e3ac0cea",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -4082,6 +6079,617 @@
       "fit": {
         "ok": 11,
         "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ecdc0a89",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "bernards",
+            "bluetick",
+            "bulldogs",
+            "character count",
+            "chihuahuas",
+            "corgis",
+            "fox",
+            "how many characters",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "rottweilers",
+            "simplify the text",
+            "sloughis",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Short"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-01ac07fc",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bassets",
+            "bearded",
+            "bichons",
+            "characters from",
+            "element",
+            "item number",
+            "keeshonden",
+            "letters from to",
+            "lowchen",
+            "nth",
+            "old",
+            "position",
+            "pulik",
+            "shih",
+            "skye",
+            "slice of the text",
+            "substring",
+            "tibetan"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "mastiffs"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-10c2ce44",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anatolian",
+            "basenjis",
+            "bernards",
+            "bulldogs",
+            "change to",
+            "chihuahuas",
+            "fox",
+            "greyhounds",
+            "item number",
+            "nth",
+            "replace",
+            "sharpei",
+            "sloughis",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6208baaa",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anatolian",
+            "basenjis",
+            "bernards",
+            "bulldogs",
+            "change to",
+            "chihuahuas",
+            "fox",
+            "greyhounds",
+            "item number",
+            "nth",
+            "replace",
+            "sharpei",
+            "sloughis",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-83bae902",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anatolian",
+            "basenjis",
+            "bernards",
+            "bulldogs",
+            "change to",
+            "chihuahuas",
+            "fox",
+            "greyhounds",
+            "item number",
+            "nth",
+            "replace",
+            "sharpei",
+            "sloughis",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "Short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fba215a5",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anatolian",
+            "basenjis",
+            "bernards",
+            "bulldogs",
+            "change to",
+            "chihuahuas",
+            "fox",
+            "greyhounds",
+            "item number",
+            "nth",
+            "replace",
+            "sharpei",
+            "sloughis",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a36c8f2e",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "bernards",
+            "bulldogs",
+            "character count",
+            "chihuahuas",
+            "chinese",
+            "fox",
+            "how many characters",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "simplify the text",
+            "sloughis",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "coat"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "crested"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Short"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
         "rows": 40
       }
     },
@@ -4212,6 +6820,848 @@
       }
     },
     {
+      "id": "n-36119c1b",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "change to",
+            "chihuahuas",
+            "element",
+            "greyhounds",
+            "item number",
+            "mastiffs",
+            "nth",
+            "position",
+            "replace",
+            "rottweilers",
+            "sloughis",
+            "substitute",
+            "swap",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "Short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b9834669",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "change to",
+            "chihuahuas",
+            "element",
+            "greyhounds",
+            "item number",
+            "mastiffs",
+            "nth",
+            "position",
+            "replace",
+            "rottweilers",
+            "sloughis",
+            "substitute",
+            "swap",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f2afb210",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "change to",
+            "chihuahuas",
+            "element",
+            "greyhounds",
+            "item number",
+            "mastiffs",
+            "nth",
+            "position",
+            "replace",
+            "rottweilers",
+            "sloughis",
+            "substitute",
+            "swap",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f3d5e570",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "change to",
+            "chihuahuas",
+            "element",
+            "greyhounds",
+            "item number",
+            "mastiffs",
+            "nth",
+            "position",
+            "replace",
+            "rottweilers",
+            "sloughis",
+            "substitute",
+            "swap",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3355fd5b",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bassets",
+            "bearded",
+            "bichons",
+            "change to",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "nth",
+            "old",
+            "replace",
+            "skye"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-87f84421",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bassets",
+            "bearded",
+            "bichons",
+            "change to",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "nth",
+            "old",
+            "replace",
+            "skye"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9d013fb8",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bassets",
+            "bearded",
+            "bichons",
+            "change to",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "nth",
+            "old",
+            "replace",
+            "skye"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "Long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d00f8ffb",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bassets",
+            "bearded",
+            "bichons",
+            "change to",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "nth",
+            "old",
+            "replace",
+            "skye"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0a9041f9",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "bulldogs",
+            "chihuahuas",
+            "chinese",
+            "delete",
+            "fox",
+            "sloughis",
+            "strip out",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "crested"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Short"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-57562944",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basenjis",
+            "bulldogs",
+            "chihuahuas",
+            "chinese",
+            "delete",
+            "fox",
+            "sloughis",
+            "strip out",
+            "whippets"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "crested"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "short"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9275735f",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "cocker",
+            "great",
+            "how many characters",
+            "item number",
+            "kuvaszok",
+            "newfoundlands",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "otterhounds",
+            "scottish",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "coat"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Medium"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a8dde3c8",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -4285,6 +7735,153 @@
       "fit": {
         "ok": 6,
         "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-10c738c6",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bearded",
+            "character count",
+            "how many characters",
+            "item number",
+            "lowchen",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "pulik",
+            "simplify the text",
+            "skye",
+            "tibetan"
+          ]
+        ],
+        [
+          "has",
+          "coat"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "mastiffs"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Long"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-423dc3a4",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "cocker",
+            "dandie",
+            "great",
+            "how many characters",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "otterhounds",
+            "position",
+            "scottish",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "coat"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Medium"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
         "rows": 40
       }
     },
@@ -4644,6 +8241,1249 @@
       }
     },
     {
+      "id": "n-4532a639",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bearded",
+            "character count",
+            "how many characters",
+            "item number",
+            "lowchen",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "simplify the text",
+            "skye",
+            "tibetan"
+          ]
+        ],
+        [
+          "has",
+          "coat"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "mastiffs"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Long"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e3dc8ec3",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bluetick",
+            "character count",
+            "chinese",
+            "corgis",
+            "how many characters",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "rottweilers",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "coat"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Short"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7345b687",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "chinooks",
+            "element",
+            "item number",
+            "kuvaszok",
+            "newfoundlands",
+            "nth",
+            "otterhounds",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c02031a1",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "chinooks",
+            "element",
+            "item number",
+            "kuvaszok",
+            "newfoundlands",
+            "nth",
+            "otterhounds",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c13d75c5",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "chinooks",
+            "element",
+            "item number",
+            "kuvaszok",
+            "newfoundlands",
+            "nth",
+            "otterhounds",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "Medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c989fcb1",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "chinooks",
+            "element",
+            "item number",
+            "kuvaszok",
+            "newfoundlands",
+            "nth",
+            "otterhounds",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-26140ed2",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basset",
+            "change to",
+            "dandie",
+            "golden",
+            "item number",
+            "kooikerhondjes",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bbe7cd1a",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basset",
+            "change to",
+            "dandie",
+            "golden",
+            "item number",
+            "kooikerhondjes",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f16b23bb",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basset",
+            "change to",
+            "dandie",
+            "golden",
+            "item number",
+            "kooikerhondjes",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fc06d97e",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basset",
+            "change to",
+            "dandie",
+            "golden",
+            "item number",
+            "kooikerhondjes",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "Medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0ff9d50e",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bearded",
+            "delete",
+            "lowchen",
+            "skye",
+            "strip out",
+            "tibetan"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "mastiffs"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "long"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9ab474d7",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bearded",
+            "delete",
+            "lowchen",
+            "skye",
+            "strip out",
+            "tibetan"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "mastiffs"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Long"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c4251e42",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "basset",
+            "dandie",
+            "delete",
+            "golden",
+            "kooikerhondjes",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "medium"
+          },
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-49f688b7",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "nth",
+            "position",
+            "pulik",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-76ae251e",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "nth",
+            "position",
+            "pulik",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "Long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c1867833",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "nth",
+            "position",
+            "pulik",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": "long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d128673d",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "keeshonden",
+            "lowchen",
+            "nth",
+            "position",
+            "pulik",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "breed"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8963ad37",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -4744,6 +9584,200 @@
       }
     },
     {
+      "id": "n-7dd95527",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f20028b6",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4a004eb0",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -4803,6 +9837,81 @@
       "fit": {
         "ok": 3,
         "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6a15054c",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "element",
+            "how many characters",
+            "item number",
+            "length",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
         "rows": 40
       }
     },
@@ -5091,6 +10200,497 @@
       }
     },
     {
+      "id": "n-62f2d744",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dandie",
+            "delete",
+            "golden",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "coat"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "medium"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a0f79883",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dandie",
+            "delete",
+            "golden",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "coat"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Medium"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6c3aeae3",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "pulik",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "coat"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Long"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cb7128dc",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "character count",
+            "element",
+            "how many characters",
+            "item number",
+            "kooikerhondjes",
+            "nth",
+            "number of characters",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "medium"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cff1e679",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "dandie",
+            "how many characters",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "simplify the text"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Medium"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f478b4c2",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "character count",
+            "element",
+            "how many characters",
+            "item number",
+            "kooikerhondjes",
+            "nth",
+            "number of characters",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "Medium"
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-70da82d6",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "character count",
+            "cocker",
+            "element",
+            "how many characters",
+            "item number",
+            "nth",
+            "number of characters",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-55d406f6",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "character count",
+            "element",
+            "how many characters",
+            "item number",
+            "kooikerhondjes",
+            "nth",
+            "number of characters",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-248203ba",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -5312,6 +10912,1648 @@
       "mem": null,
       "height": 4,
       "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-728197de",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "Medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9792abce",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "Medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b68bff14",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "Medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c68b41dd",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e89a46b5",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ea2c0154",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0eb3639b",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-307b9a8a",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "american",
+            "change to",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3353a33f",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "shih",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-36eb97ab",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "replace",
+            "shih"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-40b7c2f2",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "dogs",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "Short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4b04f8b6",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "dogs",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-59979f6e",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "replace",
+            "shih"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "Long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7a335278",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "american",
+            "change to",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "Medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7c74eddd",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "dogs",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-82e50424",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "american",
+            "change to",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "Medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-94bbdf4e",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a6d5cc71",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "replace",
+            "shih"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aeb25c7d",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "dogs",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "Short"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b2d89c94",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "replace",
+            "shih"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "Long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c3a5c96a",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "american",
+            "change to",
+            "item number",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "medium"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c3c9e1ce",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "shih",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "Long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c47cd2ec",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "coat",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "long"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eeff0100",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "shih",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "long"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -8560,6 +15802,835 @@
       }
     },
     {
+      "id": "n-49346368",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-82f9374e",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c7873222",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "giant",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "coat"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e273ff5b",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2e825325",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "coat",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-30f74bfc",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "shih",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c4612ba0",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "shih",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "breed"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-traits-085dc0"
+                },
+                {
+                  "lit": "breed"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-traits-085dc0"
+            },
+            {
+              "lit": "breed"
+            },
+            {
+              "lit": "coat length"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-15172441",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "character count",
+            "cocker",
+            "how many characters",
+            "number of characters",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "Medium"
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-58ad7ae0",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "character count",
+            "cocker",
+            "how many characters",
+            "number of characters",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "medium"
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5ece69c2",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "name",
+            "normalise",
+            "normalize",
+            "number of characters",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "length"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Long"
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6e098196",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "chinese",
+            "how many characters",
+            "normalise",
+            "normalize",
+            "number of characters",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "Short"
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0a5ae26a",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -10134,6 +18205,186 @@
       }
     },
     {
+      "id": "n-16a107e2",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "leading zeros",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-92271a14",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "leading zeros",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "Medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e2519bf4",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "leading zeros",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "Medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e33cc701",
+      "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chinooks",
+            "leading zeros",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "medium"
+          },
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-027199e3",
       "task": "fr-tidytuesday-breed-traits-085dc0-3838b0",
       "gen": 10,
@@ -11675,6 +19926,7 @@
     }
   ],
   "stages": [
-    "dfbbcb9ff12b5801eab040356df55434236e39547944980245725c6d2dc74fc1"
+    "dfbbcb9ff12b5801eab040356df55434236e39547944980245725c6d2dc74fc1",
+    "f8a1fd8c4eeddaa62bd9e9378be54786edeca74dfd4f6fedff948ac58b7df946"
   ]
 }
