@@ -2,30 +2,28 @@
   "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-25T00:19:31.376Z",
+  "at": "2026-11-25T01:52:25.920Z",
   "stats": {
-    "generated": 200077,
-    "distinct": 86257,
-    "kept": 325,
-    "know": 202,
+    "generated": 160327,
+    "distinct": 85992,
+    "kept": 351,
+    "know": 219,
     "byFamily": {
       "memory": 84,
       "sense": 8,
-      "transform": 193,
+      "transform": 219,
       "aggregate": 31,
       "iterate": 9
     },
     "bySource": {
-      "parent": 309,
-      "enum": 14,
-      "template": 1,
-      "memory": 1
+      "parent": 325,
+      "enum": 26
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 38574,
-    "cellsPerSecond": 5187,
+    "ms": 42739,
+    "cellsPerSecond": 3751,
     "capped": null,
     "packs": [
       "corpora-fruits",
@@ -35,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "956ecf13b51a146e9eafbd5ed23b13cac47995d4e3543ce858fa7292eec41b7e",
-      "round": 0,
-      "at": 105524,
+      "round": 1,
+      "at": 235975,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.mul",
+      "cost": 7,
+      "prim": "compare.contains",
       "tpl": 1176
     }
   },
@@ -1151,6 +1149,65 @@
       "fit": {
         "ok": 17,
         "fired": 17,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-51595e8b",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "asiago",
+            "dalmatia",
+            "dumfriesshire",
+            "friulivenezia",
+            "how many",
+            "how many items",
+            "lincolnshire",
+            "manitoba",
+            "maribo",
+            "mols",
+            "normalise",
+            "normalize",
+            "number of items",
+            "passendale",
+            "pullman",
+            "roxburghshire",
+            "simplify the text",
+            "swabia",
+            "valley"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "cow"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
         "rows": 40
       }
     },
@@ -2346,6 +2403,70 @@
       }
     },
     {
+      "id": "n-17d3fcb6",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "asiago",
+            "copies",
+            "dalmatia",
+            "friulivenezia",
+            "how many items",
+            "lincolnshire",
+            "manitoba",
+            "maribo",
+            "number of items",
+            "passendale",
+            "pullman",
+            "roxburghshire",
+            "say it times",
+            "valley"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.repeat",
+          {
+            "lit": "cow"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2f116a81",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -2538,6 +2659,170 @@
       "mem": null,
       "height": 3,
       "size": 8,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-370c075f",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "asiago",
+            "change to",
+            "dalmatia",
+            "friulivenezia",
+            "item number",
+            "lincolnshire",
+            "manitoba",
+            "maribo",
+            "nth",
+            "passendale",
+            "pullman",
+            "replace",
+            "roxburghshire",
+            "valley"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "cow"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e7b23894",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "asiago",
+            "change to",
+            "dalmatia",
+            "friulivenezia",
+            "item number",
+            "lincolnshire",
+            "manitoba",
+            "maribo",
+            "nth",
+            "passendale",
+            "pullman",
+            "replace",
+            "roxburghshire",
+            "valley"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "cow"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
       "fit": {
         "ok": 11,
         "fired": 11,
@@ -4795,6 +5080,257 @@
       }
     },
     {
+      "id": "n-ba28ecac",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "airedale",
+            "beara",
+            "change to",
+            "county",
+            "dumfriesshire",
+            "hautemarne",
+            "item number",
+            "mols",
+            "nth",
+            "replace",
+            "swabia"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "cow"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bca258a9",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "airedale",
+            "beara",
+            "change to",
+            "county",
+            "dumfriesshire",
+            "hautemarne",
+            "item number",
+            "mols",
+            "nth",
+            "replace",
+            "swabia"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "cow"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d13dcad2",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avila",
+            "barcelona",
+            "bedfordshire",
+            "clare",
+            "how many",
+            "how many items",
+            "kimball",
+            "languedocroussillon",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text",
+            "stewarton"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "goat"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a97ea2ee",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "beara",
+            "dalmatia",
+            "delete",
+            "lincolnshire",
+            "passendale",
+            "pullman",
+            "strip out",
+            "valley"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "cow"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-91af6177",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -5438,6 +5974,62 @@
       }
     },
     {
+      "id": "n-8d0caee9",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avila",
+            "barcelona",
+            "bedfordshire",
+            "coast",
+            "copies",
+            "how many items",
+            "languedocroussillon",
+            "number of items",
+            "say it times",
+            "stewarton"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.repeat",
+          {
+            "lit": "goat"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d032d672",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -5556,6 +6148,154 @@
       }
     },
     {
+      "id": "n-1c76ac4e",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avila",
+            "barcelona",
+            "bedfordshire",
+            "change to",
+            "coast",
+            "item number",
+            "languedocroussillon",
+            "nth",
+            "replace",
+            "stewarton"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "goat"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f34367a8",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avila",
+            "barcelona",
+            "bedfordshire",
+            "change to",
+            "coast",
+            "item number",
+            "languedocroussillon",
+            "nth",
+            "replace",
+            "stewarton"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "goat"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-df81034d",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -5594,6 +6334,56 @@
       "mem": null,
       "height": 2,
       "size": 4,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-07756931",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amou",
+            "basque",
+            "bursa",
+            "characters from",
+            "karlovy",
+            "lazio",
+            "letters from to",
+            "slice of the text",
+            "substring",
+            "wigtownshire"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          {
+            "lit": "goat, sheep"
+          },
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
       "fit": {
         "ok": 6,
         "fired": 6,
@@ -5655,6 +6445,55 @@
       "fit": {
         "ok": 6,
         "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dd4066cf",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avila",
+            "barcelona",
+            "characters from",
+            "kimball",
+            "languedocroussillon",
+            "letters from to",
+            "slice of the text",
+            "stewarton",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          {
+            "lit": "goat, sheep"
+          },
+          {
+            "lit": 1
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
         "rows": 40
       }
     },
@@ -7009,6 +7848,56 @@
       }
     },
     {
+      "id": "n-a137ae95",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amou",
+            "bursa",
+            "how many",
+            "how many items",
+            "lazio",
+            "normalise",
+            "normalize",
+            "number of items",
+            "simplify the text",
+            "wigtownshire"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          {
+            "lit": "sheep"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b73deebc",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -7340,6 +8229,59 @@
       }
     },
     {
+      "id": "n-dc208b3f",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amou",
+            "bursa",
+            "copies",
+            "how many items",
+            "number of items",
+            "say it times",
+            "wigtownshire"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.repeat",
+          {
+            "lit": "sheep"
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-57f241db",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -7513,6 +8455,148 @@
       }
     },
     {
+      "id": "n-02e68c7f",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "clare",
+            "hautesavoie",
+            "item number",
+            "kimball",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "goat"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-711aa04a",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amou",
+            "bursa",
+            "change to",
+            "item number",
+            "nth",
+            "replace",
+            "wigtownshire"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "sheep"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8b1f7f3a",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -7673,6 +8757,148 @@
       }
     },
     {
+      "id": "n-c67af47e",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amou",
+            "bursa",
+            "change to",
+            "item number",
+            "nth",
+            "replace",
+            "wigtownshire"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "sheep"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e7346a22",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "clare",
+            "hautesavoie",
+            "item number",
+            "kimball",
+            "nth",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "milk"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "goat"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-541716ec",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -7755,6 +8981,51 @@
       "mem": null,
       "height": 5,
       "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0989ad49",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "clare",
+            "delete",
+            "languedocroussillon",
+            "stewarton",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "goat"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
       "fit": {
         "ok": 3,
         "fired": 3,
@@ -8311,6 +9582,178 @@
       "mem": null,
       "height": 5,
       "size": 11,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7cc422e3",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "karlovy",
+            "lazio",
+            "nth",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "sheep"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cba4f78c",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "karlovy",
+            "lazio",
+            "nth",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "sheep"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bf4f75d0",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amou",
+            "delete",
+            "strip out",
+            "wigtownshire"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "sheep"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -15675,6 +17118,136 @@
       }
     },
     {
+      "id": "n-ac81250f",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "moliterno",
+            "nth",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "goat, sheep"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ba455c85",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "moliterno",
+            "nth",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "goat, sheep"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0b6c6945",
       "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
       "gen": 10,
@@ -17429,6 +19002,45 @@
           {
             "lit": 2
           }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d280aa8f",
+      "task": "fr-tidytuesday-cheeses-4d829a-regi-945aad",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "branco",
+            "delete",
+            "strip out"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "goat, sheep"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
         ]
       ],
       "mem": null,
@@ -19399,6 +21011,7 @@
   ],
   "stages": [
     "66359477649b692e7bb6cee4968b1bf8101399d07275e78d998fb3042d460b2c",
-    "a7a26bece1435507a2acd04283e4b65d5ae04327ebd1215b9c2f3dd3ac2f9305"
+    "a7a26bece1435507a2acd04283e4b65d5ae04327ebd1215b9c2f3dd3ac2f9305",
+    "0a1ae3d089106dc3b766cc6471cacb70862608a8b65fb334fb46035170ff5934"
   ]
 }
