@@ -2,29 +2,28 @@
   "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-25T02:10:23.782Z",
+  "at": "2026-11-25T10:09:33.437Z",
   "stats": {
-    "generated": 176952,
-    "distinct": 70447,
-    "kept": 530,
-    "know": 170,
+    "generated": 160530,
+    "distinct": 64046,
+    "kept": 640,
+    "know": 261,
     "byFamily": {
       "memory": 81,
-      "transform": 447,
+      "transform": 548,
+      "aggregate": 9,
       "know": 1,
       "iterate": 1
     },
     "bySource": {
-      "memory": 81,
-      "enum": 367,
-      "template": 79,
-      "open": 3
+      "parent": 530,
+      "enum": 110
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 51741,
-    "cellsPerSecond": 3420,
+    "ms": 71198,
+    "cellsPerSecond": 2255,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -34,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "9be3661961beff472f87e62d9eeeadf3fe4d1e5c2b6ea6eac79d69619cda73f2",
-      "round": 0,
-      "at": 105090,
+      "round": 1,
+      "at": 237663,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "transform.split",
+      "prim": "compute.divisors",
       "tpl": 2777
     }
   },
@@ -1764,6 +1763,67 @@
       }
     },
     {
+      "id": "n-50be026a",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "doravirine",
+            "elvitegravir",
+            "item number",
+            "nth",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "therapeutic"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            {
+              "lit": "HIV Infections"
+            },
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucode"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5f8bfd81",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -1806,6 +1866,66 @@
               ],
               {
                 "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8db44898",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "doravirine",
+            "elvitegravir",
+            "item number",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "therapeutic"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            {
+              "lit": "HIV Infections"
+            },
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucode"
+                }
+              ],
+              {
+                "lit": 1
               }
             ]
           ]
@@ -6844,6 +6964,189 @@
       }
     },
     {
+      "id": "n-0af1011f",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0cc69b61",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0cd1763f",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0d896c92",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -6964,6 +7267,67 @@
       }
     },
     {
+      "id": "n-0e2125de",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0e4f5bed",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -7017,6 +7381,65 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-12650e68",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -7086,6 +7509,246 @@
       }
     },
     {
+      "id": "n-1475c793",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-15e58fcf",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1aff924d",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-269b7a2a",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-country-subdivisions-eaf4dc"
+              },
+              {
+                "lit": "type"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2ce44082",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -7139,6 +7802,253 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2f43899d",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-36095d63",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3630de1d",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3daf6066",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -7326,6 +8236,65 @@
       }
     },
     {
+      "id": "n-46dca359",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4a0a120d",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -7446,6 +8415,67 @@
       }
     },
     {
+      "id": "n-4f1d5b1a",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-52f1660c",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -7499,6 +8529,67 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-55a73767",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -7682,6 +8773,188 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5c2ffe79",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5dce292c",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5eb06d69",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -7930,6 +9203,187 @@
       }
     },
     {
+      "id": "n-6d5787c9",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6fd6ab92",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-71ce7a58",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-73f9163c",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -8109,6 +9563,185 @@
       }
     },
     {
+      "id": "n-7ded8c79",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-822a762a",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-827af2e9",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-83d5b811",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -8170,6 +9803,129 @@
       }
     },
     {
+      "id": "n-8652efe3",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-86ac4722",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-86ec2848",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -8223,6 +9979,65 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-88dd8815",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -8472,6 +10287,428 @@
       }
     },
     {
+      "id": "n-90248fcb",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-93d495ba",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-94b37132",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-97c9a321",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-98d3cfa1",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9b5b0fca",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9efe5ca7",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a18f82b3",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -8525,6 +10762,65 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a4751433",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -8651,6 +10947,251 @@
       }
     },
     {
+      "id": "n-b07937bf",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b5a30dd3",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b70f14b3",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b95c67b6",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-baf830bf",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -8704,6 +11245,252 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bbfe78cc",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-be13170e",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c3996cfe",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "item number",
+            "nth",
+            "rotate the letters",
+            "separate by",
+            "shift by",
+            "shift each letter",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.caesar",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.howMany"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c661fb7c",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -8771,6 +11558,67 @@
       }
     },
     {
+      "id": "n-c8a6e7de",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ce40ba6c",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -8824,6 +11672,244 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d1c00fae",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d76ac63e",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d86e9714",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d9bdd228",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -8941,6 +12027,68 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e3e95535",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -9071,6 +12219,67 @@
       }
     },
     {
+      "id": "n-e8ea6278",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e9188e00",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -9124,6 +12333,188 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e9375aa3",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ebba43c6",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ed13e2bf",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -9250,6 +12641,246 @@
       }
     },
     {
+      "id": "n-efd35fbb",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f0dd23fd",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 10
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f16b0c55",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f19e3da3",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "item number",
+            "nth",
+            "rotate the letters",
+            "separate by",
+            "shift by",
+            "shift each letter",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.caesar",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.howMany"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f3758993",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -9364,6 +12995,189 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fbef6734",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fd776269",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ff806714",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -9499,6 +13313,76 @@
       }
     },
     {
+      "id": "n-1ccdb8e9",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sutype"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-un-locode-subdivision-codes-0859f3"
+            },
+            {
+              "lit": "sutype"
+            },
+            {
+              "lit": "sucode"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1e8ba969",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -9526,6 +13410,76 @@
             {
               "lit": "therapeutic"
             }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-un-locode-subdivision-codes-0859f3"
+            },
+            {
+              "lit": "sucountry"
+            },
+            {
+              "lit": "sutype"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-34a1d545",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.pascal",
+            [
+              "sense.lastWord"
+            ]
           ],
           [
             "know.lookup",
@@ -9633,6 +13587,213 @@
       }
     },
     {
+      "id": "n-7cf648a4",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-un-locode-subdivision-codes-0859f3"
+            },
+            {
+              "lit": "sucountry"
+            },
+            {
+              "lit": "sutype"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9f54076b",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sutype"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-un-locode-subdivision-codes-0859f3"
+            },
+            {
+              "lit": "sutype"
+            },
+            {
+              "lit": "sucode"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bcf28aeb",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-un-locode-subdivision-codes-0859f3"
+            },
+            {
+              "lit": "sucountry"
+            },
+            {
+              "lit": "sutype"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-cae2a13c",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -9692,6 +13853,1532 @@
       "mem": null,
       "height": 5,
       "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dd8c94b0",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sutype"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-un-locode-subdivision-codes-0859f3"
+            },
+            {
+              "lit": "sutype"
+            },
+            {
+              "lit": "sucode"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-08404e3e",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1d314f8e",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucode"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-45272db2",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4b39ee32",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-65be6acb",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6e2884e0",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-71229932",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7ed86e71",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8d085d95",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-97e63eaa",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-988ffabf",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucode"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c01aff97",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cc795a58",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucode"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d535098b",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucode"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d5d636af",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucode"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-df08da05",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eb5cec7c",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ed7d9c32",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucode"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f19ea0a2",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f5359a9e",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "put together",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-un-locode-subdivision-codes-0859f3"
+                },
+                {
+                  "lit": "sucountry"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-un-locode-subdivision-codes-0859f3"
+              },
+              {
+                "lit": "sucountry"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -9854,6 +15541,179 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ecbe682b",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antigen",
+            "class name",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "therapeutic"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-country-subdivisions-eaf4dc"
+                  },
+                  {
+                    "lit": "name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-country-subdivisions-eaf4dc"
+              },
+              {
+                "lit": "name"
+              },
+              {
+                "lit": "parent"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f7b3dcf8",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antigen",
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "therapeutic"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-country-subdivisions-eaf4dc"
+                  },
+                  {
+                    "lit": "name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-country-subdivisions-eaf4dc"
+              },
+              {
+                "lit": "name"
+              },
+              {
+                "lit": "parent"
+              }
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 17,
       "fit": {
         "ok": 1,
@@ -12945,6 +18805,52 @@
       }
     },
     {
+      "id": "n-aeac2494",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": "vaccine"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b2830f95",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -13108,6 +19014,51 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dba4d96a",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest one",
+            "longest word",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": "area"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -13898,6 +19849,51 @@
       }
     },
     {
+      "id": "n-204c18b8",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-205123b9",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -13932,6 +19928,52 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2147987d",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -14533,6 +20575,52 @@
       }
     },
     {
+      "id": "n-3dc3b9c3",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3fd2ec8d",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -14703,6 +20791,51 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-43a49ffb",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest",
+            "longest one",
+            "longest word",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -15359,6 +21492,104 @@
       }
     },
     {
+      "id": "n-6ec5b035",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "pascal case",
+            "pascalcase",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.pascal",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-708a609f",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest one",
+            "longest word",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7116d7c4",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -15582,6 +21813,52 @@
       }
     },
     {
+      "id": "n-7d62ec52",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7df7edb0",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -15762,6 +22039,56 @@
                 "lit": 2
               }
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-959e77c5",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "pascal case",
+            "pascalcase",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.pascal",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
           ]
         ]
       ],
@@ -16190,6 +22517,56 @@
       }
     },
     {
+      "id": "n-a728f822",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "pascal case",
+            "pascalcase",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.pascal",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a80d4a68",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -16227,6 +22604,146 @@
             {
               "lit": 12
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ae3ede90",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ae5edf84",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-afd09832",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
           ]
         ]
       ],
@@ -16371,6 +22888,52 @@
             [
               "sense.lastWord"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bcd39ac2",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
           ]
         ]
       ],
@@ -16853,6 +23416,51 @@
       }
     },
     {
+      "id": "n-d2a2fc00",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d5376ced",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -16992,6 +23600,51 @@
       }
     },
     {
+      "id": "n-dbc0db30",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest",
+            "longest one",
+            "longest word",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.before",
+              {
+                "lit": "therapeutic"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-dc35e189",
       "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
       "gen": 10,
@@ -17025,6 +23678,52 @@
             [
               "sense.lastWord"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dceeb0c5",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "separate by",
+            "split by",
+            "streptococcus",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
           ]
         ]
       ],
@@ -17306,6 +24005,54 @@
             "transform.noVowels",
             [
               "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-efd60a80",
+      "task": "fr-tidytuesday-drugs-23bc63-common-f97ef1",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest one",
+            "longest word",
+            "separate by",
+            "split by",
+            "streptococcus"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
             ]
           ]
         ]
@@ -27188,6 +33935,7 @@
     }
   ],
   "stages": [
-    "c9bd49bc2f6f2b4bf8ef5722aa886c12023c3af5611124a035981c3edea6d26b"
+    "c9bd49bc2f6f2b4bf8ef5722aa886c12023c3af5611124a035981c3edea6d26b",
+    "39faaf496a78835fdf0ab336757100fd697227aca07bd48a2bcf65c2c4b59f6f"
   ]
 }

@@ -2,9 +2,9 @@
   "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-13T11:47:54.444Z",
+  "at": "2026-11-25T10:20:01.659Z",
   "stats": {
-    "generated": 200099,
+    "generated": 200060,
     "distinct": 65247,
     "kept": 251,
     "know": 127,
@@ -17,15 +17,15 @@
     },
     "bySource": {
       "enum": 21,
-      "open": 7,
-      "template": 139,
-      "memory": 84
+      "open": 5,
+      "parent": 214,
+      "template": 11
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 57661,
-    "cellsPerSecond": 3470,
+    "ms": 141443,
+    "cellsPerSecond": 1414,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -34,7 +34,7 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "20c673beacc3765011498b311a3bc8b62db1631bfcf51422af9d9064a208814c",
+      "basis": "d09075ca73690c04de31720da1f8b60ccd42c5299b9ec12f55cfaf10f40bff89",
       "round": 0,
       "at": 120331,
       "maxCost": 7,
@@ -119,7 +119,7 @@
       }
     },
     {
-      "id": "n-39f5927c",
+      "id": "n-d06a6e50",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [
@@ -134,10 +134,12 @@
               "album",
               "artist",
               "country",
+              "date",
               "description",
               "element",
               "ft",
               "gender",
+              "guest",
               "id",
               "mccl",
               "n3",
@@ -270,11 +272,11 @@
       }
     },
     {
-      "id": "n-6261f6f2",
+      "id": "n-5ecd54cd",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [
-        "n-fe5d9daa"
+        "n-2dfbea59"
       ],
       "guard": [
         [
@@ -285,10 +287,12 @@
               "album",
               "artist",
               "country",
+              "date",
               "description",
               "element",
               "ft",
               "gender",
+              "guest",
               "id",
               "mccl",
               "n3",
@@ -305,7 +309,7 @@
       "pyramid": [
         "render.str",
         [
-          "transform.title",
+          "transform.swapCase",
           [
             "know.lookup",
             [
@@ -345,7 +349,7 @@
       }
     },
     {
-      "id": "n-789c6511",
+      "id": "n-61f8c875",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [
@@ -360,10 +364,12 @@
               "album",
               "artist",
               "country",
+              "date",
               "description",
               "element",
               "ft",
               "gender",
+              "guest",
               "id",
               "mccl",
               "n3",
@@ -420,7 +426,7 @@
       }
     },
     {
-      "id": "n-8e00595b",
+      "id": "n-9ea5ad8a",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [
@@ -435,10 +441,12 @@
               "album",
               "artist",
               "country",
+              "date",
               "description",
               "element",
               "ft",
               "gender",
+              "guest",
               "id",
               "mccl",
               "n3",
@@ -456,6 +464,83 @@
         "render.str",
         [
           "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c0585d2d",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [
+        "n-fe5d9daa"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "album",
+              "artist",
+              "country",
+              "date",
+              "description",
+              "element",
+              "ft",
+              "gender",
+              "guest",
+              "id",
+              "mccl",
+              "n3",
+              "profile",
+              "release",
+              "song",
+              "type",
+              "utc",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
           [
             "know.lookup",
             [
@@ -537,81 +622,6 @@
         "render.str",
         [
           "transform.upper",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-episodes-4eaa2f"
-                },
-                {
-                  "lit": "guest"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-episodes-4eaa2f"
-            },
-            {
-              "lit": "guest"
-            },
-            {
-              "lit": "title"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 11,
-      "fit": {
-        "ok": 40,
-        "fired": 40,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d21edfab",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [
-        "n-2dfbea59"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "album",
-              "artist",
-              "country",
-              "description",
-              "element",
-              "ft",
-              "gender",
-              "id",
-              "mccl",
-              "n3",
-              "profile",
-              "release",
-              "song",
-              "type",
-              "utc",
-              "year"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.swapCase",
           [
             "know.lookup",
             [
@@ -9090,7 +9100,7 @@
       }
     },
     {
-      "id": "n-4c67dbde",
+      "id": "n-227c8e60",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [],
@@ -9108,6 +9118,10 @@
             "split",
             "split by"
           ]
+        ],
+        [
+          "has",
+          "title"
         ]
       ],
       "pyramid": [
@@ -9168,7 +9182,7 @@
       }
     },
     {
-      "id": "n-65cee8c5",
+      "id": "n-444de255",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [],
@@ -9186,6 +9200,10 @@
             "split",
             "split by"
           ]
+        ],
+        [
+          "has",
+          "title"
         ]
       ],
       "pyramid": [
@@ -9246,86 +9264,7 @@
       }
     },
     {
-      "id": "n-6eaa0f16",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "chili",
-            "corddry",
-            "delete",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "sam",
-            "strip out",
-            "without"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-episodes-4eaa2f"
-                },
-                {
-                  "lit": "guest"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-episodes-4eaa2f"
-            },
-            {
-              "lit": "guest"
-            },
-            {
-              "lit": "title"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "cryptocurrency"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 16,
-      "fit": {
-        "ok": 3,
-        "fired": 3,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-7e41a7ce",
+      "id": "n-5c2702fe",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [],
@@ -9343,6 +9282,10 @@
             "split",
             "split by"
           ]
+        ],
+        [
+          "has",
+          "title"
         ]
       ],
       "pyramid": [
@@ -9403,7 +9346,90 @@
       }
     },
     {
-      "id": "n-d1478036",
+      "id": "n-d135979d",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chili",
+            "corddry",
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "sam",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-71091f06",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [],
@@ -9421,6 +9447,10 @@
             "strip out",
             "without"
           ]
+        ],
+        [
+          "has",
+          "title"
         ]
       ],
       "pyramid": [
@@ -9462,160 +9492,6 @@
       "mem": null,
       "height": 5,
       "size": 12,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-19c880fc",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "austin",
-            "item number",
-            "nth",
-            "position",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Austin Butler is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-episodes-4eaa2f"
-              },
-              {
-                "lit": "guest"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-episodes-4eaa2f"
-          },
-          {
-            "lit": "guest"
-          },
-          {
-            "lit": "title"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-2109c025",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "garrix",
-            "item number",
-            "nth",
-            "position",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Martin Garrix is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-episodes-4eaa2f"
-              },
-              {
-                "lit": "guest"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-episodes-4eaa2f"
-          },
-          {
-            "lit": "guest"
-          },
-          {
-            "lit": "title"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -9704,7 +9580,7 @@
       }
     },
     {
-      "id": "n-4a87f241",
+      "id": "n-4939bebe",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [],
@@ -9712,14 +9588,18 @@
         [
           "hasAny",
           [
+            "austin",
             "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "mark",
             "nth",
-            "position"
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
           ]
+        ],
+        [
+          "has",
+          "what"
         ]
       ],
       "pyramid": [
@@ -9730,7 +9610,7 @@
             {
               "slot": 0
             },
-            " of Mark Rober is ",
+            " of Austin Butler is ",
             {
               "slot": 1
             },
@@ -9738,9 +9618,9 @@
           ]
         },
         [
-          "aggregate.longest",
+          "aggregate.shortest",
           [
-            "sense.words"
+            "sense.content"
           ]
         ],
         [
@@ -10182,7 +10062,7 @@
       }
     },
     {
-      "id": "n-8004ac9d",
+      "id": "n-7e37d7ad",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [],
@@ -10198,6 +10078,10 @@
             "nth",
             "position"
           ]
+        ],
+        [
+          "has",
+          "name"
         ]
       ],
       "pyramid": [
@@ -10336,7 +10220,7 @@
       }
     },
     {
-      "id": "n-8ec84dfe",
+      "id": "n-8e0babb7",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [],
@@ -10344,7 +10228,7 @@
         [
           "hasAny",
           [
-            "aubrey",
+            "garrix",
             "item number",
             "nth",
             "position",
@@ -10355,7 +10239,7 @@
         ],
         [
           "has",
-          "what"
+          "title"
         ]
       ],
       "pyramid": [
@@ -10366,7 +10250,7 @@
             {
               "slot": 0
             },
-            " of Aubrey Plaza is ",
+            " of Martin Garrix is ",
             {
               "slot": 1
             },
@@ -10448,6 +10332,87 @@
               "slot": 0
             },
             " of Michael Rapaport is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a19acfc3",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "aubrey",
+            "item number",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Aubrey Plaza is ",
             {
               "slot": 1
             },
@@ -10683,6 +10648,87 @@
               "slot": 0
             },
             " of Sam Smith is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b2433667",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "mark",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Mark Rober is ",
             {
               "slot": 1
             },
@@ -11515,7 +11561,88 @@
       }
     },
     {
-      "id": "n-61fe35fa",
+      "id": "n-5a2830bc",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "charlie",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Charlie Day is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-627f9802",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
       "parents": [],
@@ -11528,6 +11655,10 @@
             "nth",
             "position"
           ]
+        ],
+        [
+          "has",
+          "name"
         ]
       ],
       "pyramid": [
@@ -11552,6 +11683,87 @@
           ],
           {
             "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-678e3d2f",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "corddry",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Rob Corddry is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
           }
         ],
         [
@@ -11977,160 +12189,6 @@
       }
     },
     {
-      "id": "n-9abcffef",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "ellis",
-            "item number",
-            "nth",
-            "position"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Tracee Ellis Ross is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-episodes-4eaa2f"
-              },
-              {
-                "lit": "guest"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-episodes-4eaa2f"
-          },
-          {
-            "lit": "guest"
-          },
-          {
-            "lit": "title"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-a9694328",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "adam",
-            "item number",
-            "nth",
-            "position"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Adam Carolla is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-episodes-4eaa2f"
-              },
-              {
-                "lit": "guest"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-episodes-4eaa2f"
-          },
-          {
-            "lit": "guest"
-          },
-          {
-            "lit": "title"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-c0f79ee7",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
@@ -12155,6 +12213,87 @@
               "slot": 0
             },
             " of Emma Chamberlain is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c4b9e4fc",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "adam",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Adam Carolla is ",
             {
               "slot": 1
             },
@@ -12245,164 +12384,6 @@
           ],
           {
             "lit": 2
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-episodes-4eaa2f"
-              },
-              {
-                "lit": "guest"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-episodes-4eaa2f"
-          },
-          {
-            "lit": "guest"
-          },
-          {
-            "lit": "title"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-cefa94a5",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "charlie",
-            "item number",
-            "nth",
-            "position"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Charlie Day is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-episodes-4eaa2f"
-              },
-              {
-                "lit": "guest"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-episodes-4eaa2f"
-          },
-          {
-            "lit": "guest"
-          },
-          {
-            "lit": "title"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-de338aeb",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "corddry",
-            "item number",
-            "nth",
-            "position"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Rob Corddry is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
           }
         ],
         [
@@ -12557,6 +12538,87 @@
           ],
           {
             "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ffe828c8",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ellis",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Tracee Ellis Ross is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
           }
         ],
         [
@@ -15269,66 +15331,6 @@
       }
     },
     {
-      "id": "n-01ef214e",
-      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "charlie",
-            "item number",
-            "nth",
-            "position"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is Charlie Day Learns to Love Ridiculously Spicy Wings."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "title"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-2112e3bb",
       "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
       "gen": 10,
@@ -16209,6 +16211,66 @@
               "slot": 1
             },
             " is Cole Bennett Needs Lemonade While Eating Spicy Wings."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fadb6c37",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "charlie",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "day"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Charlie Day Learns to Love Ridiculously Spicy Wings."
           ]
         },
         [
@@ -17821,9 +17883,1599 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-39f5927c",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [
+        "n-31cf8b3b"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "album",
+              "artist",
+              "country",
+              "description",
+              "element",
+              "ft",
+              "gender",
+              "id",
+              "mccl",
+              "n3",
+              "profile",
+              "release",
+              "song",
+              "type",
+              "utc",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6261f6f2",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [
+        "n-fe5d9daa"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "album",
+              "artist",
+              "country",
+              "description",
+              "element",
+              "ft",
+              "gender",
+              "id",
+              "mccl",
+              "n3",
+              "profile",
+              "release",
+              "song",
+              "type",
+              "utc",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-789c6511",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [
+        "n-d215edda"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "album",
+              "artist",
+              "country",
+              "description",
+              "element",
+              "ft",
+              "gender",
+              "id",
+              "mccl",
+              "n3",
+              "profile",
+              "release",
+              "song",
+              "type",
+              "utc",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8e00595b",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [
+        "n-ffa6faf9"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "album",
+              "artist",
+              "country",
+              "description",
+              "element",
+              "ft",
+              "gender",
+              "id",
+              "mccl",
+              "n3",
+              "profile",
+              "release",
+              "song",
+              "type",
+              "utc",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d21edfab",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [
+        "n-2dfbea59"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "album",
+              "artist",
+              "country",
+              "description",
+              "element",
+              "ft",
+              "gender",
+              "id",
+              "mccl",
+              "n3",
+              "profile",
+              "release",
+              "song",
+              "type",
+              "utc",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4c67dbde",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chili",
+            "corddry",
+            "item number",
+            "nth",
+            "position",
+            "sam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-65cee8c5",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chili",
+            "corddry",
+            "item number",
+            "nth",
+            "position",
+            "sam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6eaa0f16",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chili",
+            "corddry",
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "sam",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7e41a7ce",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chili",
+            "corddry",
+            "item number",
+            "nth",
+            "position",
+            "sam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d1478036",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "charlie",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-episodes-4eaa2f"
+                },
+                {
+                  "lit": "guest"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-episodes-4eaa2f"
+            },
+            {
+              "lit": "guest"
+            },
+            {
+              "lit": "title"
+            }
+          ],
+          [
+            "sense.unit"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-19c880fc",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "austin",
+            "item number",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Austin Butler is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2109c025",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "garrix",
+            "item number",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Martin Garrix is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4a87f241",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "mark",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Mark Rober is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8004ac9d",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delia",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Chris D'Elia is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8ec84dfe",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "aubrey",
+            "item number",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Aubrey Plaza is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-61fe35fa",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "khalifa",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Wiz Khalifa is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9abcffef",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ellis",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Tracee Ellis Ross is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a9694328",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "adam",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Adam Carolla is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cefa94a5",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "charlie",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Charlie Day is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-de338aeb",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "corddry",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Rob Corddry is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-episodes-4eaa2f"
+              },
+              {
+                "lit": "guest"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-episodes-4eaa2f"
+          },
+          {
+            "lit": "guest"
+          },
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-01ef214e",
+      "task": "fr-tidytuesday-episodes-4eaa2f-gue-c01977",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "charlie",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Charlie Day Learns to Love Ridiculously Spicy Wings."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "title"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "607602f86ad2824c2704ed605eba28908cc4336d5fe4e98fcef8ef37f56710c1"
+    "607602f86ad2824c2704ed605eba28908cc4336d5fe4e98fcef8ef37f56710c1",
+    "dea10541342ef4e6fd896771fed6d44a4f16ccaba5af4c68bead4e2293d5fd74"
   ]
 }
