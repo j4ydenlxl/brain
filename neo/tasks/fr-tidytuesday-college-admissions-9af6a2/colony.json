@@ -2,10 +2,10 @@
   "task": "fr-tidytuesday-college-admissions-9af6a2",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-17T16:16:06.338Z",
+  "at": "2026-11-25T12:20:18.525Z",
   "stats": {
-    "generated": 200026,
-    "distinct": 58840,
+    "generated": 160178,
+    "distinct": 115606,
     "kept": 178,
     "know": 96,
     "byFamily": {
@@ -16,16 +16,14 @@
       "aggregate": 57
     },
     "bySource": {
-      "enum": 34,
-      "template": 99,
-      "open": 2,
-      "memory": 43
+      "parent": 177,
+      "open": 1
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 41697,
-    "cellsPerSecond": 4797,
+    "ms": 35445,
+    "cellsPerSecond": 4519,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "b18eca8f90e86d0b1e464fd2781bf98175adce2b842b30a6091a329fd859e84e",
-      "round": 0,
-      "at": 120774,
+      "round": 1,
+      "at": 219930,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.divisorSum",
+      "prim": "transform.cube",
       "tpl": 2703
     }
   },
@@ -3296,41 +3294,29 @@
       }
     },
     {
-      "id": "n-34a54fce",
+      "id": "n-40835580",
       "task": "fr-tidytuesday-college-admissions-9af6a2",
       "gen": 10,
-      "parents": [
-        "n-40835580"
-      ],
+      "parents": [],
       "guard": [
+        [
+          "hasAny",
+          [
+            "attend",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out"
+          ]
+        ],
         [
           "not",
           [
-            "hasAny",
-            [
-              "adjusted",
-              "airdate",
-              "bound",
-              "corporat",
-              "country",
-              "date",
-              "description",
-              "dplyr",
-              "j2000",
-              "location",
-              "name",
-              "par",
-              "smoothed",
-              "sp500",
-              "sr0",
-              "stderr",
-              "subcategory",
-              "uncertainty",
-              "usd",
-              "version",
-              "x",
-              "year"
-            ]
+            "has",
+            "stderr"
           ]
         ]
       ],
@@ -3392,29 +3378,43 @@
       }
     },
     {
-      "id": "n-40835580",
+      "id": "n-48aaa1fa",
       "task": "fr-tidytuesday-college-admissions-9af6a2",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-40835580"
+      ],
       "guard": [
-        [
-          "hasAny",
-          [
-            "attend",
-            "delete",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out"
-          ]
-        ],
         [
           "not",
           [
-            "has",
-            "stderr"
+            "hasAny",
+            [
+              "added",
+              "adjusted",
+              "airdate",
+              "bound",
+              "corporat",
+              "country",
+              "date",
+              "description",
+              "dplyr",
+              "j2000",
+              "location",
+              "name",
+              "par",
+              "smoothed",
+              "sp500",
+              "sr0",
+              "stderr",
+              "subcategory",
+              "uncertainty",
+              "updated",
+              "usd",
+              "version",
+              "x",
+              "year"
+            ]
           ]
         ]
       ],
@@ -12301,9 +12301,106 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-34a54fce",
+      "task": "fr-tidytuesday-college-admissions-9af6a2",
+      "gen": 10,
+      "parents": [
+        "n-40835580"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "adjusted",
+              "airdate",
+              "bound",
+              "corporat",
+              "country",
+              "date",
+              "description",
+              "dplyr",
+              "j2000",
+              "location",
+              "name",
+              "par",
+              "smoothed",
+              "sp500",
+              "sr0",
+              "stderr",
+              "subcategory",
+              "uncertainty",
+              "usd",
+              "version",
+              "x",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-college-admissions-92be5b"
+                },
+                {
+                  "lit": "stderr attend"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-college-admissions-92be5b"
+            },
+            {
+              "lit": "stderr attend"
+            },
+            {
+              "lit": "attend"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "8b7dab6780c8d2a92843da851a5bff28a51f7808a1744ce9059e724ec29f4f52"
+    "8b7dab6780c8d2a92843da851a5bff28a51f7808a1744ce9059e724ec29f4f52",
+    "2980e7c46937670847eeb98917e00e1a3e0dc6483247d5c99ae77dc383881fcb"
   ]
 }
