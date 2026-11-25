@@ -2,30 +2,30 @@
   "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T16:29:09.337Z",
+  "at": "2026-11-25T15:31:06.696Z",
   "stats": {
-    "generated": 200039,
-    "distinct": 59122,
-    "kept": 76,
-    "know": 32,
+    "generated": 160076,
+    "distinct": 94377,
+    "kept": 117,
+    "know": 73,
     "byFamily": {
       "know": 2,
-      "transform": 18,
+      "transform": 56,
       "sense": 7,
       "memory": 44,
+      "iterate": 3,
       "aggregate": 5
     },
     "bySource": {
-      "open": 6,
-      "enum": 7,
-      "template": 19,
-      "memory": 44
+      "parent": 76,
+      "enum": 29,
+      "open": 12
     },
-    "maxHeight": 5,
+    "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 68485,
-    "cellsPerSecond": 2921,
+    "ms": 61503,
+    "cellsPerSecond": 2603,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +35,12 @@
     "cursor": {
       "v": 1,
       "basis": "11b8982d1d385532c211f10de1e8e625b522aa2529e8b251ae3c156c69ed5fd1",
-      "round": 0,
-      "at": 120489,
+      "round": 1,
+      "at": 237134,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "iterate.growth",
+      "cost": 7,
+      "prim": "aggregate.indexOf",
       "tpl": 1618
     }
   },
@@ -425,6 +425,145 @@
       }
     },
     {
+      "id": "n-21572f50",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "county",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "title case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-agencies-5efd65"
+                  },
+                  {
+                    "lit": "longitude"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-agencies-5efd65"
+              },
+              {
+                "lit": "longitude"
+              },
+              {
+                "lit": "county"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5af9e8c2",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-21572f50"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-agencies-5efd65"
+                  },
+                  {
+                    "lit": "longitude"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-agencies-5efd65"
+              },
+              {
+                "lit": "longitude"
+              },
+              {
+                "lit": "county"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-44b32c94",
       "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
       "gen": 10,
@@ -559,6 +698,173 @@
       "mem": null,
       "height": 4,
       "size": 13,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-205991d4",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "county",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-agencies-5efd65"
+              },
+              {
+                "lit": "longitude"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5770139c",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-205991d4"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-agencies-5efd65"
+              },
+              {
+                "lit": "longitude"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 40,
         "fired": 40,
@@ -784,6 +1090,548 @@
       "fit": {
         "ok": 40,
         "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3d0e2f63",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-6ce00fe5"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8779561",
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-84b36908",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-399ebe8d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8779561",
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3b479981",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-1c570790"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8779561",
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-927ef398",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-23e7f821"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8779561",
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cab55fa5",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-e0c5b770"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8779561",
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-agencies-5efd65"
+              },
+              {
+                "lit": "longitude"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37efb3f8",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-a3d10cd1"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": "WILLACY"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a3d10cd1",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "county",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": "WILLACY"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
         "rows": 40
       }
     },
@@ -1104,6 +1952,777 @@
       "fit": {
         "ok": 37,
         "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7183adaf",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-641a85b8"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8779561",
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2015 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-80d0c69a",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-ff7b010a"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8779561",
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 36,
+        "fired": 36,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c7494db6",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-7ce5a555"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8779561",
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 36,
+        "fired": 36,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-601a3319",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "county",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2015 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 35,
+        "fired": 35,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6f512031",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [
+        "n-601a3319"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "country",
+              "eua9",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2015 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 35,
+        "fired": 35,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-50132794",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count",
+            "element",
+            "how many",
+            "how many items",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "number of items",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 15,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5e8e4019",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count",
+            "element",
+            "how many",
+            "how many items",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "number of items",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 15,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e0327e9b",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count",
+            "element",
+            "how many",
+            "how many items",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "number of items",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 15,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f5c56acb",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "copies",
+            "count",
+            "element",
+            "how many",
+            "how many items",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "number of items",
+            "position",
+            "repeat",
+            "say it times"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 15,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
         "rows": 40
       }
     },
@@ -1858,6 +3477,943 @@
       }
     },
     {
+      "id": "n-30eab0f2",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ad389e70",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-399ebe8d",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "me",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6ce00fe5",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "me",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1c570790",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "me",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-23e7f821",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "me",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e0c5b770",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "me",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-agencies-5efd65"
+              },
+              {
+                "lit": "longitude"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-641a85b8",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "me",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2015 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7ce5a555",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "me",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 24,
+        "fired": 24,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ff7b010a",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "me",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 24,
+        "fired": 24,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c17f23d9",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "county",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-677ebf1f",
       "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
       "gen": 10,
@@ -1903,6 +4459,88 @@
       "fit": {
         "ok": 14,
         "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-47d6dfc0",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count",
+            "element",
+            "how many",
+            "how many items",
+            "item number",
+            "name",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of items",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 15,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
         "rows": 40
       }
     },
@@ -2038,6 +4676,154 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9c4a0343",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ba7ecb60",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 13,
         "fired": 13,
@@ -2861,6 +5647,346 @@
       }
     },
     {
+      "id": "n-2476a1ac",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "county",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-267cab1f",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2d434f08",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3296c97d",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b0292e97",
       "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
       "gen": 10,
@@ -2951,6 +6077,267 @@
       "fit": {
         "ok": 13,
         "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f8c433a5",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count",
+            "element",
+            "how many",
+            "how many items",
+            "item number",
+            "name",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of items",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2015 rank"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 15,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-33e189ab",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "leading zeros",
+            "name",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "county"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2015 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bd563673",
+      "task": "fr-tidytuesday-agencies-5efd65-lon-320cef",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "county",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "longitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "longitude"
+            },
+            {
+              "lit": "county"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
         "rows": 40
       }
     },
@@ -4315,6 +7702,7 @@
     }
   ],
   "stages": [
-    "20a70ce7eb8f8a3b8377a6b99f0d95e1920c135ebee0f5933eca05de9783d34c"
+    "20a70ce7eb8f8a3b8377a6b99f0d95e1920c135ebee0f5933eca05de9783d34c",
+    "304a1554f6d65be68ad06290a0c5de36361834c406e7965362fc4e3e89a24fef"
   ]
 }

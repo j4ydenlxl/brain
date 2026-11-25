@@ -2,31 +2,29 @@
   "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T22:29:35.765Z",
+  "at": "2026-11-25T15:37:19.197Z",
   "stats": {
-    "generated": 200077,
-    "distinct": 40576,
-    "kept": 650,
-    "know": 448,
+    "generated": 160650,
+    "distinct": 107397,
+    "kept": 701,
+    "know": 498,
     "byFamily": {
       "sense": 2,
       "memory": 82,
-      "transform": 474,
+      "transform": 478,
       "aggregate": 87,
-      "iterate": 3,
+      "iterate": 50,
       "know": 2
     },
     "bySource": {
-      "open": 1,
-      "memory": 82,
-      "enum": 414,
-      "template": 153
+      "parent": 650,
+      "enum": 51
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 118119,
-    "cellsPerSecond": 1694,
+    "ms": 85793,
+    "cellsPerSecond": 1873,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -36,12 +34,12 @@
     "cursor": {
       "v": 1,
       "basis": "c568dd0f2633f69dd463f56b3fb6c156af262ef29c3588a3e22c00ec5ff25374",
-      "round": 0,
-      "at": 135718,
+      "round": 1,
+      "at": 238353,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.asPercent",
+      "prim": "transform.caesar",
       "tpl": 2506
     }
   },
@@ -7755,6 +7753,67 @@
       }
     },
     {
+      "id": "n-04830c86",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "invert case",
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "reverb",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "contact name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0fba8d95",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -7803,6 +7862,68 @@
             {
               "lit": 2
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-12e16a4f",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after",
+            "bungienet",
+            "item number",
+            "miataru",
+            "next",
+            "nth",
+            "one more",
+            "position",
+            "reverb",
+            "successor"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.next",
+            [
+              "sense.howMany"
+            ]
           ]
         ]
       ],
@@ -8059,6 +8180,128 @@
       }
     },
     {
+      "id": "n-529f66e7",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "digit count",
+            "how many digits",
+            "item number",
+            "miataru",
+            "nth",
+            "number of digits",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-547e5da8",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "digit count",
+            "how many digits",
+            "item number",
+            "miataru",
+            "nth",
+            "number of digits",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5e3f996d",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -8109,6 +8352,129 @@
           },
           [
             "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6115e4f0",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "reverb",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-73963f41",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after",
+            "bungienet",
+            "item number",
+            "miataru",
+            "next",
+            "nth",
+            "one more",
+            "position",
+            "reverb",
+            "successor"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.next",
+            [
+              "sense.howMany"
+            ]
           ]
         ]
       ],
@@ -8185,6 +8551,71 @@
       }
     },
     {
+      "id": "n-7bb53fbf",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "caesar cipher",
+            "item number",
+            "miataru",
+            "negate",
+            "negative",
+            "nth",
+            "opposite",
+            "position",
+            "reverb",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.neg",
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7c3a2897",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -8234,6 +8665,132 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7f433c72",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "caesar cipher",
+            "double",
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "reverb",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "twice",
+            "two times"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.double",
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-82ea5b5d",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "item number",
+            "lower case",
+            "lowercase",
+            "miataru",
+            "nth",
+            "position",
+            "reverb",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "contact name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 3,
@@ -8292,6 +8849,67 @@
           },
           [
             "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-86bd9c0b",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "reverb",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
           ]
         ]
       ],
@@ -8367,6 +8985,71 @@
       }
     },
     {
+      "id": "n-a242f7a2",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a circle",
+            "area with radius",
+            "bungienet",
+            "caesar cipher",
+            "circle area",
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "reverb",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "compute.circleArea",
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-aa3b89c4",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -8420,6 +9103,68 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bec050ca",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "reverb",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "contact name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 3,
@@ -8610,6 +9355,67 @@
       }
     },
     {
+      "id": "n-df2fab05",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "digit count",
+            "how many digits",
+            "item number",
+            "miataru",
+            "nth",
+            "number of digits",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e55d9d0b",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -8671,6 +9477,69 @@
       }
     },
     {
+      "id": "n-ef069030",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "bungienet",
+            "capital letters",
+            "capitals",
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "reverb",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.upper",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "contact name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f40a6dde",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -8715,6 +9584,129 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f7591020",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "reverb",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fb055a74",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after",
+            "bungienet",
+            "item number",
+            "miataru",
+            "next",
+            "nth",
+            "one more",
+            "position",
+            "reverb",
+            "successor"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.next",
+            [
+              "sense.howMany"
+            ]
           ]
         ]
       ],
@@ -8861,6 +9853,74 @@
       }
     },
     {
+      "id": "n-27fc2b1f",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "count",
+            "how many",
+            "how many items",
+            "item number",
+            "miataru",
+            "nth",
+            "number of items",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 11,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-560396dd",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -8991,6 +10051,74 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7de5ac61",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "count",
+            "how many",
+            "how many items",
+            "item number",
+            "miataru",
+            "nth",
+            "number of items",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 11,
       "fit": {
         "ok": 3,
@@ -9196,6 +10324,74 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f99992f8",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "count",
+            "how many",
+            "how many items",
+            "item number",
+            "miataru",
+            "nth",
+            "number of items",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 11,
       "fit": {
         "ok": 3,
@@ -14393,6 +15589,66 @@
       }
     },
     {
+      "id": "n-58aec1ea",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "invert case",
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-59294fa5",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -14802,6 +16058,68 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9e17de29",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "bungienet",
+            "capital letters",
+            "capitals",
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.upper",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -15283,6 +16601,67 @@
       }
     },
     {
+      "id": "n-f3a2184b",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f6609434",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -15332,6 +16711,66 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fadc5e2a",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "item number",
+            "lower case",
+            "lowercase",
+            "miataru",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -16578,6 +18017,78 @@
       }
     },
     {
+      "id": "n-057bcf11",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0637e52d",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -16626,6 +18137,79 @@
                 "lit": 1
               }
             ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-14e0e2ff",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "reverb",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
             [
               "transform.nthStr",
               [
@@ -17099,6 +18683,78 @@
       }
     },
     {
+      "id": "n-4ff84f7a",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5cd2bafc",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -17470,6 +19126,151 @@
       }
     },
     {
+      "id": "n-88788ff9",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-88cd4235",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "reverb",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-909c45b9",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -17537,6 +19338,79 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9436f4af",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "reverb",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 2,
@@ -17840,6 +19714,78 @@
       }
     },
     {
+      "id": "n-bc268f4e",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bd99cf12",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -17906,6 +19852,78 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c9438319",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 2,
@@ -18351,6 +20369,78 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f17740d5",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 2,
@@ -20973,6 +23063,54 @@
             {
               "lit": 4
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37c804be",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "longest one",
+            "longest word",
+            "miataru",
+            "reverb",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "aggregate.longest",
+            [
+              "sense.words"
+            ]
+          ],
+          [
+            "sense.howMany"
           ]
         ]
       ],
@@ -25090,6 +27228,67 @@
       }
     },
     {
+      "id": "n-24cb8a32",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "miataru",
+            "nth",
+            "position",
+            "slug"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-28492c58",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -25252,6 +27451,124 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-41230d93",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-489bbfcc",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.lastWord"
+            ]
           ]
         ]
       ],
@@ -25747,6 +28064,243 @@
       }
     },
     {
+      "id": "n-a5481a87",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.snake",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bf6442e2",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c58d6b73",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "miataru",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cc9beac7",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ce399c2b",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -25848,6 +28402,65 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e740d40e",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.subject"
+            ]
           ]
         ]
       ],
@@ -26078,6 +28691,65 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fcb7c088",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.lastWord"
+            ]
           ]
         ]
       ],
@@ -28053,6 +30725,78 @@
       }
     },
     {
+      "id": "n-0ae8ba19",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1009c777",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -28345,6 +31089,148 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2448c421",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2466687b",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -29131,6 +32017,77 @@
       }
     },
     {
+      "id": "n-621bbb88",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6418189d",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -29487,6 +32444,77 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6bd6fd26",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -29884,6 +32912,78 @@
       }
     },
     {
+      "id": "n-7d4867de",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7f1f6e89",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -30183,6 +33283,78 @@
       }
     },
     {
+      "id": "n-922ef238",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "reverb"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "contact name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-94127470",
       "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
       "gen": 10,
@@ -30248,6 +33420,77 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a0c8d3d6",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many words",
+            "item number",
+            "miataru",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-api-info-e45bea"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -31317,6 +34560,77 @@
                 },
                 {
                   "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e7d77ac8",
+      "task": "fr-tidytuesday-api-info-e45bea-con-3a65c7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bungienet",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-api-info-e45bea"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
                 }
               ],
               {
@@ -42689,6 +46003,7 @@
     }
   ],
   "stages": [
-    "04280377545a206d5f57349fe904d46c2422ba822cce061c59b37fa38f7785cc"
+    "04280377545a206d5f57349fe904d46c2422ba822cce061c59b37fa38f7785cc",
+    "86af983f2a3e55ecd506b0d4e5fdfc67a0267a1662f81506244c3e5ec829e7eb"
   ]
 }

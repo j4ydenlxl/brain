@@ -2,29 +2,28 @@
   "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T16:28:13.824Z",
+  "at": "2026-11-25T15:29:56.045Z",
   "stats": {
-    "generated": 200074,
-    "distinct": 49887,
-    "kept": 63,
-    "know": 20,
+    "generated": 160063,
+    "distinct": 102694,
+    "kept": 125,
+    "know": 82,
     "byFamily": {
       "know": 2,
       "sense": 5,
       "memory": 43,
-      "transform": 13
+      "transform": 75
     },
     "bySource": {
-      "enum": 3,
-      "open": 2,
-      "template": 15,
-      "memory": 43
+      "open": 23,
+      "parent": 62,
+      "enum": 40
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 33105,
-    "cellsPerSecond": 6044,
+    "ms": 188364,
+    "cellsPerSecond": 850,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -34,29 +33,58 @@
     "cursor": {
       "v": 1,
       "basis": "5792453b548a3015a746664928677637634110f92fa2f72770ae5fc10529e822",
-      "round": 0,
-      "at": 127988,
+      "round": 1,
+      "at": 236268,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "compute.percentOf",
+      "cost": 7,
+      "prim": "aggregate.chars",
       "tpl": 1943
     }
   },
   "cells": [
     {
-      "id": "n-cd5ab7f6",
+      "id": "n-82fbbdbb",
       "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-cd5ab7f6"
+      ],
       "guard": [
         [
-          "hasAny",
+          "not",
           [
-            "item number",
-            "longitude",
-            "nth",
-            "position"
+            "hasAny",
+            [
+              "alpha",
+              "category",
+              "cb",
+              "code",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "naha",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend",
+              "tribe"
+            ]
           ]
         ]
       ],
@@ -100,44 +128,18 @@
       }
     },
     {
-      "id": "n-d806c0f6",
+      "id": "n-cd5ab7f6",
       "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
       "gen": 10,
-      "parents": [
-        "n-cd5ab7f6"
-      ],
+      "parents": [],
       "guard": [
         [
-          "not",
+          "hasAny",
           [
-            "hasAny",
-            [
-              "alpha",
-              "category",
-              "contestant",
-              "country",
-              "county",
-              "description",
-              "element",
-              "id",
-              "iso",
-              "iso2",
-              "iso3",
-              "latitude",
-              "mban",
-              "meanhfl",
-              "minhfl",
-              "na",
-              "north",
-              "number",
-              "occupation",
-              "ori",
-              "release",
-              "season",
-              "smoothed",
-              "time",
-              "trend"
-            ]
+            "item number",
+            "longitude",
+            "nth",
+            "position"
           ]
         ]
       ],
@@ -465,6 +467,2346 @@
       "fit": {
         "ok": 40,
         "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d80cd124",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "leading zeros",
+            "longitude",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e24ababf",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-d80cd124"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "alpha",
+              "category",
+              "cb",
+              "code",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "naha",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend",
+              "tribe"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0b1c58b1",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-5b8dcb14"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "41972282",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "raty",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2d1b754b",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-eea7126d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "31631521",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "raty",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2013 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-55d464da",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-6372030d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "41972282",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "raty",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6cfd477a",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-4764a348"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "31631521",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "raty",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2013 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8c63f997",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-d5118c6d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "41972282",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "raty",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ea3cdc06",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-cd550c55"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "31631521",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "raty",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2013 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f516d101",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-963dafb7"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "31631521",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "raty",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2013 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f57f5d9b",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-b9210cb2"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "41972282",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "raty",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-585d9350",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-44704e82"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "36106",
+              "alpha",
+              "category",
+              "cb",
+              "code",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "naha",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend",
+              "tribe"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c2dd0ced",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-eb57f7a8"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "36106",
+              "alpha",
+              "category",
+              "cb",
+              "code",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "naha",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend",
+              "tribe"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ceeaff9c",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-7a81b08a"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "36106",
+              "alpha",
+              "category",
+              "cb",
+              "code",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "naha",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend",
+              "tribe"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b53fd350",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-aff9902f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "42782623",
+              "44722325",
+              "alpha",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "race",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0f16c527",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-71217484"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "33986713",
+              "38059093",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "plazy",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1a13b9f6",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-46134e74"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "33986713",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "plazy",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5724e27c",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-df54334f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "33986713",
+              "38059093",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "plazy",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-659e0218",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-9804b603"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "33986713",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "plazy",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7ef7788c",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-92871e3b"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "33986713",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "plazy",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9599b851",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-1d4ed15d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "33986713",
+              "country",
+              "county",
+              "iso",
+              "latitude",
+              "north",
+              "observations",
+              "ori",
+              "plazy",
+              "smoothed",
+              "time"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-039f4bf7",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-2b8b02ff"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "36106",
+              "alpha",
+              "category",
+              "cb",
+              "code",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "naha",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend",
+              "tribe"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-76ed1bdd",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-57276b7d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "36106",
+              "alpha",
+              "category",
+              "cb",
+              "code",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "naha",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend",
+              "tribe"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a224567e",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-b3819c4a"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "36106",
+              "alpha",
+              "category",
+              "cb",
+              "code",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "naha",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend",
+              "tribe"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
         "rows": 40
       }
     },
@@ -1028,6 +3370,2358 @@
       }
     },
     {
+      "id": "n-4764a348",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2013 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5b8dcb14",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "is",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6372030d",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-963dafb7",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2013 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b9210cb2",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd550c55",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2013 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d5118c6d",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eea7126d",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2013 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2b8b02ff",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-44704e82",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-57276b7d",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-76eabba5",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7a81b08a",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b0f9bf67",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b3819c4a",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eb57f7a8",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2013 rank"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-71217484",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b71eda27",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c18d0104",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-df54334f",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1d4ed15d",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-46134e74",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-92871e3b",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9804b603",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aa38db0a",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "item number",
+            "longitude",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-69761758",
       "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
       "gen": 10,
@@ -1073,6 +5767,79 @@
       "fit": {
         "ok": 14,
         "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aff9902f",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "item number",
+            "letters from to",
+            "me",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
         "rows": 40
       }
     },
@@ -1878,6 +6645,1218 @@
       "fit": {
         "ok": 13,
         "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1768a154",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3068b4bf",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4921e36a",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-944d92ec",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-98f11a2e",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2015 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a7d5fa02",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-afcb42eb",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b70107cf",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2015 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2015 rank"
+            },
+            {
+              "lit": "2014 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-55d2804f",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-83ad2410",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8ca6629e",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ce26b8fd",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "longitude"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2014 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-breed-rank-2f2cff"
+            },
+            {
+              "lit": "2014 rank"
+            },
+            {
+              "lit": "2013 rank"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2eed0c89",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "longitude",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-agencies-5efd65"
+                },
+                {
+                  "lit": "latitude"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-agencies-5efd65"
+            },
+            {
+              "lit": "latitude"
+            },
+            {
+              "lit": "longitude"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-breed-rank-2f2cff"
+              },
+              {
+                "lit": "2014 rank"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
         "rows": 40
       }
     },
@@ -3317,9 +9296,91 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-d806c0f6",
+      "task": "fr-tidytuesday-agencies-5efd65-lat-fbcf12",
+      "gen": 10,
+      "parents": [
+        "n-cd5ab7f6"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "alpha",
+              "category",
+              "contestant",
+              "country",
+              "county",
+              "description",
+              "element",
+              "id",
+              "iso",
+              "iso2",
+              "iso3",
+              "latitude",
+              "mban",
+              "meanhfl",
+              "minhfl",
+              "na",
+              "north",
+              "number",
+              "occupation",
+              "ori",
+              "release",
+              "season",
+              "smoothed",
+              "time",
+              "trend"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-agencies-5efd65"
+              },
+              {
+                "lit": "latitude"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-agencies-5efd65"
+          },
+          {
+            "lit": "latitude"
+          },
+          {
+            "lit": "longitude"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "507e143bac9b0ef9bfff41dbcdc86b22ae3b7c7f0954b78ac6dcaf17ed0fcb40"
+    "507e143bac9b0ef9bfff41dbcdc86b22ae3b7c7f0954b78ac6dcaf17ed0fcb40",
+    "8ada3068642fdb233ace20b9869ffd1edc02d22b3eaafd46df348e4a4056ddf6"
   ]
 }
