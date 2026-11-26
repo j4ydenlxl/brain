@@ -2,32 +2,29 @@
   "task": "samayo-area-country-to-surface-area",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-25T11:56:42.647Z",
+  "at": "2026-11-26T14:35:34.822Z",
   "stats": {
-    "generated": 200257,
-    "distinct": 93938,
-    "kept": 1929,
+    "generated": 161930,
+    "distinct": 101047,
+    "kept": 1933,
     "know": 572,
     "byFamily": {
       "memory": 82,
-      "transform": 485,
+      "transform": 486,
       "compute": 715,
-      "aggregate": 570,
+      "aggregate": 573,
       "iterate": 24,
       "sense": 53
     },
     "bySource": {
-      "parent": 1509,
-      "enum": 413,
-      "open": 1,
-      "template": 5,
-      "memory": 1
+      "parent": 1452,
+      "enum": 481
     },
     "maxHeight": 8,
     "devOk": 40,
     "devN": 40,
-    "ms": 231600,
-    "cellsPerSecond": 865,
+    "ms": 221602,
+    "cellsPerSecond": 731,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -37,12 +34,12 @@
     "cursor": {
       "v": 1,
       "basis": "4f8a3b3da9844c93c52bb131fc833f90bd12bc54684001d58ee72b493aff1693",
-      "round": 0,
-      "at": 95172,
+      "round": 1,
+      "at": 208213,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.double",
+      "cost": 7,
+      "prim": "compare.between",
       "tpl": 1236
     }
   },
@@ -51343,6 +51340,55 @@
       }
     },
     {
+      "id": "n-0e55ce61",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "gibraltar",
+            "how many letters",
+            "letter count",
+            "number of letters"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.letters",
+          [
+            "transform.base64",
+            [
+              "transform.acronym",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0f3e1e14",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -56769,6 +56815,57 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-468b142c",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "character count",
+            "first letters of the name",
+            "gibraltar",
+            "how many characters",
+            "initials",
+            "number of characters"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.chars",
+          [
+            "transform.acronym",
+            [
+              "transform.initials",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -65191,6 +65288,56 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9fa80504",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cocos",
+            "increase by",
+            "plus tax",
+            "raise by",
+            "successor",
+            "with tax"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.next",
+          [
+            "compute.increase",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -90069,6 +90216,57 @@
           {
             "lit": 5
           }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d0337333",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add up",
+            "altogether",
+            "armenia",
+            "in all"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.sum",
+          [
+            "iterate.steps",
+            {
+              "lit": 1
+            },
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 100
+            }
+          ]
         ]
       ],
       "mem": null,
@@ -115416,6 +115614,7 @@
     "02b66fe4eb8e5ce60431b523a7d34d3bc6c5a43610b85f9bf6787366f94d0d20",
     "7e508723fdd3060f257d0b2d04b62dac6456ab0b791201ee53d39ef7c2f7a11c",
     "1673242106b9aa0186e8a85fd35ad9a58b1c6cc9247b421176e6757afa7a54c8",
-    "4310dec2b5e53be36d34e2dbde886c5847711a6d4e76d86a8f7b7453b18c89c1"
+    "4310dec2b5e53be36d34e2dbde886c5847711a6d4e76d86a8f7b7453b18c89c1",
+    "fa09b921f2712e43a82b66488f1acf73776f9bbe9319a6357656310290c10323"
   ]
 }

@@ -2,42 +2,40 @@
   "task": "recovered-of-date-7143",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-26T11:47:12.460Z",
+  "at": "2026-11-26T14:48:05.293Z",
   "stats": {
-    "generated": 200159,
-    "distinct": 77775,
-    "kept": 100,
-    "know": 27,
+    "generated": 82867,
+    "distinct": 84581,
+    "kept": 102,
+    "know": 29,
     "byFamily": {
       "sense": 7,
-      "transform": 19,
+      "transform": 20,
       "memory": 73,
-      "aggregate": 1
+      "aggregate": 2
     },
     "bySource": {
-      "parent": 85,
-      "template": 11,
-      "open": 2,
-      "enum": 2
+      "parent": 100,
+      "open": 2
     },
     "maxHeight": 7,
     "devOk": 72,
     "devN": 72,
-    "ms": 55436,
-    "cellsPerSecond": 3611,
-    "capped": null,
+    "ms": 80907,
+    "cellsPerSecond": 1024,
+    "capped": "ms",
     "packs": [
       "fr-covid-19-worldwide-aggregate-60f19d"
     ],
     "cursor": {
       "v": 1,
       "basis": "cd6c4db0e16daab5329a3ab5f676e268c7d6950c079948fffbea4043827e9a77",
-      "round": 0,
-      "at": 111840,
+      "round": 1,
+      "at": 162063,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.compound",
+      "prim": "compute.nextPrime",
       "tpl": 2500
     }
   },
@@ -1870,6 +1868,107 @@
       }
     },
     {
+      "id": "n-2ea1d974",
+      "task": "recovered-of-date-7143",
+      "gen": 10,
+      "parents": [
+        "n-ff7c6f24"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20200830",
+              "20201130",
+              "20210330",
+              "20210730",
+              "20211130",
+              "20220130",
+              "add",
+              "china",
+              "close",
+              "compare",
+              "confirmed",
+              "date",
+              "greater",
+              "guest",
+              "high",
+              "incident",
+              "larger",
+              "lesser",
+              "makes",
+              "mortality",
+              "price",
+              "smaller",
+              "sum",
+              "title",
+              "updated",
+              "us",
+              "version"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "recovered"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+              },
+              {
+                "lit": "recovered"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 72
+      }
+    },
+    {
       "id": "n-ff7c6f24",
       "task": "recovered-of-date-7143",
       "gen": 10,
@@ -1948,6 +2047,88 @@
       "fit": {
         "ok": 2,
         "fired": 2,
+        "rows": 72
+      }
+    },
+    {
+      "id": "n-2995234d",
+      "task": "recovered-of-date-7143",
+      "gen": 10,
+      "parents": [
+        "n-ca939455"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20200124",
+              "angeles",
+              "az",
+              "china",
+              "compare",
+              "confirmed",
+              "date",
+              "greater",
+              "guest",
+              "high",
+              "larger",
+              "lesser",
+              "makes",
+              "mortality",
+              "price",
+              "smaller",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.count",
+          [
+            "iterate.fibs",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-covid-19-worldwide-aggregate-60f19d"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "recovered"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
         "rows": 72
       }
     },
@@ -5775,6 +5956,7 @@
     "24578360d1da8f4dc45814927672b374c62a66bd254233c2bbc7761736d3c28d",
     "7c30f84e8a3a3f2483dc4169a5212f0322f2e74775894b6f68a1446de3835747",
     "3dd5d8544a20e79b0a0ad4db2529e91b44399cb2f9946bc18f3c45bb9e62b2a6",
-    "7700df5432631eaf0376d98eedd2245618ac2588a259a27fab15b463ec083c73"
+    "7700df5432631eaf0376d98eedd2245618ac2588a259a27fab15b463ec083c73",
+    "8ba95e5962a271f4e7d7ca5f2db114cb36e93cdfb8bc034d7e58a74de80f1240"
   ]
 }
