@@ -2,28 +2,28 @@
   "task": "sp500-ticker-company-6886db",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-26T09:56:32.459Z",
+  "at": "2026-11-26T11:29:18.433Z",
   "stats": {
-    "generated": 160419,
-    "distinct": 107367,
-    "kept": 698,
-    "know": 532,
+    "generated": 160698,
+    "distinct": 105785,
+    "kept": 704,
+    "know": 538,
     "byFamily": {
       "memory": 166,
       "transform": 462,
-      "aggregate": 4,
+      "aggregate": 10,
       "know": 65,
       "sense": 1
     },
     "bySource": {
-      "parent": 419,
-      "enum": 279
+      "parent": 698,
+      "enum": 6
     },
     "maxHeight": 6,
     "devOk": 99,
     "devN": 99,
-    "ms": 121021,
-    "cellsPerSecond": 1326,
+    "ms": 42829,
+    "cellsPerSecond": 3752,
     "capped": null,
     "packs": [
       "sp500"
@@ -31,12 +31,12 @@
     "cursor": {
       "v": 1,
       "basis": "829e83aa03c22c552d6b59825b6dfd22fc3c185f8de596cb16080b0bebd1ff92",
-      "round": 1,
-      "at": 210211,
+      "round": 2,
+      "at": 333719,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compare.contains",
+      "prim": "compare.atMost",
       "tpl": 1611
     }
   },
@@ -2530,6 +2530,121 @@
       }
     },
     {
+      "id": "n-53b44dca",
+      "task": "sp500-ticker-company-6886db",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abt",
+            "aig",
+            "bax",
+            "bdx",
+            "cien",
+            "cmi",
+            "ctsh",
+            "cvx",
+            "dri",
+            "ew",
+            "frt",
+            "fslr",
+            "gild",
+            "ice",
+            "ir",
+            "item number",
+            "jnj",
+            "ko",
+            "lite",
+            "longest",
+            "longest one",
+            "longest word",
+            "mmm",
+            "msft",
+            "nflx",
+            "nth",
+            "oke",
+            "pnw",
+            "position",
+            "rf",
+            "separate by",
+            "sna",
+            "split",
+            "split by",
+            "tmus",
+            "vrsk",
+            "vtrs",
+            "wdc",
+            "wmb"
+          ]
+        ],
+        [
+          "has",
+          "sp"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "sp500"
+                  },
+                  {
+                    "lit": "ticker"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "ticker"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 30,
+        "fired": 30,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-68e89e4e",
       "task": "sp500-ticker-company-6886db",
       "gen": 10,
@@ -3689,6 +3804,124 @@
       }
     },
     {
+      "id": "n-8bbed9fc",
+      "task": "sp500-ticker-company-6886db",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "adsk",
+            "ben",
+            "bfb",
+            "bro",
+            "ceg",
+            "cmcsa",
+            "coo",
+            "cost",
+            "dhr",
+            "evrg",
+            "expe",
+            "fdxf",
+            "hwm",
+            "incy",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "lvs",
+            "mar",
+            "mrna",
+            "ndsn",
+            "nee",
+            "nth",
+            "nvda",
+            "panw",
+            "pypl",
+            "rddt",
+            "separate by",
+            "skyd",
+            "split by",
+            "tpr",
+            "wday",
+            "wsm"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "sp500"
+                  },
+                  {
+                    "lit": "ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "ticker"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-96a6f937",
       "task": "sp500-ticker-company-6886db",
       "gen": 10,
@@ -4200,6 +4433,111 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 26,
+        "fired": 26,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-e5a628c5",
+      "task": "sp500-ticker-company-6886db",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "adsk",
+            "ben",
+            "bro",
+            "ceg",
+            "cmcsa",
+            "coo",
+            "cost",
+            "dhr",
+            "evrg",
+            "expe",
+            "fdxf",
+            "hwm",
+            "incy",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "lvs",
+            "mar",
+            "mrna",
+            "ndsn",
+            "nee",
+            "nth",
+            "nvda",
+            "panw",
+            "pypl",
+            "rddt",
+            "separate by",
+            "skyd",
+            "split by",
+            "tpr",
+            "wday",
+            "wsm"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "sp500"
+                  },
+                  {
+                    "lit": "ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "ticker"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 26,
@@ -19940,6 +20278,83 @@
       }
     },
     {
+      "id": "n-945ff3f6",
+      "task": "sp500-ticker-company-6886db",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "expe",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "skyd",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "sp500"
+                  },
+                  {
+                    "lit": "ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "ticker"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-c9e2fa92",
       "task": "sp500-ticker-company-6886db",
       "gen": 10,
@@ -21011,6 +21426,184 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-89603396",
+      "task": "sp500-ticker-company-6886db",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "expe",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "skyd",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "sp500"
+                  },
+                  {
+                    "lit": "ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "ticker"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-e2f1de0e",
+      "task": "sp500-ticker-company-6886db",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "expe",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "skyd",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "sp500"
+                  },
+                  {
+                    "lit": "ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "ticker"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 17,
       "fit": {
         "ok": 2,
@@ -47162,6 +47755,7 @@
   "stages": [
     "e2c2829b409c3dd7ef7ed50daa6db0c210baa78bb07630260f1dc8acd832e8a4",
     "b068ee03e5c56445fac3eb32a223c7be2b282cc4cda3657fb10b1f60e5685b14",
-    "9edb86333e6f99721533a5b4546a242b129949ea28e80eaf0e70647a1dee1ee0"
+    "9edb86333e6f99721533a5b4546a242b129949ea28e80eaf0e70647a1dee1ee0",
+    "87e667b5903b5461a91dd3d5248830a7f0f7769690e6fa73718eda8b5bef6a29"
   ]
 }

@@ -2,28 +2,31 @@
   "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T14:38:27.123Z",
+  "at": "2026-11-26T11:49:09.049Z",
   "stats": {
-    "generated": 108,
-    "distinct": 61505,
-    "kept": 64,
-    "know": 22,
+    "generated": 200102,
+    "distinct": 79672,
+    "kept": 65,
+    "know": 23,
     "byFamily": {
       "memory": 41,
       "sense": 1,
-      "transform": 12,
-      "compute": 9,
+      "transform": 14,
+      "compute": 8,
       "aggregate": 1
     },
     "bySource": {
-      "parent": 64
+      "parent": 46,
+      "template": 12,
+      "open": 5,
+      "enum": 2
     },
     "maxHeight": 7,
     "devOk": 40,
     "devN": 40,
-    "ms": 78994,
-    "cellsPerSecond": 1,
-    "capped": "ms",
+    "ms": 67580,
+    "cellsPerSecond": 2961,
+    "capped": null,
     "packs": [
       "crypto-tickers",
       "fr-co2-fossil-global-global-6f35f5",
@@ -31,14 +34,14 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "668410f4dd7e4b8d44a21d7e2e27e339fbe20b0a6c73fcdc04e9834800a6e537",
-      "round": 2,
-      "at": 200908,
+      "basis": "0c5f9a573dc655e64e70302b1a444e0f567a20c37b0cc2e05047e738f015144f",
+      "round": 0,
+      "at": 109689,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.percentChange",
-      "tpl": 2281
+      "prim": "compute.compound",
+      "tpl": 1956
     }
   },
   "cells": [
@@ -92,7 +95,7 @@
       }
     },
     {
-      "id": "n-075b514d",
+      "id": "n-c5f59887",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -109,7 +112,7 @@
         ],
         [
           "has",
-          "of"
+          "observations"
         ]
       ],
       "pyramid": [
@@ -181,7 +184,7 @@
       }
     },
     {
-      "id": "n-4bd5ef59",
+      "id": "n-84b10c79",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -201,7 +204,7 @@
         ],
         [
           "has",
-          "of"
+          "observations"
         ]
       ],
       "pyramid": [
@@ -276,99 +279,7 @@
       }
     },
     {
-      "id": "n-56aa1277",
-      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position"
-          ]
-        ],
-        [
-          "has",
-          "of"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "number"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-              },
-              {
-                "lit": "year"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-          },
-          {
-            "lit": "year"
-          },
-          {
-            "lit": "number of observations"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d0965378",
+      "id": "n-a90c2436",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -389,7 +300,7 @@
         ],
         [
           "has",
-          "of"
+          "observations"
         ]
       ],
       "pyramid": [
@@ -464,7 +375,99 @@
       }
     },
     {
-      "id": "n-ecc3c8fd",
+      "id": "n-ed3accda",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "observations"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fbd8d781",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -474,12 +477,17 @@
           [
             "hasAny",
             [
+              "19581110t000000z",
               "1959",
               "1964",
+              "19641219t000000z",
               "1965",
               "1967",
               "1969",
+              "19701121t000000z",
               "1971",
+              "19720826t000000z",
+              "19760918t000000z",
               "1979",
               "1981",
               "19810910",
@@ -487,21 +495,65 @@
               "1983",
               "1984",
               "1989",
+              "19910330t000000z",
               "1992",
               "1993",
+              "19931225t000000z",
               "1994",
+              "19940415",
               "1996",
               "1998",
               "1999",
               "2000",
+              "20010331t000000z",
+              "20020629t000000z",
               "2003",
+              "20030510t000000z",
               "2004",
+              "20040325",
+              "20060420",
+              "20070406",
               "2008",
               "2009",
+              "20090418t000000z",
               "2010",
+              "20101004",
+              "20101218t000000z",
+              "20110910t000000z",
+              "20120421",
               "2013",
               "2014",
+              "20140401",
+              "20150420",
+              "20160327",
+              "20160401",
               "2017",
+              "20170630t090440z",
+              "20170701t010550z",
+              "20170702t010243z",
+              "20170708t011636z",
+              "20170708t023648z",
+              "20170708t131254z",
+              "20170713t010100z",
+              "20170714t025128z",
+              "20170722t010242z",
+              "20170722t013651z",
+              "20170726t005028z",
+              "20170727t000854z",
+              "20170729t095237z",
+              "20170825t010132z",
+              "20170825t012222z",
+              "20170826t010301z",
+              "20170901t000531z",
+              "20170917t010512z",
+              "20170918t000525z",
+              "20170918t010313z",
+              "20170925t010324z",
+              "20170929t050959z",
+              "20171004t134217z",
+              "20171006t004455z",
+              "20171106t050845z",
+              "20171120t011641z",
               "2018",
               "2020",
               "20200209",
@@ -580,10 +632,17 @@
               "20220224",
               "20220306",
               "20220327",
+              "20220905",
+              "20230904",
+              "2d",
+              "7th",
               "add",
+              "added",
               "adjusted",
               "angeles",
+              "artist",
               "artyfacts",
+              "author",
               "birth",
               "bound",
               "c",
@@ -593,44 +652,97 @@
               "clean",
               "close",
               "coffee",
+              "comment",
               "compare",
               "confirmed",
               "country",
               "cumulative",
               "date",
               "death",
+              "description",
               "devils",
+              "directed",
               "discards",
               "dividend",
+              "division",
+              "e420",
               "eclipsepartial2023",
               "enrollment",
               "ep",
               "episode",
               "explorer",
+              "fatalities",
               "feb",
               "firefox",
               "fixedincome",
+              "forename",
               "give",
               "gmsl",
               "greater",
+              "guest",
               "h2632000",
               "incident",
               "increase",
               "j11",
-              "janeiro",
+              "jabbrv",
+              "journal",
+              "judge1",
               "larger",
               "lesser",
+              "m201220121024m",
+              "m201320131043m",
+              "m201420141016m",
+              "m201420141035m",
+              "m201420141036m",
+              "m201420142064m",
+              "m201520151051m",
+              "m201520152054m",
+              "m201620161048m",
+              "m201620162005m",
+              "m201620162050m",
+              "m201720171035m",
+              "m201720172036m",
+              "m201720181005m",
+              "m201720181032m",
+              "m201720182013m",
+              "m201720182027m",
+              "m201720182045m",
+              "m201720182062m",
+              "m201720182082m",
+              "m201820191006m",
+              "m201820191108m",
+              "m201820192022m",
+              "m201820192081m",
+              "m201920201057m",
+              "m201920202024m",
+              "m202020211049m",
+              "m202020212087m",
+              "m202120221064m",
+              "m202120221113m",
+              "m202120222022m",
+              "m202120222069m",
+              "m202120222075m",
+              "m202120222114m",
+              "m202220231077m",
+              "m202220231091m",
+              "m202220232036m",
+              "m202320241015m",
+              "m202320241071m",
+              "m202320241132m",
               "makes",
               "males",
               "mauna",
               "millions",
               "mortality",
+              "nader",
               "name",
               "national",
-              "occupation",
+              "nationality",
+              "no",
               "ounce",
               "overall",
               "passenger",
+              "person",
               "player",
               "pm",
               "price",
@@ -642,6 +754,7 @@
               "recovered",
               "recreational",
               "region",
+              "s",
               "s1",
               "s2003",
               "s2004",
@@ -652,13 +765,18 @@
               "solid",
               "sp500",
               "steam",
+              "study",
               "sum",
+              "tag",
+              "tags",
               "title",
               "total",
               "trend",
               "uncertainty",
+              "updated",
+              "version",
               "winner",
-              "wreck",
+              "written",
               "yarn"
             ]
           ]
@@ -722,7 +840,105 @@
       }
     },
     {
-      "id": "n-5c2ec119",
+      "id": "n-068928f2",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "observations"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0f6917d2",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -742,7 +958,7 @@
         ],
         [
           "has",
-          "of"
+          "observations"
         ]
       ],
       "pyramid": [
@@ -820,106 +1036,7 @@
       }
     },
     {
-      "id": "n-adee07b0",
-      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "of"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "transform.title",
-          [
-            "sense.after",
-            {
-              "lit": "number"
-            }
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-              },
-              {
-                "lit": "year"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-          },
-          {
-            "lit": "year"
-          },
-          {
-            "lit": "number of observations"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 17,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-b665f7a0",
+      "id": "n-56499e3e",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -939,7 +1056,7 @@
         ],
         [
           "has",
-          "of"
+          "observations"
         ]
       ],
       "pyramid": [
@@ -1017,7 +1134,7 @@
       }
     },
     {
-      "id": "n-f640c0bf",
+      "id": "n-8306047c",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -1025,19 +1142,20 @@
         [
           "hasAny",
           [
-            "each word",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
             "element",
             "item number",
             "name",
             "nth",
             "position",
-            "split into words",
-            "words"
+            "title case"
           ]
         ],
         [
           "has",
-          "of"
+          "observations"
         ]
       ],
       "pyramid": [
@@ -1060,22 +1178,22 @@
           ]
         },
         [
-          "render.and",
+          "transform.nthStr",
           [
-            "transform.words",
-            [
-              "sense.wordAt",
-              {
-                "lit": 3
-              }
-            ]
-          ]
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
         ],
         [
-          "sense.after",
-          {
-            "lit": "number"
-          }
+          "transform.title",
+          [
+            "sense.after",
+            {
+              "lit": "number"
+            }
+          ]
         ],
         [
           "know.lookup",
@@ -1115,7 +1233,7 @@
       }
     },
     {
-      "id": "n-2612d9cd",
+      "id": "n-68be7387",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -1132,206 +1250,7 @@
         ],
         [
           "has",
-          "of"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "number"
-          }
-        ],
-        [
-          "render.number",
-          [
-            "know.num",
-            [
-              "know.lookup",
-              [
-                "transform.nthStr",
-                [
-                  "know.find",
-                  {
-                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-                  },
-                  {
-                    "lit": "year"
-                  }
-                ],
-                {
-                  "lit": 1
-                }
-              ],
-              {
-                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-              },
-              {
-                "lit": "year"
-              },
-              {
-                "lit": "number of observations"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 6,
-      "size": 18,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-65f24e3d",
-      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "each word",
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position",
-            "split into words",
-            "words"
-          ]
-        ],
-        [
-          "has",
-          "of"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "number"
-          }
-        ],
-        [
-          "render.and",
-          [
-            "transform.words",
-            [
-              "know.lookup",
-              [
-                "transform.nthStr",
-                [
-                  "know.find",
-                  {
-                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-                  },
-                  {
-                    "lit": "year"
-                  }
-                ],
-                {
-                  "lit": 1
-                }
-              ],
-              {
-                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-              },
-              {
-                "lit": "year"
-              },
-              {
-                "lit": "number of observations"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 6,
-      "size": 18,
-      "fit": {
-        "ok": 13,
-        "fired": 13,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-92bdec4b",
-      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position"
-          ]
-        ],
-        [
-          "has",
-          "of"
+          "observations"
         ]
       ],
       "pyramid": [
@@ -1412,7 +1331,7 @@
       }
     },
     {
-      "id": "n-976b9cca",
+      "id": "n-ed92e96d",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -1432,7 +1351,108 @@
         ],
         [
           "has",
-          "of"
+          "observations"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "render.and",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "number of observations"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 18,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ee298fdc",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "observations"
         ]
       ],
       "pyramid": [
@@ -1513,93 +1533,100 @@
       }
     },
     {
-      "id": "n-28e0c0c8",
+      "id": "n-fbf69243",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
-      "parents": [
-        "n-4df09699"
-      ],
+      "parents": [],
       "guard": [
         [
-          "not",
+          "hasAny",
           [
-            "hasAny",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "observations"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "render.number",
+          [
+            "know.num",
             [
-              "8th",
-              "add",
-              "apollo",
-              "balance",
-              "bound",
-              "compare",
-              "country",
-              "discards",
-              "dividend",
-              "feb",
-              "gmsl",
-              "greater",
-              "increase",
-              "jan",
-              "larger",
-              "lesser",
-              "loa",
-              "makes",
-              "massacre",
-              "overall",
-              "price",
-              "recreational",
-              "smaller",
-              "solid",
-              "sp500",
-              "sum",
-              "uncertainty",
-              "what",
-              "wreck"
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "number of observations"
+              }
             ]
           ]
         ]
       ],
-      "pyramid": [
-        "render.str",
-        [
-          "compute.fraction",
-          {
-            "lit": 60
-          },
-          [
-            "series.next",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-                },
-                {
-                  "lit": "year"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-            },
-            {
-              "lit": "year"
-            },
-            {
-              "lit": "mean cumulative mass balance"
-            }
-          ]
-        ]
-      ],
       "mem": null,
-      "height": 5,
-      "size": 12,
+      "height": 6,
+      "size": 18,
       "fit": {
-        "ok": 1,
-        "fired": 1,
+        "ok": 13,
+        "fired": 13,
         "rows": 40
       }
     },
@@ -1667,6 +1694,101 @@
       ],
       "mem": null,
       "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-482bb344",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [
+        "n-4df09699"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8th",
+              "add",
+              "apollo",
+              "balance",
+              "bound",
+              "compare",
+              "country",
+              "description",
+              "discards",
+              "dividend",
+              "electric",
+              "feb",
+              "gmsl",
+              "greater",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "loa",
+              "makes",
+              "massacre",
+              "nationality",
+              "overall",
+              "price",
+              "recreational",
+              "smaller",
+              "solid",
+              "song",
+              "sp500",
+              "sum",
+              "uncertainty",
+              "what",
+              "wreck"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          {
+            "lit": 60
+          },
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "mean cumulative mass balance"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 12,
       "fit": {
         "ok": 1,
@@ -1745,100 +1867,7 @@
       }
     },
     {
-      "id": "n-6f753c68",
-      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
-      "gen": 10,
-      "parents": [
-        "n-28e0c0c8",
-        "n-4df09699"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "8th",
-              "add",
-              "apollo",
-              "balance",
-              "bound",
-              "compare",
-              "country",
-              "discards",
-              "dividend",
-              "electric",
-              "feb",
-              "gmsl",
-              "greater",
-              "increase",
-              "jan",
-              "larger",
-              "lesser",
-              "loa",
-              "makes",
-              "massacre",
-              "overall",
-              "price",
-              "recreational",
-              "smaller",
-              "solid",
-              "sp500",
-              "sum",
-              "uncertainty",
-              "what",
-              "wreck"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "compute.fraction",
-          {
-            "lit": 60
-          },
-          [
-            "series.next",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-                },
-                {
-                  "lit": "year"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
-            },
-            {
-              "lit": "year"
-            },
-            {
-              "lit": "mean cumulative mass balance"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 12,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-7af0e903",
+      "id": "n-51e24c90",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [
@@ -1851,9 +1880,12 @@
             "hasAny",
             [
               "19640802",
+              "19641219t000000z",
               "1964apr",
+              "2d",
               "add",
               "adjusted",
+              "artist",
               "birth",
               "bound",
               "compare",
@@ -1870,6 +1902,7 @@
               "loa",
               "makes",
               "mean",
+              "nationality",
               "occupation",
               "overall",
               "passenger",
@@ -1877,6 +1910,7 @@
               "price",
               "rate",
               "recreational",
+              "ref",
               "smaller",
               "sp500",
               "sum",
@@ -1934,7 +1968,102 @@
       }
     },
     {
-      "id": "n-b75ba922",
+      "id": "n-524aa06b",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [
+        "n-bf6f3cb9"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8th",
+              "add",
+              "apollo",
+              "balance",
+              "bound",
+              "compare",
+              "country",
+              "description",
+              "discards",
+              "dividend",
+              "electric",
+              "feb",
+              "gmsl",
+              "greater",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "loa",
+              "makes",
+              "massacre",
+              "nationality",
+              "overall",
+              "price",
+              "recreational",
+              "smaller",
+              "solid",
+              "song",
+              "sp500",
+              "sum",
+              "uncertainty",
+              "what",
+              "wreck"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.idiv",
+          {
+            "lit": 58
+          },
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "mean cumulative mass balance"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bf6f3cb9",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
       "parents": [],
@@ -1943,20 +2072,113 @@
           "hasAny",
           [
             "element",
+            "goes into",
+            "how many whole times",
+            "integer division",
             "item number",
             "nth",
-            "nth prime",
             "number",
             "position",
-            "square",
-            "squared",
-            "the prime number in position",
-            "to the second power"
+            "whole division"
           ]
         ],
         [
-          "nums==",
-          1
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.idiv",
+          {
+            "lit": 58
+          },
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "mean cumulative mass balance"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-46578a96",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [
+        "n-b75ba922"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "adjusted",
+              "balance",
+              "birth",
+              "compare",
+              "death",
+              "discards",
+              "dividend",
+              "feb",
+              "flock",
+              "gold",
+              "greater",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "loa",
+              "name",
+              "occupation",
+              "plus",
+              "rate",
+              "raw",
+              "recreational",
+              "ref",
+              "smaller",
+              "song",
+              "sp500",
+              "sum",
+              "total",
+              "uncertainty",
+              "volcano",
+              "winner"
+            ]
+          ]
         ]
       ],
       "pyramid": [
@@ -2008,49 +2230,29 @@
       }
     },
     {
-      "id": "n-c74bae90",
+      "id": "n-b75ba922",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
-      "parents": [
-        "n-b75ba922"
-      ],
+      "parents": [],
       "guard": [
         [
-          "not",
+          "hasAny",
           [
-            "hasAny",
-            [
-              "add",
-              "adjusted",
-              "balance",
-              "birth",
-              "compare",
-              "death",
-              "discards",
-              "dividend",
-              "feb",
-              "flock",
-              "gold",
-              "greater",
-              "increase",
-              "jan",
-              "larger",
-              "lesser",
-              "loa",
-              "name",
-              "occupation",
-              "plus",
-              "rate",
-              "raw",
-              "recreational",
-              "smaller",
-              "sp500",
-              "sum",
-              "total",
-              "uncertainty",
-              "winner"
-            ]
+            "element",
+            "item number",
+            "nth",
+            "nth prime",
+            "number",
+            "position",
+            "square",
+            "squared",
+            "the prime number in position",
+            "to the second power"
           ]
+        ],
+        [
+          "nums==",
+          1
         ]
       ],
       "pyramid": [
@@ -3844,6 +4046,1801 @@
       }
     },
     {
+      "id": "n-075b514d",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4bd5ef59",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.swapCase",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-56aa1277",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d0965378",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ecc3c8fd",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1959",
+              "1964",
+              "1965",
+              "1967",
+              "1969",
+              "1971",
+              "1979",
+              "1981",
+              "19810910",
+              "1982",
+              "1983",
+              "1984",
+              "1989",
+              "1992",
+              "1993",
+              "1994",
+              "1996",
+              "1998",
+              "1999",
+              "2000",
+              "2003",
+              "2004",
+              "2008",
+              "2009",
+              "2010",
+              "2013",
+              "2014",
+              "2017",
+              "2018",
+              "2020",
+              "20200209",
+              "20200211",
+              "20200216",
+              "20200226",
+              "20200312",
+              "20200315",
+              "20200323",
+              "20200329",
+              "20200331",
+              "20200409",
+              "20200412",
+              "20200430",
+              "20200501",
+              "20200504",
+              "20200510",
+              "20200622",
+              "20200624",
+              "20200625",
+              "20200704",
+              "20200706",
+              "20200728",
+              "20200806",
+              "20200910",
+              "20201006",
+              "20201013",
+              "20201022",
+              "20201125",
+              "20201127",
+              "20201130",
+              "20201204",
+              "20201217",
+              "20201219",
+              "20210103",
+              "20210104",
+              "20210114",
+              "20210115",
+              "20210127",
+              "20210204",
+              "20210206",
+              "20210208",
+              "20210218",
+              "20210301",
+              "20210322",
+              "20210326",
+              "20210504",
+              "20210506",
+              "20210510",
+              "20210519",
+              "20210601",
+              "20210605",
+              "20210618",
+              "20210628",
+              "20210715",
+              "20210716",
+              "20210720",
+              "20210725",
+              "20210730",
+              "20210812",
+              "20210826",
+              "20210901",
+              "20210904",
+              "20210906",
+              "20211012",
+              "20211016",
+              "20211020",
+              "20211119",
+              "20211123",
+              "20211207",
+              "20211216",
+              "20211221",
+              "20220112",
+              "20220129",
+              "20220130",
+              "20220224",
+              "20220306",
+              "20220327",
+              "add",
+              "adjusted",
+              "angeles",
+              "artyfacts",
+              "birth",
+              "bound",
+              "c",
+              "carriages",
+              "category",
+              "china",
+              "clean",
+              "close",
+              "coffee",
+              "compare",
+              "confirmed",
+              "country",
+              "cumulative",
+              "date",
+              "death",
+              "devils",
+              "discards",
+              "dividend",
+              "eclipsepartial2023",
+              "enrollment",
+              "ep",
+              "episode",
+              "explorer",
+              "feb",
+              "firefox",
+              "fixedincome",
+              "give",
+              "gmsl",
+              "greater",
+              "h2632000",
+              "incident",
+              "increase",
+              "j11",
+              "janeiro",
+              "larger",
+              "lesser",
+              "makes",
+              "males",
+              "mauna",
+              "millions",
+              "mortality",
+              "name",
+              "national",
+              "occupation",
+              "ounce",
+              "overall",
+              "passenger",
+              "player",
+              "pm",
+              "price",
+              "prices",
+              "proposal",
+              "rank",
+              "rate",
+              "raw",
+              "recovered",
+              "recreational",
+              "region",
+              "s1",
+              "s2003",
+              "s2004",
+              "s2007",
+              "sa",
+              "season",
+              "smaller",
+              "solid",
+              "sp500",
+              "steam",
+              "sum",
+              "title",
+              "total",
+              "trend",
+              "uncertainty",
+              "winner",
+              "wreck",
+              "yarn"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "number of observations"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5c2ec119",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "number"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-adee07b0",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "transform.title",
+          [
+            "sense.after",
+            {
+              "lit": "number"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b665f7a0",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f640c0bf",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "number of observations"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2612d9cd",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "render.number",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "number of observations"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 18,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-65f24e3d",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "render.and",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "number of observations"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 18,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-92bdec4b",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "number of observations"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 18,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-976b9cca",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "number"
+          }
+        ],
+        [
+          "render.list",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "number of observations"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 18,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-28e0c0c8",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [
+        "n-4df09699"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8th",
+              "add",
+              "apollo",
+              "balance",
+              "bound",
+              "compare",
+              "country",
+              "discards",
+              "dividend",
+              "feb",
+              "gmsl",
+              "greater",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "loa",
+              "makes",
+              "massacre",
+              "overall",
+              "price",
+              "recreational",
+              "smaller",
+              "solid",
+              "sp500",
+              "sum",
+              "uncertainty",
+              "what",
+              "wreck"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          {
+            "lit": 60
+          },
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "mean cumulative mass balance"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6f753c68",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [
+        "n-28e0c0c8",
+        "n-4df09699"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "8th",
+              "add",
+              "apollo",
+              "balance",
+              "bound",
+              "compare",
+              "country",
+              "discards",
+              "dividend",
+              "electric",
+              "feb",
+              "gmsl",
+              "greater",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "loa",
+              "makes",
+              "massacre",
+              "overall",
+              "price",
+              "recreational",
+              "smaller",
+              "solid",
+              "sp500",
+              "sum",
+              "uncertainty",
+              "what",
+              "wreck"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          {
+            "lit": 60
+          },
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "mean cumulative mass balance"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7af0e903",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [
+        "n-4342a50f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19640802",
+              "1964apr",
+              "add",
+              "adjusted",
+              "birth",
+              "bound",
+              "compare",
+              "death",
+              "dividend",
+              "electric",
+              "feb",
+              "glucose",
+              "greater",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "loa",
+              "makes",
+              "mean",
+              "occupation",
+              "overall",
+              "passenger",
+              "portrait",
+              "price",
+              "rate",
+              "recreational",
+              "smaller",
+              "sp500",
+              "sum",
+              "tell",
+              "total",
+              "uncertainty",
+              "wreck"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.nthPrime",
+          [
+            "transform.square",
+            [
+              "series.prev",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "mean cumulative mass balance"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c74bae90",
+      "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
+      "gen": 10,
+      "parents": [
+        "n-b75ba922"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "adjusted",
+              "balance",
+              "birth",
+              "compare",
+              "death",
+              "discards",
+              "dividend",
+              "feb",
+              "flock",
+              "gold",
+              "greater",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "loa",
+              "name",
+              "occupation",
+              "plus",
+              "rate",
+              "raw",
+              "recreational",
+              "smaller",
+              "sp500",
+              "sum",
+              "total",
+              "uncertainty",
+              "winner"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.nthPrime",
+          [
+            "transform.square",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                    },
+                    {
+                      "lit": "year"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-glacier-mass-balance-glaciers-86f5e7"
+                },
+                {
+                  "lit": "year"
+                },
+                {
+                  "lit": "mean cumulative mass balance"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8091cebd",
       "task": "fr-glacier-mass-balance-glaciers-8-fb9c1d",
       "gen": 10,
@@ -4094,6 +6091,7 @@
   "stages": [
     "0e8d353138917b76fa27a5d0783bba1982566fda694419ff700fbfe7df2cdb97",
     "e2f2062c17d05d192c76e37b77c701b4976a620ab9dddbb47c315b5863389598",
-    "d0bda55019108f72af1f022f2d438739c345f00582ef0ae5589b4c385d299937"
+    "d0bda55019108f72af1f022f2d438739c345f00582ef0ae5589b4c385d299937",
+    "7650a832cf40ec62efa19640807bd1a55f39d6a9114b96aca0d0ce0c1c9f16c4"
   ]
 }

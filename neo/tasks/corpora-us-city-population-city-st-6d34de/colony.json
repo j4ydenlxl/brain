@@ -2,29 +2,31 @@
   "task": "corpora-us-city-population-city-st-6d34de",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T14:35:40.087Z",
+  "at": "2026-11-26T11:48:30.536Z",
   "stats": {
-    "generated": 160284,
-    "distinct": 130323,
-    "kept": 284,
-    "know": 164,
+    "generated": 200037,
+    "distinct": 61827,
+    "kept": 287,
+    "know": 166,
     "byFamily": {
-      "transform": 71,
-      "compute": 27,
+      "transform": 66,
+      "compute": 34,
       "aggregate": 93,
-      "memory": 80,
+      "memory": 81,
       "sense": 1,
       "iterate": 12
     },
     "bySource": {
-      "parent": 281,
-      "enum": 3
+      "parent": 260,
+      "enum": 25,
+      "template": 1,
+      "memory": 1
     },
     "maxHeight": 8,
     "devOk": 40,
     "devN": 40,
-    "ms": 59959,
-    "cellsPerSecond": 2673,
+    "ms": 129301,
+    "cellsPerSecond": 1547,
     "capped": null,
     "packs": [
       "corpora-us-cities",
@@ -33,13 +35,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "61b249a583e966cd59cbd7a120271957d05f29ee32f37f2ef4b76dd212d370e8",
-      "round": 2,
-      "at": 343234,
+      "basis": "fad07b44443f854de4d3a066ece3a52330effbbecb0946a366bb298ef1ea8d63",
+      "round": 0,
+      "at": 123174,
       "maxCost": 7,
       "done": false,
-      "cost": 7,
-      "prim": "aggregate.vowels",
+      "cost": 6,
+      "prim": "compute.lcm",
       "tpl": 1781
     }
   },
@@ -155,6 +157,127 @@
       "fit": {
         "ok": 26,
         "fired": 26,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-99ac17ac",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bountiful",
+            "buckeye",
+            "centennial",
+            "charlotte",
+            "cloud",
+            "cranston",
+            "creek",
+            "element",
+            "encinitas",
+            "federal",
+            "gaithersburg",
+            "hanford",
+            "hawaii",
+            "hempstead",
+            "item number",
+            "lawton",
+            "lcm",
+            "least common multiple",
+            "lehi",
+            "lowest common multiple",
+            "margarita",
+            "nth",
+            "peoria",
+            "position",
+            "riverview",
+            "titusville",
+            "turlock",
+            "wheaton"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austin"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "city"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "coconut"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 2
+          },
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
         "rows": 40
       }
     },
@@ -1734,7 +1857,7 @@
       }
     },
     {
-      "id": "n-540b1be0",
+      "id": "n-ddeec794",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 10,
       "parents": [],
@@ -1742,28 +1865,25 @@
         [
           "hasAny",
           [
-            "amboy",
+            "apex",
             "bountiful",
             "buckeye",
+            "centennial",
             "club",
-            "count",
             "element",
             "encinitas",
-            "glendale",
+            "george",
             "hanford",
-            "how many",
-            "how many items",
             "item number",
             "joplin",
-            "lawton",
             "lcm",
             "least common multiple",
             "lombard",
             "lowest common multiple",
+            "margarita",
             "minnetonka",
             "nth",
-            "number of items",
-            "odessa",
+            "plymouth",
             "position",
             "turlock",
             "wheaton"
@@ -1772,6 +1892,10 @@
         [
           "words<=",
           9
+        ],
+        [
+          "has",
+          "population"
         ],
         [
           "has",
@@ -1788,7 +1912,14 @@
           "not",
           [
             "has",
-            "give"
+            "austin"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "city"
           ]
         ]
       ],
@@ -1796,6 +1927,9 @@
         "render.number",
         [
           "compute.lcm",
+          {
+            "lit": 3
+          },
           [
             "know.num",
             [
@@ -1825,21 +1959,15 @@
                 "lit": "population"
               }
             ]
-          ],
-          [
-            "aggregate.countStrs",
-            [
-              "sense.content"
-            ]
           ]
         ]
       ],
       "mem": null,
       "height": 6,
-      "size": 14,
+      "size": 13,
       "fit": {
-        "ok": 14,
-        "fired": 14,
+        "ok": 15,
+        "fired": 15,
         "rows": 40
       }
     },
@@ -3687,9 +3815,9 @@
       }
     },
     {
-      "id": "n-e9cfd2bc",
+      "id": "n-3a087f0c",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -3720,6 +3848,10 @@
         [
           "words<=",
           9
+        ],
+        [
+          "has",
+          "population"
         ],
         [
           "has",
@@ -5191,6 +5323,133 @@
       }
     },
     {
+      "id": "n-1a82e7b9",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amboy",
+            "auburn",
+            "binomial coefficient",
+            "centennial",
+            "choose",
+            "combinations",
+            "count",
+            "cranston",
+            "dayton",
+            "element",
+            "franklin",
+            "hawaii",
+            "how many",
+            "how many items",
+            "item number",
+            "joplin",
+            "lawton",
+            "margarita",
+            "n choose k",
+            "nth",
+            "number of items",
+            "plymouth",
+            "position",
+            "turlock",
+            "ways to choose"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "aurora"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austin"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 16,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3dcb28e2",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 7,
@@ -6025,6 +6284,132 @@
         "render.number",
         [
           "compute.power",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 16,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e481efd0",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amboy",
+            "auburn",
+            "centennial",
+            "count",
+            "cranston",
+            "dayton",
+            "element",
+            "franklin",
+            "hawaii",
+            "how many",
+            "how many items",
+            "item number",
+            "joplin",
+            "lawton",
+            "lowest terms",
+            "margarita",
+            "nth",
+            "number of items",
+            "plymouth",
+            "position",
+            "reduce the fraction",
+            "simplest form",
+            "simplify the fraction",
+            "turlock"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "aurora"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austin"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
           [
             "know.num",
             [
@@ -7328,6 +7713,130 @@
       }
     },
     {
+      "id": "n-22018f74",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amboy",
+            "centennial",
+            "count",
+            "cranston",
+            "dayton",
+            "element",
+            "franklin",
+            "gaithersburg",
+            "hawaii",
+            "how many",
+            "how many items",
+            "item number",
+            "joplin",
+            "lancaster",
+            "lawton",
+            "lowest terms",
+            "nth",
+            "number of items",
+            "position",
+            "reduce the fraction",
+            "simplest form",
+            "simplify the fraction"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "altadena"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "angeles"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "US city"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 16,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5f89a301",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 10,
@@ -7891,6 +8400,131 @@
         "render.number",
         [
           "transform.idiv",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "US city"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 16,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c0818699",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amboy",
+            "binomial coefficient",
+            "centennial",
+            "choose",
+            "combinations",
+            "count",
+            "cranston",
+            "dayton",
+            "element",
+            "franklin",
+            "gaithersburg",
+            "hawaii",
+            "how many",
+            "how many items",
+            "item number",
+            "joplin",
+            "lancaster",
+            "lawton",
+            "n choose k",
+            "nth",
+            "number of items",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "altadena"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "angeles"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
           [
             "know.num",
             [
@@ -9330,7 +9964,7 @@
     {
       "id": "n-190d5e8c",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -9415,7 +10049,7 @@
     {
       "id": "n-0e561593",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -9448,6 +10082,83 @@
           {
             "lit": 4
           },
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a4df4fc6",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bountiful",
+            "centennial",
+            "element",
+            "encinitas",
+            "hempstead",
+            "item number",
+            "lcm",
+            "least common multiple",
+            "lowest common multiple",
+            "nth",
+            "peoria",
+            "position",
+            "tyler"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          [
+            "sense.wordCount"
+          ],
           [
             "know.num",
             [
@@ -9681,7 +10392,7 @@
     {
       "id": "n-096096e4",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -9759,7 +10470,7 @@
     {
       "id": "n-3f861649",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -9832,9 +10543,114 @@
       }
     },
     {
+      "id": "n-8740cd37",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "centennial",
+            "charlotte",
+            "dayton",
+            "diagonal",
+            "element",
+            "hypotenuse",
+            "item number",
+            "nth",
+            "peoria",
+            "position",
+            "pythagoras",
+            "pythagorean"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austin"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "city"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "euless"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.hypot",
+          {
+            "lit": 100
+          },
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f70bc2a2",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -10191,398 +11007,6 @@
       }
     },
     {
-      "id": "n-29d5a239",
-      "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "element",
-            "hempstead",
-            "item number",
-            "nth",
-            "position",
-            "replace",
-            "substitute",
-            "swap",
-            "washington"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "US city"
-              }
-            ],
-            {
-              "lit": -1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "state"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "city, state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "city, state"
-            },
-            {
-              "lit": "population"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 21,
-      "fit": {
-        "ok": 3,
-        "fired": 3,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-a58a78af",
-      "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "element",
-            "hempstead",
-            "item number",
-            "nth",
-            "position",
-            "replace",
-            "substitute",
-            "swap",
-            "washington"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "US city"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "state"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "city, state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "city, state"
-            },
-            {
-              "lit": "population"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 21,
-      "fit": {
-        "ok": 3,
-        "fired": 3,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d8fb4cac",
-      "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "element",
-            "hempstead",
-            "item number",
-            "nth",
-            "position",
-            "replace",
-            "substitute",
-            "swap",
-            "washington"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "state"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "US city"
-              }
-            ],
-            {
-              "lit": -1
-            }
-          ],
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "city, state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "city, state"
-            },
-            {
-              "lit": "population"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 21,
-      "fit": {
-        "ok": 3,
-        "fired": 3,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-f2b6f8f8",
-      "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "element",
-            "hempstead",
-            "item number",
-            "nth",
-            "position",
-            "replace",
-            "substitute",
-            "swap",
-            "washington"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "state"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "US city"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ],
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "city, state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "city, state"
-            },
-            {
-              "lit": "population"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 21,
-      "fit": {
-        "ok": 3,
-        "fired": 3,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-1397e369",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 10,
@@ -10828,7 +11252,7 @@
     {
       "id": "n-8ef13dec",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -11354,99 +11778,6 @@
       }
     },
     {
-      "id": "n-faaf5455",
-      "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "element",
-            "item number",
-            "name",
-            "nth",
-            "position",
-            "replace",
-            "substitute",
-            "swap"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "corpora-us-city-population"
-                },
-                {
-                  "lit": "city, state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "corpora-us-city-population"
-            },
-            {
-              "lit": "city, state"
-            },
-            {
-              "lit": "population"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-cities"
-              },
-              {
-                "lit": "US city"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 21,
-      "fit": {
-        "ok": 2,
-        "fired": 2,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-13307afd",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 10,
@@ -11548,7 +11879,7 @@
     {
       "id": "n-bd147ab9",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -11986,7 +12317,7 @@
     {
       "id": "n-1f9104b1",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -12136,7 +12467,7 @@
     {
       "id": "n-26b558cb",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -12291,7 +12622,7 @@
     {
       "id": "n-274fd573",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -12525,7 +12856,7 @@
     {
       "id": "n-32c4548c",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -12623,88 +12954,6 @@
               "slot": 0
             },
             " of Buckeye, Arizona is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "corpora-us-city-population"
-              },
-              {
-                "lit": "city, state"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "corpora-us-city-population"
-          },
-          {
-            "lit": "city, state"
-          },
-          {
-            "lit": "population"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-3bde60dc",
-      "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "michigan",
-            "nth",
-            "position"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Royal Oak, Michigan is ",
             {
               "slot": 1
             },
@@ -13073,7 +13322,7 @@
     {
       "id": "n-525f9431",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -13932,7 +14181,7 @@
     {
       "id": "n-94daee36",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -14406,7 +14655,7 @@
     {
       "id": "n-b400f802",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -15112,7 +15361,7 @@
     {
       "id": "n-c9c4b773",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -15506,6 +15755,88 @@
       }
     },
     {
+      "id": "n-ed879752",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "michigan",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "royal"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Royal Oak, Michigan is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "city, state"
+          },
+          {
+            "lit": "population"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f5eb00c6",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 7,
@@ -15586,7 +15917,7 @@
     {
       "id": "n-fae2baa6",
       "task": "corpora-us-city-population-city-st-6d34de",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -21423,6 +21754,49 @@
       }
     },
     {
+      "id": "n-aaf463cc",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "hempstead",
+            "name",
+            "new",
+            "population",
+            "york"
+          ]
+        ],
+        [
+          "has",
+          "hempstead"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "name the population of Hempstead, New York": "The population of Hempstead, New York is 55454."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-abcfb080",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 7,
@@ -21873,6 +22247,792 @@
       }
     },
     {
+      "id": "n-540b1be0",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amboy",
+            "bountiful",
+            "buckeye",
+            "club",
+            "count",
+            "element",
+            "encinitas",
+            "glendale",
+            "hanford",
+            "how many",
+            "how many items",
+            "item number",
+            "joplin",
+            "lawton",
+            "lcm",
+            "least common multiple",
+            "lombard",
+            "lowest common multiple",
+            "minnetonka",
+            "nth",
+            "number of items",
+            "odessa",
+            "position",
+            "turlock",
+            "wheaton"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "give"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 14,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e9cfd2bc",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "amboy",
+            "buckeye",
+            "cloud",
+            "club",
+            "creek",
+            "element",
+            "encinitas",
+            "franklin",
+            "glendale",
+            "hawaii",
+            "item number",
+            "lcm",
+            "least common multiple",
+            "lombard",
+            "lowest common multiple",
+            "nth",
+            "peoria",
+            "plymouth",
+            "position",
+            "riverview"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "coconut"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "give"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 5
+          },
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-29d5a239",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "hempstead",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap",
+            "washington"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "US city"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "state"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "city, state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "city, state"
+            },
+            {
+              "lit": "population"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a58a78af",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "hempstead",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap",
+            "washington"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "US city"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "state"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "city, state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "city, state"
+            },
+            {
+              "lit": "population"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d8fb4cac",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "hempstead",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap",
+            "washington"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "state"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "US city"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "city, state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "city, state"
+            },
+            {
+              "lit": "population"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f2b6f8f8",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "hempstead",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap",
+            "washington"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "state"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "US city"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "city, state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "city, state"
+            },
+            {
+              "lit": "population"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-faaf5455",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "city, state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "city, state"
+            },
+            {
+              "lit": "population"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-cities"
+              },
+              {
+                "lit": "US city"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3bde60dc",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "michigan",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Royal Oak, Michigan is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "corpora-us-city-population"
+          },
+          {
+            "lit": "city, state"
+          },
+          {
+            "lit": "population"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e9d81399",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 7,
@@ -22121,6 +23281,7 @@
   "stages": [
     "f75d68576016ae55393c156aad2f30e1c4c3c7334ec423aab898e976d4cb47fb",
     "65936b068e7ea75b1bba81f3f490ce94659de3663afb6e9c24678a2febe9394e",
-    "692a7e7e172a5e7f849cf4e655e996154c9e292a922e04ce7e46624a3c96e78e"
+    "692a7e7e172a5e7f849cf4e655e996154c9e292a922e04ce7e46624a3c96e78e",
+    "6f649ad6831cc0e2b9d215972620f293db49040dd4a212f75250f03fefcad537"
   ]
 }
