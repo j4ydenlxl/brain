@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "6d5727819200242f618d711a6a5b9ccce256042a72eb734707d8f201884b295b";
+const VERSION = "d56e989d08e09fd86d12f1f35f3a7f39cb66babaf9b40c86f3fa47357af0f119";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"ed480237a4642885481ecc4ded7cb7955bd3babcb73ac9623f8306d3141512c0"},
+  {"url":"/organism/cells.json","sha256":"1a9355bfab2d37cc4b26c5a5294f199641442bfc8bf86468a43fe78df2ffdbfe"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -511,10 +511,11 @@ const PRECACHE = [
   {"url":"/organism/cells/fr-tidytuesday-former-countries-70-4bf0e6-neo-g10.mjs","sha256":"056b4cf3e7a173af5385f84a71ca51124c8c467daf53adaeef6e6ce76fba8827"},
   {"url":"/organism/cells/fatalities-count-of-d-f626-larger-neo-g10-2.mjs","sha256":"63ba77b6624aef96419af8cc1b8526433670b0b0054819d4b8c8b932610513b8"},
   {"url":"/organism/cells/fr-tidytuesday-cuisines-ce1912-aut-4cab64-neo-g10.mjs","sha256":"00969bb5c9d1d6866b3006d7d6c0775d44aaf789930a131414162b8d4eba9c73"},
+  {"url":"/organism/cells/fr-tidytuesday-gutenberg-authors-5-b622b6-neo-g10.mjs","sha256":"2217264837ab178af2ccecef3b548a9898e1b3602b53210ba577fdc1063c9205"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"8b99ff937f2b2ee6b626bb87aa194b2d52b48408d2b0f7e494d25bf571b1140e"}
+  {"url":"/organism/era/tasks.json","sha256":"0aa89637b50e9c1a3da89eeaa263f8bd36c8ec7419c6a5a546741d03acdc06b5"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
