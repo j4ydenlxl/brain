@@ -2,28 +2,29 @@
   "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T12:41:05.277Z",
+  "at": "2026-11-26T22:06:05.416Z",
   "stats": {
     "generated": 160392,
-    "distinct": 115739,
-    "kept": 307,
-    "know": 257,
+    "distinct": 104838,
+    "kept": 309,
+    "know": 259,
     "byFamily": {
       "know": 57,
-      "transform": 189,
+      "transform": 191,
       "sense": 2,
       "memory": 43,
       "aggregate": 16
     },
     "bySource": {
-      "parent": 213,
-      "enum": 94
+      "open": 12,
+      "parent": 259,
+      "enum": 38
     },
     "maxHeight": 6,
     "devOk": 20,
     "devN": 20,
-    "ms": 151611,
-    "cellsPerSecond": 1058,
+    "ms": 138282,
+    "cellsPerSecond": 1160,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -33,16 +34,90 @@
     "cursor": {
       "v": 1,
       "basis": "b0eb7ffb9ab5e33624daed5dfe3ee18dd3b4b695fa332cd9facc114523a71a3b",
-      "round": 1,
-      "at": 232686,
+      "round": 2,
+      "at": 366292,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.split",
+      "cost": 7,
+      "prim": "compare.atLeast",
       "tpl": 1781
     }
   },
   "cells": [
+    {
+      "id": "n-3ddf6eab",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-791ed515"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "ft",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+              },
+              {
+                "lit": "featuring"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+          },
+          {
+            "lit": "featuring"
+          },
+          {
+            "lit": "artist"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 20
+      }
+    },
     {
       "id": "n-791ed515",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
@@ -111,10 +186,12 @@
       }
     },
     {
-      "id": "n-de863be0",
+      "id": "n-5eee8b26",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-d592d907"
+      ],
       "guard": [
         [
           "not",
@@ -128,6 +205,7 @@
               "brice",
               "count",
               "featuring",
+              "ft",
               "hex",
               "holds",
               "josh",
@@ -145,78 +223,7 @@
       "pyramid": [
         "render.str",
         [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-country-lyrics-92d7ec"
-              },
-              {
-                "lit": "featuring"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-country-lyrics-92d7ec"
-          },
-          {
-            "lit": "featuring"
-          },
-          {
-            "lit": "artist"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 20,
-        "fired": 20,
-        "rows": 20
-      }
-    },
-    {
-      "id": "n-0ee2fa57",
-      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "aarons",
-              "act",
-              "album",
-              "ariana",
-              "brice",
-              "count",
-              "featuring",
-              "hex",
-              "holds",
-              "josh",
-              "pounder",
-              "song",
-              "sort",
-              "taylorswiftlyrics",
-              "title",
-              "writers",
-              "wylie"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.title",
+          "transform.upper",
           [
             "know.lookup",
             [
@@ -329,10 +336,85 @@
       }
     },
     {
-      "id": "n-6ec9060a",
+      "id": "n-9490ee93",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
       "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "artist",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "church"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-ab95951d",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-68f25e96"
+      ],
       "guard": [
         [
           "not",
@@ -346,6 +428,7 @@
               "brice",
               "count",
               "featuring",
+              "ft",
               "hex",
               "holds",
               "josh",
@@ -403,10 +486,12 @@
       }
     },
     {
-      "id": "n-852b538a",
+      "id": "n-c760b557",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-e0782249"
+      ],
       "guard": [
         [
           "not",
@@ -420,6 +505,7 @@
               "brice",
               "count",
               "featuring",
+              "ft",
               "hex",
               "holds",
               "josh",
@@ -437,7 +523,7 @@
       "pyramid": [
         "render.str",
         [
-          "transform.upper",
+          "transform.title",
           [
             "know.lookup",
             [
@@ -477,33 +563,37 @@
       }
     },
     {
-      "id": "n-9490ee93",
+      "id": "n-d2b3241d",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-9490ee93"
+      ],
       "guard": [
-        [
-          "hasAny",
-          [
-            "artist",
-            "element",
-            "invert case",
-            "item number",
-            "nth",
-            "position",
-            "swap case",
-            "toggle case"
-          ]
-        ],
-        [
-          "words<=",
-          9
-        ],
         [
           "not",
           [
-            "has",
-            "church"
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "ft",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
           ]
         ]
       ],
@@ -699,80 +789,6 @@
       }
     },
     {
-      "id": "n-f8995b29",
-      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "aarons",
-              "act",
-              "album",
-              "ariana",
-              "brice",
-              "count",
-              "featuring",
-              "hex",
-              "holds",
-              "josh",
-              "pounder",
-              "song",
-              "sort",
-              "taylorswiftlyrics",
-              "title",
-              "writers",
-              "wylie"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.swapCase",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
-                },
-                {
-                  "lit": "featuring"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
-            },
-            {
-              "lit": "featuring"
-            },
-            {
-              "lit": "artist"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 11,
-      "fit": {
-        "ok": 20,
-        "fired": 20,
-        "rows": 20
-      }
-    },
-    {
       "id": "n-4b2fb5b9",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
@@ -853,7 +869,7 @@
       }
     },
     {
-      "id": "n-59745241",
+      "id": "n-5998171f",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
       "parents": [
@@ -872,6 +888,7 @@
               "brice",
               "count",
               "featuring",
+              "ft",
               "hex",
               "holds",
               "josh",
@@ -1320,6 +1337,91 @@
               "brice",
               "count",
               "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "swift",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 19,
+        "fired": 19,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-c416840d",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-64e72b45",
+        "n-9d9f6aae"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "ft",
               "hex",
               "holds",
               "josh",
@@ -1905,6 +2007,112 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 19,
+        "fired": 19,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-b753117e",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-14bc758d",
+        "n-32bd8d05"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "album",
+              "ariana",
+              "blush",
+              "brice",
+              "carnation",
+              "count",
+              "courtesy",
+              "crayola",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "lavender",
+              "malone",
+              "pounder",
+              "quavo",
+              "security",
+              "sherbert",
+              "shocking",
+              "song",
+              "sort",
+              "swift",
+              "taylorswiftlyrics",
+              "title",
+              "ugly",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 17,
       "fit": {
         "ok": 19,
@@ -4535,6 +4743,81 @@
       }
     },
     {
+      "id": "n-35cc596e",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-6b0af3a6"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "ft",
+              "josh",
+              "song",
+              "source",
+              "taylorswiftlyrics",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ],
+          {
+            "lit": "Kenny Chesney"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 20
+      }
+    },
+    {
       "id": "n-3d72647d",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
@@ -4605,11 +4888,11 @@
       }
     },
     {
-      "id": "n-3dd67aab",
+      "id": "n-570f428e",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
       "parents": [
-        "n-ff2320a3"
+        "n-3d72647d"
       ],
       "guard": [
         [
@@ -4624,6 +4907,7 @@
               "brice",
               "count",
               "featuring",
+              "ft",
               "hex",
               "holds",
               "josh",
@@ -4670,7 +4954,7 @@
             }
           ],
           {
-            "lit": "Dierks Bentley"
+            "lit": "Brantley Gilbert"
           }
         ]
       ],
@@ -4761,11 +5045,11 @@
       }
     },
     {
-      "id": "n-90421d73",
+      "id": "n-8e90a145",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
       "parents": [
-        "n-3d72647d"
+        "n-ff2320a3"
       ],
       "guard": [
         [
@@ -4780,6 +5064,7 @@
               "brice",
               "count",
               "featuring",
+              "ft",
               "hex",
               "holds",
               "josh",
@@ -4826,7 +5111,7 @@
             }
           ],
           {
-            "lit": "Brantley Gilbert"
+            "lit": "Dierks Bentley"
           }
         ]
       ],
@@ -4917,7 +5202,7 @@
       }
     },
     {
-      "id": "n-bc1db1f8",
+      "id": "n-99480650",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
       "parents": [
@@ -4936,6 +5221,7 @@
               "brice",
               "count",
               "featuring",
+              "ft",
               "hex",
               "holds",
               "josh",
@@ -4983,80 +5269,6 @@
           ],
           {
             "lit": "Florida Georgia Line"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 12,
-      "fit": {
-        "ok": 18,
-        "fired": 18,
-        "rows": 20
-      }
-    },
-    {
-      "id": "n-f585a755",
-      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
-      "gen": 10,
-      "parents": [
-        "n-6b0af3a6"
-      ],
-      "guard": [
-        [
-          "not",
-          [
-            "hasAny",
-            [
-              "aarons",
-              "album",
-              "ariana",
-              "brice",
-              "count",
-              "featuring",
-              "josh",
-              "song",
-              "source",
-              "taylorswiftlyrics",
-              "writers",
-              "wylie"
-            ]
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
-                },
-                {
-                  "lit": "featuring"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
-            },
-            {
-              "lit": "featuring"
-            },
-            {
-              "lit": "artist"
-            }
-          ],
-          {
-            "lit": "Kenny Chesney"
           }
         ]
       ],
@@ -23208,6 +23420,763 @@
       }
     },
     {
+      "id": "n-de863be0",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+              },
+              {
+                "lit": "featuring"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+          },
+          {
+            "lit": "featuring"
+          },
+          {
+            "lit": "artist"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-0ee2fa57",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-6ec9060a",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-852b538a",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-f8995b29",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-59745241",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-4b2fb5b9"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                  },
+                  {
+                    "lit": "featuring"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+              },
+              {
+                "lit": "featuring"
+              },
+              {
+                "lit": "artist"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-3dd67aab",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-ff2320a3"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ],
+          {
+            "lit": "Dierks Bentley"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-90421d73",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-3d72647d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ],
+          {
+            "lit": "Brantley Gilbert"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-bc1db1f8",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-91fc14ea"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "act",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "hex",
+              "holds",
+              "josh",
+              "pounder",
+              "song",
+              "sort",
+              "taylorswiftlyrics",
+              "title",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ],
+          {
+            "lit": "Florida Georgia Line"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 20
+      }
+    },
+    {
+      "id": "n-f585a755",
+      "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
+      "gen": 10,
+      "parents": [
+        "n-6b0af3a6"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "aarons",
+              "album",
+              "ariana",
+              "brice",
+              "count",
+              "featuring",
+              "josh",
+              "song",
+              "source",
+              "taylorswiftlyrics",
+              "writers",
+              "wylie"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "featuring"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "featuring"
+            },
+            {
+              "lit": "artist"
+            }
+          ],
+          {
+            "lit": "Kenny Chesney"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 20
+      }
+    },
+    {
       "id": "n-9f0c5e6a",
       "task": "fr-tidytuesday-country-lyrics-92d7-ab08a3",
       "gen": 10,
@@ -30910,6 +31879,7 @@
     "45f52b465c31d45c37921cb37501e82e999a3400afc1e862ef63dcba66c79dbb",
     "bab5fb898840dadeb0c62dca3a3634a0930b3002c55950a98b676cb7f4809755",
     "e7066bf45f04d5b6b28af58a42771883d4f05cb43cbb91a6be6c9d4d442cea83",
-    "f09a31b61b8b879e2f7d92a5b743521cfa303733ac400e57d4393b13ca6bac56"
+    "f09a31b61b8b879e2f7d92a5b743521cfa303733ac400e57d4393b13ca6bac56",
+    "95ef907b429a993ece37ec941a3bf640ded08a140f5f9044503bf52367725c79"
   ]
 }
