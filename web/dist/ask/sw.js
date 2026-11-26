@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "0dfd98999bab4fd4eb2fccfb51ef338539fafe073db3a6cdc170019d44ffe0cc";
+const VERSION = "283135cfa37c25b8b4a3d2744daf34b17d7a76913fb420f6f73b7229ba51562c";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"b4666a84bcea95a925058c5ce3d1257c3e26b73cff8afe6ce2f6598967abd46e"},
+  {"url":"/organism/cells.json","sha256":"90c7ee5e44fe38d6225bbd6a6dc5c8912af35b981a6005da38f0a1f307133503"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -514,10 +514,19 @@ const PRECACHE = [
   {"url":"/organism/cells/fr-tidytuesday-gutenberg-authors-5-b622b6-neo-g10.mjs","sha256":"2217264837ab178af2ccecef3b548a9898e1b3602b53210ba577fdc1063c9205"},
   {"url":"/organism/cells/fr-tidytuesday-hbcu-all-31e5d4-tot-897d58-neo-g10.mjs","sha256":"bb13da21b882c747613b0ef9a8e439cd1b3477aa0df0d9686f9e189da1a54396"},
   {"url":"/organism/cells/fr-tidytuesday-hbcu-all-31e5d4-mal-349aec-neo-g10.mjs","sha256":"721a89ee2baf078fe9309a8af978e02e6ded9dc3dd2d92088e0922b75bf68df7"},
+  {"url":"/organism/cells/indicator-of-date-7f71-compare-neo-g10.mjs","sha256":"f574299e98b7d6f754386d96fa9974c905d3932008ff9d8f73eb1f04b3869668"},
+  {"url":"/organism/cells/indicator-of-date-7f71-larger-neo-g10.mjs","sha256":"68541f34e38ba57b37c6fc3597b4b9ed9f85cf8c0fe360bbdae02bc8df63a722"},
+  {"url":"/organism/cells/indicator-of-date-7f71-smaller-neo-g10.mjs","sha256":"6e69dcaafe60d1ff60bc3ce8d9d77b326ca465cca06d32e7889f893ebca2045c"},
+  {"url":"/organism/cells/indicator-of-date-7f71-sum-neo-g10.mjs","sha256":"e09c328de40825791d3d344ab384a1765c063012c0590a1299da53b64f57bfcd"},
+  {"url":"/organism/cells/sp500-of-observation-402b-neo-g10.mjs","sha256":"46df6aa9369d7976d035d146b7c91e9d0e9834edfd3ace659f296a2b0b01ca61"},
+  {"url":"/organism/cells/sp500-of-observation-402b-compare-neo-g10.mjs","sha256":"f6b98eeba5f92f10c3e7b0726e3f3d940fffbf839aaaf07d803b416e91061a8c"},
+  {"url":"/organism/cells/sp500-of-observation-402b-larger-neo-g10.mjs","sha256":"28a09eef50f41198f74605a2245bff94ace03f36f5b6ff68bae4661508ea48de"},
+  {"url":"/organism/cells/sp500-of-observation-402b-smaller-neo-g10.mjs","sha256":"289e8cd69cc81c5459afc51308db543d7d433f16588c69236ae140da5122157a"},
+  {"url":"/organism/cells/sp500-of-observation-402b-sum-neo-g10.mjs","sha256":"d0e774e8520d25e6a79709c206db61a88d36be4d419711b2c96a92613a360880"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"228df46de3e744e5ba91f819114c04b7836551fcf333d5fd3f48b9249bee2966"}
+  {"url":"/organism/era/tasks.json","sha256":"12d3f989f6046a82a2312f90f135d7888d3dd48e261ab448453c28ef66d3dfa5"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
