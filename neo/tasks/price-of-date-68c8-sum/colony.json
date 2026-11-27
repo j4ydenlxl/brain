@@ -2,10 +2,10 @@
   "task": "price-of-date-68c8-sum",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T10:56:33.526Z",
+  "at": "2026-11-27T06:46:13.710Z",
   "stats": {
-    "generated": 163703,
-    "distinct": 125847,
+    "generated": 135237,
+    "distinct": 130054,
     "kept": 112,
     "know": 8,
     "byFamily": {
@@ -14,28 +14,27 @@
       "transform": 7
     },
     "bySource": {
-      "parent": 110,
-      "open": 1,
-      "template": 1
+      "parent": 111,
+      "open": 1
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 69672,
-    "cellsPerSecond": 2350,
-    "capped": null,
+    "ms": 69938,
+    "cellsPerSecond": 1934,
+    "capped": "ms",
     "packs": [
       "fr-oil-prices-brent-weekly-f6578a"
     ],
     "cursor": {
       "v": 1,
       "basis": "3dcc84a602e449f805bea37ca9e9e95aac5a62c21fbdbfc6a114cac5887da388",
-      "round": 1,
-      "at": 152149,
+      "round": 2,
+      "at": 237828,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.contains",
+      "prim": "compute.discount",
       "tpl": 3397
     }
   },
@@ -512,7 +511,7 @@
       }
     },
     {
-      "id": "n-dd242f45",
+      "id": "n-d3f066fb",
       "task": "price-of-date-68c8-sum",
       "gen": 10,
       "parents": [],
@@ -524,6 +523,7 @@
             [
               "20040917",
               "greater",
+              "indicator",
               "larger",
               "smaller",
               "sum"
@@ -5452,6 +5452,107 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-dd242f45",
+      "task": "price-of-date-68c8-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20040917",
+              "greater",
+              "larger",
+              "smaller",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-weekly-f6578a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-weekly-f6578a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-weekly-f6578a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-weekly-f6578a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 24,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
@@ -5466,6 +5567,7 @@
     "0c9d5133c3c21cfe3064b80acc5c211535f2f12981a04e487a441ae5ed404b2f",
     "cc23a43a1178b13160608795a92202707ea669ba42bd30def9ad7420c8cd3ae4",
     "2a93c8e6d1ecb6569853db3170e2e436bbdbd095f2fb4f8c57d1c69e4526556f",
-    "f4a086bbeed527f1b75c5950bfac5a88f3dfa511dc5b4d4704da13b2228001d7"
+    "f4a086bbeed527f1b75c5950bfac5a88f3dfa511dc5b4d4704da13b2228001d7",
+    "4c400dd7cb59463b37e6cbaaf8d82e387d5b99506cd0a1db99a20bd2eb380556"
   ]
 }

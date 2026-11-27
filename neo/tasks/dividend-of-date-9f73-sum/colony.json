@@ -2,10 +2,10 @@
   "task": "dividend-of-date-9f73-sum",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-18T09:05:37.466Z",
+  "at": "2026-11-27T06:42:48.601Z",
   "stats": {
-    "generated": 105225,
-    "distinct": 100683,
+    "generated": 160106,
+    "distinct": 175592,
     "kept": 106,
     "know": 2,
     "byFamily": {
@@ -13,26 +13,27 @@
       "compute": 2
     },
     "bySource": {
-      "parent": 106
+      "parent": 105,
+      "open": 1
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 55234,
-    "cellsPerSecond": 1905,
-    "capped": "ms",
+    "ms": 41323,
+    "cellsPerSecond": 3875,
+    "capped": null,
     "packs": [
       "fr-s-and-p-500-data-97f0ea"
     ],
     "cursor": {
       "v": 1,
       "basis": "3580a3c30eeea32df29d6fb6eb5bcf1f6415b5b8de28ca8d647505b0d4da8dd5",
-      "round": 1,
-      "at": 143390,
+      "round": 2,
+      "at": 209187,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "transform.div",
+      "prim": "aggregate.median",
       "tpl": 3305
     }
   },
@@ -509,24 +510,26 @@
       }
     },
     {
-      "id": "n-0944f3c8",
+      "id": "n-9571829e",
       "task": "dividend-of-date-9f73-sum",
       "gen": 10,
-      "parents": [
-        "n-9571829e"
-      ],
+      "parents": [],
       "guard": [
         [
-          "not",
+          "hasAny",
           [
-            "hasAny",
-            [
-              "angeles",
-              "compare",
-              "cpi",
-              "makes",
-              "rate"
-            ]
+            "add",
+            "added to",
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "element",
+            "item number",
+            "more than",
+            "n choose k",
+            "nth",
+            "position",
+            "ways to choose"
           ]
         ]
       ],
@@ -612,26 +615,25 @@
       }
     },
     {
-      "id": "n-9571829e",
+      "id": "n-bb53507b",
       "task": "dividend-of-date-9f73-sum",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-9571829e"
+      ],
       "guard": [
         [
-          "hasAny",
+          "not",
           [
-            "add",
-            "added to",
-            "binomial coefficient",
-            "choose",
-            "combinations",
-            "element",
-            "item number",
-            "more than",
-            "n choose k",
-            "nth",
-            "position",
-            "ways to choose"
+            "hasAny",
+            [
+              "angeles",
+              "compare",
+              "cpi",
+              "indicator",
+              "makes",
+              "rate"
+            ]
           ]
         ]
       ],
@@ -4348,6 +4350,109 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-0944f3c8",
+      "task": "dividend-of-date-9f73-sum",
+      "gen": 10,
+      "parents": [
+        "n-9571829e"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "angeles",
+              "compare",
+              "cpi",
+              "makes",
+              "rate"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-s-and-p-500-data-97f0ea"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-s-and-p-500-data-97f0ea"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "dividend"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-s-and-p-500-data-97f0ea"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-s-and-p-500-data-97f0ea"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "dividend"
+                }
+              ]
+            ]
+          ],
+          [
+            "sense.last"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 24,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
@@ -4364,6 +4469,7 @@
     "67d10d455e41be652bff7a262307c43d10af1f93385b03a739ed7a2804894ac9",
     "51756dcce86cb22e23d11ac86ae2620d6c44254590beadb81f77d81f88f9ad5f",
     "df67cfb78528b71c43949cacfa0c73436b4c83343e9e3dd514719ce6dfb7450e",
-    "c2e3a45679bdcc4f7909ea80decd67475f10fbe6d44b02cbd5b46f80c6e5271c"
+    "c2e3a45679bdcc4f7909ea80decd67475f10fbe6d44b02cbd5b46f80c6e5271c",
+    "e6cd3c46d95182a84b4bd115fd84a9fa782bfc16892599f4aee37e9df96ed16f"
   ]
 }

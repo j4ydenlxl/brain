@@ -2,30 +2,28 @@
   "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-11-25T15:17:47.918Z",
+  "at": "2026-11-27T06:36:03.208Z",
   "stats": {
-    "generated": 200063,
-    "distinct": 56420,
-    "kept": 259,
-    "know": 138,
+    "generated": 160259,
+    "distinct": 114640,
+    "kept": 332,
+    "know": 211,
     "byFamily": {
       "sense": 1,
       "memory": 83,
-      "transform": 63,
-      "aggregate": 110,
+      "transform": 132,
+      "aggregate": 114,
       "know": 2
     },
     "bySource": {
-      "open": 1,
-      "memory": 83,
-      "enum": 59,
-      "template": 116
+      "parent": 259,
+      "enum": 73
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 113900,
-    "cellsPerSecond": 1756,
+    "ms": 175686,
+    "cellsPerSecond": 912,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "af1a387467648ae9a4e5bf1da223636b144fc1ddfec8160b330261c2125e2297",
-      "round": 0,
-      "at": 125405,
+      "round": 2,
+      "at": 354900,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "compute.log",
+      "cost": 7,
+      "prim": "compare.atLeast",
       "tpl": 1836
     }
   },
@@ -508,6 +506,121 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-56e25f8e",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "characters from",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "letters from to",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "orange",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "slice of the text",
+            "snohomish",
+            "substring",
+            "unadilla",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "shortname"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 33,
         "fired": 33,
@@ -1374,6 +1487,348 @@
       }
     },
     {
+      "id": "n-03e78edb",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "invert case",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0a36f699",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "all caps",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "capital letters",
+            "capitals",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "unadilla",
+            "upper case",
+            "uppercase",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-155cbfd6",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "camel case",
+            "camelcase",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "lower camel case",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "title case",
+            "unadilla",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3e4d169d",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -1597,6 +2052,804 @@
       }
     },
     {
+      "id": "n-4e090dee",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "invert case",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-52c283ad",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "city",
+            "cleveland",
+            "county",
+            "dashes",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "title case",
+            "unadilla",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-559acac1",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "class name",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "unadilla",
+            "upper camel case",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-55cbf8bd",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "cleveland",
+            "county",
+            "dashes",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-66fda867",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "title case",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6a839f22",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "cleveland",
+            "county",
+            "dashes",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "hyphens",
+            "invert case",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "swap case",
+            "toggle case",
+            "unadilla",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6fa2012f",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "title case",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-70a650ef",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -1703,6 +2956,1489 @@
       "mem": null,
       "height": 6,
       "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-70cbf5e8",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "all caps",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "capital letters",
+            "capitals",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "unadilla",
+            "upper case",
+            "uppercase",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-726c50e6",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "all caps",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "capital letters",
+            "capitals",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "unadilla",
+            "upper case",
+            "uppercase",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7f952489",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "cleveland",
+            "county",
+            "dashes",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-81342354",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "class name",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "invert case",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "swap case",
+            "toggle case",
+            "unadilla",
+            "upper camel case",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8fd12687",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "invert case",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9712ea19",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snake case",
+            "snakecase",
+            "snohomish",
+            "title case",
+            "unadilla",
+            "underscores",
+            "variable name",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.snake",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bcd9b285",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "camel case",
+            "camelcase",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "invert case",
+            "item number",
+            "lower camel case",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "swap case",
+            "toggle case",
+            "unadilla",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d1da7063",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "title case",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e51e71ef",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "camel case",
+            "camelcase",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "lower camel case",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e83124ea",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "invert case",
+            "item number",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snake case",
+            "snakecase",
+            "snohomish",
+            "swap case",
+            "toggle case",
+            "unadilla",
+            "underscores",
+            "variable name",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.snake",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f006835d",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "city",
+            "cleveland",
+            "county",
+            "dashes",
+            "dc",
+            "des",
+            "dover",
+            "each word",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "split into words",
+            "unadilla",
+            "vernon",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-faf47b63",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "all caps",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "camel case",
+            "camelcase",
+            "capital letters",
+            "capitals",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "lower camel case",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "snohomish",
+            "unadilla",
+            "upper case",
+            "uppercase",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 32,
+        "fired": 32,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7452fefe",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "characters from",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "eastford",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "letters from to",
+            "manchester",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "pelham",
+            "philadelphia",
+            "portland",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "slice of the text",
+            "snohomish",
+            "substring",
+            "unadilla",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "shortname"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 32,
         "fired": 32,
@@ -3811,6 +6547,115 @@
       }
     },
     {
+      "id": "n-3af2894f",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "aurora",
+            "boulder",
+            "buckeye",
+            "buffalo",
+            "characters from",
+            "city",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "letters from to",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "nanaimo",
+            "nth",
+            "philadelphia",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "slice of the text",
+            "snohomish",
+            "substring",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "shortname"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-90451498",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -4379,6 +7224,112 @@
       "fit": {
         "ok": 27,
         "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c5d3833b",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "buckeye",
+            "buffalo",
+            "characters from",
+            "cleveland",
+            "county",
+            "dc",
+            "des",
+            "dover",
+            "element",
+            "garner",
+            "harleysville",
+            "howell",
+            "item number",
+            "letters from to",
+            "marion",
+            "melbourne",
+            "millersville",
+            "milwaukee",
+            "new",
+            "nth",
+            "philadelphia",
+            "position",
+            "prairie",
+            "quincy",
+            "raleigh",
+            "reading",
+            "slice of the text",
+            "snohomish",
+            "substring",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "shortname"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 23,
+        "fired": 23,
         "rows": 40
       }
     },
@@ -5153,6 +8104,641 @@
       }
     },
     {
+      "id": "n-58544dca",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "all caps",
+            "alphabetize the letters",
+            "buckeye",
+            "buffalo",
+            "capital letters",
+            "capitals",
+            "county",
+            "dc",
+            "element",
+            "item number",
+            "letters in order",
+            "millersville",
+            "nth",
+            "philadelphia",
+            "position",
+            "prairie",
+            "raleigh",
+            "reading",
+            "sort the letters",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5e97d93e",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "alphabetize the letters",
+            "buckeye",
+            "buffalo",
+            "county",
+            "dc",
+            "each word",
+            "element",
+            "item number",
+            "letters in order",
+            "millersville",
+            "nth",
+            "philadelphia",
+            "position",
+            "prairie",
+            "raleigh",
+            "reading",
+            "sort the letters",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c143f736",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "alphabetize the letters",
+            "buckeye",
+            "buffalo",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "county",
+            "dc",
+            "element",
+            "item number",
+            "letters in order",
+            "millersville",
+            "nth",
+            "philadelphia",
+            "position",
+            "prairie",
+            "raleigh",
+            "reading",
+            "sort the letters",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d253dc14",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "alphabetize the letters",
+            "buckeye",
+            "buffalo",
+            "county",
+            "dc",
+            "element",
+            "invert case",
+            "item number",
+            "letters in order",
+            "millersville",
+            "nth",
+            "philadelphia",
+            "position",
+            "prairie",
+            "raleigh",
+            "reading",
+            "sort the letters",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "shortname"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-270d5d4f",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "buckeye",
+            "characters from",
+            "cleveland",
+            "county",
+            "element",
+            "garner",
+            "howell",
+            "item number",
+            "letters from to",
+            "millersville",
+            "milwaukee",
+            "nth",
+            "position",
+            "prairie",
+            "quincy",
+            "reading",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c02fe1a0",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "buckeye",
+            "characters from",
+            "cleveland",
+            "county",
+            "element",
+            "garner",
+            "howell",
+            "item number",
+            "letters from to",
+            "millersville",
+            "milwaukee",
+            "nth",
+            "position",
+            "prairie",
+            "quincy",
+            "reading",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fb025f2b",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "buffalo",
+            "characters from",
+            "dc",
+            "dover",
+            "dunkirk",
+            "element",
+            "harleysville",
+            "item number",
+            "letters from to",
+            "melbourne",
+            "nth",
+            "philadelphia",
+            "position",
+            "slice of the text",
+            "snohomish",
+            "substring",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "dave"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "shortname"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1fa21311",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -5398,6 +8984,408 @@
       "fit": {
         "ok": 10,
         "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3b3fd461",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "buffalo",
+            "concord",
+            "dunkirk",
+            "element",
+            "garner",
+            "grove",
+            "harleysville",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "mount",
+            "nth",
+            "position",
+            "separate by",
+            "snohomish",
+            "split",
+            "split by",
+            "unadilla"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "charlie"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "dave"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "grady"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "minnie"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8f846e36",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "aurora",
+            "characters from",
+            "cleveland",
+            "element",
+            "garner",
+            "hanna",
+            "howell",
+            "item number",
+            "letters from to",
+            "millersville",
+            "milwaukee",
+            "nth",
+            "position",
+            "quincy",
+            "reading",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a79e31fd",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "aurora",
+            "characters from",
+            "cleveland",
+            "element",
+            "garner",
+            "hanna",
+            "howell",
+            "item number",
+            "letters from to",
+            "millersville",
+            "milwaukee",
+            "nth",
+            "position",
+            "quincy",
+            "reading",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3ece0f57",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "buffalo",
+            "concord",
+            "dunkirk",
+            "element",
+            "garner",
+            "harleysville",
+            "item number",
+            "joy",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "position",
+            "separate by",
+            "snohomish",
+            "split",
+            "split by",
+            "unadilla"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "charlie"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "dave"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "minnie"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
         "rows": 40
       }
     },
@@ -7178,6 +11166,91 @@
       }
     },
     {
+      "id": "n-2081b20c",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "buffalo",
+            "concord",
+            "dunkirk",
+            "element",
+            "garner",
+            "harleysville",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "snohomish",
+            "split",
+            "split by",
+            "unadilla"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5bd3b121",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -7339,6 +11412,198 @@
       "mem": null,
       "height": 6,
       "size": 12,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0b97b7ea",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "boulder",
+            "characters from",
+            "element",
+            "item number",
+            "joy",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "snohomish",
+            "stonewall",
+            "substring",
+            "unadilla",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "jackson"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "minnie"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b4327a89",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "boulder",
+            "characters from",
+            "element",
+            "item number",
+            "joy",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "snohomish",
+            "stonewall",
+            "substring",
+            "unadilla",
+            "vernon"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "jackson"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "minnie"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 6,
         "fired": 6,
@@ -7771,6 +12036,271 @@
       "fit": {
         "ok": 6,
         "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9b0f9ad2",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "buffalo",
+            "concord",
+            "dover",
+            "dunkirk",
+            "element",
+            "garner",
+            "grove",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bert"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "charlie"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "dave"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-26fdcb15",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "des",
+            "element",
+            "item number",
+            "letters from to",
+            "melbourne",
+            "nanaimo",
+            "nth",
+            "position",
+            "raleigh",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-38e5e270",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "des",
+            "element",
+            "item number",
+            "letters from to",
+            "melbourne",
+            "nanaimo",
+            "nth",
+            "position",
+            "raleigh",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
         "rows": 40
       }
     },
@@ -8332,6 +12862,228 @@
       "mem": null,
       "height": 5,
       "size": 11,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-545cd25b",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "garner",
+            "grove",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "title case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-61cb39ce",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "garner",
+            "item number",
+            "letters from to",
+            "nth",
+            "orange",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c00a556f",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albertville",
+            "characters from",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "philadelphia",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "shortname"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -9862,6 +14614,150 @@
       }
     },
     {
+      "id": "n-02b4f0de",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-28cc0576",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "slug"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2f4c072a",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -9923,6 +14819,442 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-34b6add2",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "each word",
+            "element",
+            "garner",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "split into words",
+            "upper camel case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-39c0b988",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "garner",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-49063b48",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "slug"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-53dade46",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5b0c4dcf",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "camel case",
+            "camelcase",
+            "capital letters",
+            "capitals",
+            "element",
+            "garner",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5e043dd8",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "slug"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 12,
       "fit": {
         "ok": 1,
@@ -10000,6 +15332,297 @@
       }
     },
     {
+      "id": "n-75d085b1",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7cd0f518",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "swap case",
+            "toggle case",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7d04d965",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "title case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "slug"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8c6a8f01",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "snake case",
+            "snakecase",
+            "swap case",
+            "toggle case",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.snake",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a1dee6e7",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -10063,6 +15686,516 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b10df734",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "element",
+            "garner",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "title case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b601b968",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "garner",
+            "item number",
+            "nth",
+            "position",
+            "snake case",
+            "snakecase",
+            "title case",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.snake",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c7d358d4",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "each word",
+            "element",
+            "garner",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c90a2416",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "element",
+            "garner",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "title case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d6133f74",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "garner",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e4f3b9bf",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "element",
+            "garner",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "title case",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                  },
+                  {
+                    "lit": "city"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-groundhogs-bfd00a"
+              },
+              {
+                "lit": "city"
+              },
+              {
+                "lit": "name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0496244a",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "dover",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -10562,6 +16695,79 @@
       }
     },
     {
+      "id": "n-22cc251a",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "dover",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-239e48d8",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -10718,6 +16924,79 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2b502f39",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "garner",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -11210,6 +17489,152 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-47a54f4d",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "dover",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-50669120",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "dover",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -11717,6 +18142,79 @@
       }
     },
     {
+      "id": "n-7b27aa51",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "dover",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7f724992",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -12213,6 +18711,79 @@
       }
     },
     {
+      "id": "n-a74d8592",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "dover",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b644cfde",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -12631,6 +19202,79 @@
       }
     },
     {
+      "id": "n-cd744a0e",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "garner",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "slug"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d7d04d86",
       "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
       "gen": 10,
@@ -13033,6 +19677,79 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f91ecafa",
+      "task": "fr-tidytuesday-groundhogs-bfd00a-c-d205e5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "garner",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "shortname"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-groundhogs-bfd00a"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-groundhogs-bfd00a"
+            },
+            {
+              "lit": "city"
+            },
+            {
+              "lit": "name"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -18650,6 +25367,7 @@
     }
   ],
   "stages": [
-    "58953bb214f7216c17c595270def6e187f44a5aafc5272aac15a5a971c9241b3"
+    "58953bb214f7216c17c595270def6e187f44a5aafc5272aac15a5a971c9241b3",
+    "a5fd1fc833d0642d73114ad90a23d109de264cc837cee6027137c940e74b93e4"
   ]
 }
