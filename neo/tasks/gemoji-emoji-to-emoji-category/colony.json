@@ -2,28 +2,31 @@
   "task": "gemoji-emoji-to-emoji-category",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:28:30.844Z",
+  "at": "2026-11-28T03:18:27.448Z",
   "stats": {
-    "generated": 160289,
-    "distinct": 95602,
-    "kept": 293,
-    "know": 209,
+    "generated": 200061,
+    "distinct": 88992,
+    "kept": 295,
+    "know": 210,
     "byFamily": {
       "sense": 1,
       "memory": 82,
-      "transform": 176,
-      "aggregate": 33,
-      "know": 1
+      "transform": 173,
+      "aggregate": 36,
+      "know": 1,
+      "route": 2
     },
     "bySource": {
-      "parent": 289,
-      "enum": 4
+      "parent": 257,
+      "memory": 2,
+      "template": 12,
+      "enum": 24
     },
-    "maxHeight": 6,
+    "maxHeight": 7,
     "devOk": 40,
     "devN": 40,
-    "ms": 104444,
-    "cellsPerSecond": 1535,
+    "ms": 216806,
+    "cellsPerSecond": 923,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -32,14 +35,14 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "7e3daa21f12d3b68a2e795c936e6daa4da7198d5388e039dd3e4a4c00f29a39d",
-      "round": 1,
-      "at": 212315,
+      "basis": "0afe6be92f7a9caf2c9919a75c2c9cc317ddd8efe7c81a99bf2025460c8e9d0f",
+      "round": 0,
+      "at": 102823,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "compute.gcd",
-      "tpl": 2460
+      "cost": 5,
+      "prim": "compute.circumference",
+      "tpl": 3000
     }
   },
   "cells": [
@@ -196,7 +199,7 @@
       }
     },
     {
-      "id": "n-bdaa85e8",
+      "id": "n-944f701c",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
       "parents": [],
@@ -204,6 +207,10 @@
         [
           "has",
           "category"
+        ],
+        [
+          "has",
+          "emoji"
         ]
       ],
       "pyramid": [
@@ -7352,6 +7359,154 @@
       }
     },
     {
+      "id": "n-7ddc0d61",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "austria",
+            "blueberries",
+            "button",
+            "camping",
+            "car",
+            "chicken",
+            "cityscape",
+            "congo",
+            "el",
+            "element",
+            "eye",
+            "fan",
+            "hospital",
+            "item number",
+            "monaco",
+            "national",
+            "nth",
+            "peanuts",
+            "pin",
+            "roller",
+            "spouting",
+            "symbol",
+            "trolleybus"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "ball"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "detective"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "gesturing"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "railway"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "emoji"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji shortcode"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji shortcode"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 18,
+      "fit": {
+        "ok": 20,
+        "fired": 20,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-9158d31e",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -12227,6 +12382,93 @@
       }
     },
     {
+      "id": "n-4d1b984c",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camping",
+            "car",
+            "cityscape",
+            "element",
+            "hospital",
+            "item number",
+            "national",
+            "nth",
+            "oclock",
+            "roller",
+            "trolleybus"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "railway"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "ten"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Travel & Places."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "emoji"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-259199e0",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -14819,6 +15061,75 @@
       }
     },
     {
+      "id": "n-f2708f2b",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camping",
+            "cityscape",
+            "hospital",
+            "oclock",
+            "roller",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "trolleybus"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "ten"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is Travel & Places."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "emoji"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-49698363",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -15035,91 +15346,6 @@
       "mem": null,
       "height": 3,
       "size": 9,
-      "fit": {
-        "ok": 5,
-        "fired": 5,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-0f30b00e",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "chicken",
-            "cream",
-            "delete",
-            "hearnoevil",
-            "item number",
-            "nth",
-            "pin",
-            "position",
-            "remove",
-            "spouting",
-            "strip out",
-            "without"
-          ]
-        ],
-        [
-          "has",
-          "category"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "gemoji"
-                },
-                {
-                  "lit": "emoji name"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "gemoji"
-            },
-            {
-              "lit": "emoji name"
-            },
-            {
-              "lit": "emoji category"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "cryptocurrency"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 16,
       "fit": {
         "ok": 5,
         "fired": 5,
@@ -15703,89 +15929,6 @@
       "mem": null,
       "height": 3,
       "size": 9,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-03efa73c",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "chicken",
-            "cream",
-            "delete",
-            "item number",
-            "nth",
-            "pin",
-            "position",
-            "remove",
-            "spouting",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "category"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "gemoji"
-                },
-                {
-                  "lit": "emoji shortcode"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "gemoji"
-            },
-            {
-              "lit": "emoji shortcode"
-            },
-            {
-              "lit": "emoji category"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "cryptocurrency"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 16,
       "fit": {
         "ok": 4,
         "fired": 4,
@@ -17239,6 +17382,206 @@
       }
     },
     {
+      "id": "n-2bd9d248",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "car",
+            "element",
+            "exceeds",
+            "eye",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "oclock",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "railway"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "ten"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                    },
+                    {
+                      "lit": "package"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                },
+                {
+                  "lit": "package"
+                },
+                {
+                  "lit": "n total"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                    },
+                    {
+                      "lit": "package"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                },
+                {
+                  "lit": "package"
+                },
+                {
+                  "lit": "n total"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "emoji"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 45,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-27693407",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -17592,63 +17935,6 @@
       }
     },
     {
-      "id": "n-e8de8353",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "baby",
-            "delete",
-            "eye",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out"
-          ]
-        ],
-        [
-          "words<=",
-          7
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "People & Body"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-internal-calls-10b0d2"
-              },
-              {
-                "lit": "package"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 2,
-        "fired": 2,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-fcad7ff7",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -17927,6 +18213,222 @@
       }
     },
     {
+      "id": "n-f01991cd",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "button",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "angola"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bouncingballman"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "clouds"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "croatia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                    },
+                    {
+                      "lit": "package"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                },
+                {
+                  "lit": "package"
+                },
+                {
+                  "lit": "n total"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                    },
+                    {
+                      "lit": "package"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                },
+                {
+                  "lit": "package"
+                },
+                {
+                  "lit": "n total"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "emoji"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 45,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-20e44aa4",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -17968,60 +18470,6 @@
           "transform.remove",
           {
             "lit": "People & Body"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-402fc3cd",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "cream",
-            "delete",
-            "item number",
-            "nth",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "Food & Drink"
           },
           [
             "transform.nthStr",
@@ -18381,113 +18829,6 @@
       }
     },
     {
-      "id": "n-c8a55392",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "couch",
-            "delete",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "Objects"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-internal-calls-10b0d2"
-              },
-              {
-                "lit": "package"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-ce7fbdfc",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "cream",
-            "delete",
-            "item number",
-            "nth",
-            "position",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "Food & Drink"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "cryptocurrency"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-e0dd5728",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -18529,62 +18870,6 @@
             ],
             {
               "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-e4a0e06f",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "cream",
-            "delete",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "name"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "Food & Drink"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-internal-calls-10b0d2"
-              },
-              {
-                "lit": "package"
-              }
-            ],
-            {
-              "lit": 2
             }
           ]
         ]
@@ -18924,6 +19209,86 @@
       }
     },
     {
+      "id": "n-7f02c6d3",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "oclock",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "twelve"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of twelve o’clock is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7543993e",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -19166,7 +19531,97 @@
       }
     },
     {
-      "id": "n-06fbe994",
+      "id": "n-1634635c",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "down",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of fast down button is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-17ba5007",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
       "parents": [],
@@ -19184,7 +19639,7 @@
         ],
         [
           "has",
-          "name"
+          "emoji"
         ]
       ],
       "pyramid": [
@@ -19596,92 +20051,6 @@
       }
     },
     {
-      "id": "n-0123ded7",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "stop"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " category of stop button is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "know.find",
-            {
-              "lit": "fr-tidytuesday-internal-calls-10b0d2"
-            },
-            {
-              "lit": "package"
-            }
-          ],
-          {
-            "lit": -1
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "gemoji"
-              },
-              {
-                "lit": "emoji name"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "gemoji"
-          },
-          {
-            "lit": "emoji name"
-          },
-          {
-            "lit": "emoji category"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-0bf97259",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -19936,6 +20305,92 @@
       }
     },
     {
+      "id": "n-1ee38813",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "stop"
+          ]
+        ],
+        [
+          "has",
+          "emoji"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of stop button is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-internal-calls-10b0d2"
+            },
+            {
+              "lit": "package"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-20c59611",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -19978,6 +20433,92 @@
           ],
           {
             "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-26da136a",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "car",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "racing"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of racing car is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": 1
           }
         ],
         [
@@ -20793,6 +21334,92 @@
       }
     },
     {
+      "id": "n-58c98b17",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blueberries",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of blueberries is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5a7e79fa",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -21219,7 +21846,7 @@
       }
     },
     {
-      "id": "n-947a7b40",
+      "id": "n-8ddc6e2b",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
       "parents": [],
@@ -21227,10 +21854,18 @@
         [
           "hasAny",
           [
-            "blueberries",
             "item number",
-            "nth"
+            "nth",
+            "parrot"
           ]
+        ],
+        [
+          "has",
+          "emoji"
+        ],
+        [
+          "words<=",
+          6
         ]
       ],
       "pyramid": [
@@ -21241,7 +21876,7 @@
             {
               "slot": 0
             },
-            " category of blueberries is ",
+            " category of parrot is ",
             {
               "slot": 1
             },
@@ -24435,6 +25070,43 @@
       }
     },
     {
+      "id": "n-6e81ccee",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "chicken"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the emoji category of chicken": "The emoji category of chicken is Animals & Nature."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-734c17dd",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -24911,39 +25583,6 @@
       }
     },
     {
-      "id": "n-cb3613d8",
-      "task": "gemoji-emoji-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "chicken"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "what is the emoji category of chicken": "The emoji category of chicken is Animals & Nature."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-cc530f4a",
       "task": "gemoji-emoji-to-emoji-category",
       "gen": 10,
@@ -25285,10 +25924,815 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-bdaa85e8",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "category"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.after",
+            {
+              "lit": "category"
+            }
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "of smirking face": "The emoji category of smirking face is Smileys & Emotion.",
+          "of baby symbol": "The emoji category of baby symbol is Symbols.",
+          "of confounded face": "The emoji category of confounded face is Smileys & Emotion.",
+          "of peanuts": "The emoji category of peanuts is Food & Drink.",
+          "of cityscape": "The emoji category of cityscape is Travel & Places.",
+          "of parrot": "The emoji category of parrot is Animals & Nature.",
+          "of hospital": "The emoji category of hospital is Travel & Places.",
+          "of prohibited": "The emoji category of prohibited is Symbols.",
+          "of Japanese “bargain” button": "The emoji category of Japanese “bargain” button is Symbols.",
+          "of roller skate": "The emoji category of roller skate is Travel & Places.",
+          "of trolleybus": "The emoji category of trolleybus is Travel & Places.",
+          "of flag: Canary Islands": "The emoji category of flag: Canary Islands is Flags.",
+          "of eye": "The emoji category of eye is People & Body.",
+          "of spouting whale": "The emoji category of spouting whale is Animals & Nature.",
+          "of face with hand over mouth": "The emoji category of face with hand over mouth is Smileys & Emotion.",
+          "of flag: Congo - Kinshasa": "The emoji category of flag: Congo - Kinshasa is Flags.",
+          "of twelve o’clock": "The emoji category of twelve o’clock is Travel & Places.",
+          "of white flag": "The emoji category of white flag is Flags.",
+          "of chicken": "The emoji category of chicken is Animals & Nature.",
+          "of flag: El Salvador": "The emoji category of flag: El Salvador is Flags.",
+          "of rugby football": "The emoji category of rugby football is Activities.",
+          "of fast down button": "The emoji category of fast down button is Symbols.",
+          "of flag: Austria": "The emoji category of flag: Austria is Flags.",
+          "of baby": "The emoji category of baby is People & Body.",
+          "of stop button": "The emoji category of stop button is Symbols.",
+          "of flag: Monaco": "The emoji category of flag: Monaco is Flags.",
+          "of couch and lamp": "The emoji category of couch and lamp is Objects.",
+          "of hear-no-evil monkey": "The emoji category of hear-no-evil monkey is Smileys & Emotion.",
+          "of national park": "The emoji category of national park is Travel & Places.",
+          "of sauropod": "The emoji category of sauropod is Animals & Nature.",
+          "of blueberries": "The emoji category of blueberries is Food & Drink.",
+          "of camping": "The emoji category of camping is Travel & Places.",
+          "of mobile phone off": "The emoji category of mobile phone off is Symbols.",
+          "of safety pin": "The emoji category of safety pin is Objects.",
+          "of man kneeling": "The emoji category of man kneeling is People & Body.",
+          "of fearful face": "The emoji category of fearful face is Smileys & Emotion.",
+          "of man: beard": "The emoji category of man: beard is People & Body.",
+          "of folding hand fan": "The emoji category of folding hand fan is Objects.",
+          "of soft ice cream": "The emoji category of soft ice cream is Food & Drink.",
+          "of racing car": "The emoji category of racing car is Travel & Places."
+        }
+      },
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0f30b00e",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chicken",
+            "cream",
+            "delete",
+            "hearnoevil",
+            "item number",
+            "nth",
+            "pin",
+            "position",
+            "remove",
+            "spouting",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji name"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-03efa73c",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chicken",
+            "cream",
+            "delete",
+            "item number",
+            "nth",
+            "pin",
+            "position",
+            "remove",
+            "spouting",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji shortcode"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji shortcode"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e8de8353",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "baby",
+            "delete",
+            "eye",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "People & Body"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-402fc3cd",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cream",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Food & Drink"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c8a55392",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "couch",
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Objects"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ce7fbdfc",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cream",
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Food & Drink"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e4a0e06f",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cream",
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Food & Drink"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-06fbe994",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "fearful",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of fearful face is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0123ded7",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "stop"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of stop button is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-internal-calls-10b0d2"
+            },
+            {
+              "lit": "package"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-947a7b40",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blueberries",
+            "item number",
+            "nth"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of blueberries is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cb3613d8",
+      "task": "gemoji-emoji-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "chicken"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the emoji category of chicken": "The emoji category of chicken is Animals & Nature."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
     "e842d6387604c05e6a0c997d61a26bb4e61241d9998171a9bf9e8e9484ccce9a",
-    "cdcb0e4f9e23ce8ac5d19b92b108cb0c2cbb52aeb3087b93b29edca440485515"
+    "cdcb0e4f9e23ce8ac5d19b92b108cb0c2cbb52aeb3087b93b29edca440485515",
+    "6471806f09ddeb98973942ce7ebf07131dae8084a6fe0ac9f0ba93acd625a20b"
   ]
 }
